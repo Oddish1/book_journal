@@ -4,10 +4,18 @@ This is being developed for my capstone project.
 
 ## Currently in Progress
 
-- [ ] Data Models
+- [X] Data Models
 - [ ] UI
+  - [ ] Homepage
+  - [ ] Book Page
+  - [ ] Library Page
+  - [ ] Recommendations Page
+  - [ ] Login Page
+  - [ ] Register Page
+  - [ ] Journal Page
 
 ## Development Backlog
 
 - [ ] Recommendations
 - [ ] API Integration
+- [ ] Search
