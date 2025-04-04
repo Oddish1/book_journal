@@ -31,8 +31,28 @@
 	</head>
 	<body>
 		{% if user.is_authenticated %}
-			<h1>Welcome Back {{user.username}}!</h1>
 			<a class=button-a href="logout/">logout</a>
+			<h1>Welcome Back {{user.username}}!</h1>
+			<h2>Search for a Book</h2>
+			<form method="get">
+				{{ form.as_p }}
+				<button type="submit">Search</button>
+			</form>
+			{% if results %}
+				<h3>Results:</h3>
+				{% for book in results %}
+					<div>
+						{% if book.volumeInfo.imageLinks.thumbnail %}
+							<img src="{{ book.volumeInfo.imageLinks.thumbnail }}" alt="Book cover">
+						{% endif %}
+						<h4>{{ book.volumeInfo.title }}</h4>
+						<h5>{{ book.volumeInfo.authors|join:", " }}</h5>
+						<p>{{ book.volumeInfo.pageCount }} pages - {{ book.volumeInfo.printType }} - {{ book.volumeInfo.publishedDate }}</p>
+						<p>{{ book.volumeInfo.categories }}</p>
+					</div>
+					<hr>
+				{% endfor %}
+			{% endif %}
 		{% else %}
 			<h1>Welcome to BookJournal!</h1>
 			<p>A place to track and reflect on your reading.</p>

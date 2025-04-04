@@ -11,3 +11,7 @@ class RegisterForm(UserCreationForm):
     class Meta:
         model = User
         fields = ["username", "email", "password1", "password2"]
+
+
+class BookSearchForm(forms.Form):
+    query = forms.CharField(label='Search for a book', max_length=200)

@@ -1,2 +1,4 @@
 db.sqlite3
 book_journal_project/settings.py
+.env
+venv
