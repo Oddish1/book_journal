@@ -42,7 +42,7 @@ class List(models.Model):
 
 class Covers(models.Model):
     # represents the cover image
-    image = models.ImageField()
+    image = models.ImageField(upload_to='book_covers/', null=True, blank=True)
 
 
 class Genres(models.Model):
@@ -63,14 +63,14 @@ class Authors(models.Model):
 
 class Book(models.Model):
     # foreign key linking to Genres.id representing the main genre of the book
-    main_genre = models.ForeignKey(Genres, on_delete=models.CASCADE)
+    main_genre = models.ForeignKey(Genres, on_delete=models.CASCADE, null=True)
     genres = models.ManyToManyField(Genres, related_name="books")
     # foreign key linking to Covers.id representing the thumbnail cover
-    thumbnail_cover = models.ForeignKey(Covers, on_delete=models.CASCADE, null=True)
-    covers = models.ManyToManyField(Covers, related_name="covers")
+    thumbnail_cover = models.ForeignKey(Covers, on_delete=models.CASCADE, default=None)
+    covers = models.ManyToManyField(Covers, related_name="covers", default=None)
     # foreign key linking to Authors.id representing the main author
-    main_author = models.ForeignKey(Authors, on_delete=models.CASCADE)
-    authors = models.ManyToManyField(Authors, related_name="authors")
+    main_author = models.ForeignKey(Authors, on_delete=models.CASCADE, null=True)
+    authors = models.ManyToManyField(Authors, related_name="authors", default=None)
     # foreign key linking to List.id representing the list the book is in
     list = models.ForeignKey(List, on_delete=models.CASCADE, null=True)
     # represents the book title, max length of 500 characters
