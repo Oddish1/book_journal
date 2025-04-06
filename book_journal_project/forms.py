@@ -14,4 +14,8 @@ class RegisterForm(UserCreationForm):
 
 
 class BookSearchForm(forms.Form):
-    query = forms.CharField(label='Search for a book', max_length=200)
+    query = forms.CharField(label='', max_length=200, widget=forms.TextInput(attrs={
+                                                    'placeholder': 'Search books...',
+                                                    'class': 'search-input'
+                                                    })
+                            )

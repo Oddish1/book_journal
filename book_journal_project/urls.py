@@ -17,6 +17,8 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import include, path
 from .views import home, register, login_view, logout_view, book
+from django.conf import settings
+from django.conf.urls.static import static
 
 urlpatterns = [
     path("", home, name="home"),
@@ -26,4 +28,4 @@ urlpatterns = [
     path("library/", include("library.urls")),
     path('admin/', admin.site.urls),
     path("book/<int:book_id>/", book, name="book")
-]
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -1,63 +1,52 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<style>
-			.button-a:link, .button-a:visited {
-				background-color: #233D4D;
-				color: #FDFDFF;
-				padding: 14px 25px;
-				text-align: center;
-				text-decoration: none;
-				display: inline-block;
-			}
-
-			.button-b:link, .button-b:visited {
-				background-color: #FDFDFF;
-				color: #233D4D;
-				padding: 14px 25px;
-				text-align: center;
-				text-decoration: none;
-				display: inline-block;
-			}
-
-			.button-a:hover, .button-b:hover {
-				background-color: #C6C5B9;
-				color: #233D4D;
-				transition: background-color .25s ease;
-			}
-		</style>
-
+		{% load static %}
+		<link rel="stylesheet" href="{% static 'index.css' %}">
 		<title>BookJournal | home</title>
 	</head>
-	<body>
-		{% if user.is_authenticated %}
-			<a class=button-a href="logout/">logout</a>
-			<h1>Welcome Back {{user.username}}!</h1>
-			<h2>Search for a Book</h2>
-			<form method="get">
-				{{ form.as_p }}
-				<button type="submit">Search</button>
-			</form>
-			{% if results %}
-				<h3>Results:</h3>
-				{% for book in results %}
-					<div>
-						{% if book.volumeInfo.imageLinks.thumbnail %}
-							<img src="{{ book.volumeInfo.imageLinks.thumbnail }}" alt="Book cover">
-						{% endif %}
-						<h4>{{ book.volumeInfo.title }}</h4>
-						<h5>{{ book.volumeInfo.authors|join:", " }}</h5>
-						<p>{{ book.volumeInfo.pageCount }} pages - {{ book.volumeInfo.printType }} - {{ book.volumeInfo.publishedDate }}</p>
-						<p>{{ book.volumeInfo.categories }}</p>
+	<div class="page-container">
+		<body>
+			{% if user.is_authenticated %}
+				<div class="top-bar">
+					<h1>BookJournal</h1>
+					<a class="button-a" href="logout/">logout</a>
+				</div>
+				<hr>
+				<div class="search-bar">
+					<h2>Welcome Back {{user.username}}!</h2>
+					<form method="get" class="search-form">
+						{{ form.as_p }}
+						<button type="submit">Search</button>
+					</form>
+				</div>
+				{% if results %}
+					<div class="search-results">
+						{% for book in results %}
+							<div class="book-result">
+								{% if book.volumeInfo.imageLinks.thumbnail %}
+									<img src="{{ book.volumeInfo.imageLinks.thumbnail }}" alt="Book cover">
+								{% endif %}
+								<h4>{{ book.volumeInfo.title }}</h4>
+								<h5>{{ book.volumeInfo.authors|join:", " }}</h5>
+								<p>
+									{% for category in book.volumeInfo.categories %}
+										{{ category }}{% if not forloop.last %}, {% endif %}
+									{% endfor %}
+								</p>
+								<p>{% if book.volumeInfo.mainCategory %}{{ book.volumeInfo.mainCategory }}{% endif %}</p>
+								<p>{{ book.volumeInfo.publishedDate }}</p>
+								<p>{{ book.volumeInfo.pageCount }} pages</p>
+							</div>
+						{% endfor %}
 					</div>
-					<hr>
-				{% endfor %}
+				{% endif %}
+			{% else %}
+				<h1>Welcome to BookJournal!</h1>
+				<p>A place to track and reflect on your reading.</p>
+				<h2>Let's Get Started</h2>
+				<a class=button-a href="register/">sign up</a> <a class=button-b href="login/">sign in</a>
 			{% endif %}
-		{% else %}
-			<h1>Welcome to BookJournal!</h1>
-			<p>A place to track and reflect on your reading.</p>
-			<h2>Let's Get Started</h2>
-			<a class=button-a href="register/">sign up</a> <a class=button-b href="login/">sign in</a>
-		{% endif %}
-	</body>
+		</body>
+	</div>
 </html>

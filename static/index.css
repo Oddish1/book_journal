@@ -1,0 +1,100 @@
+.button-a:link, .button-a:visited {
+	background-color: #233D4D;
+	color: #FDFDFF;
+	padding: 14px 25px;
+	text-align: center;
+	text-decoration: none;
+	display: inline-block;
+}
+
+.button-b:link, .button-b:visited {
+	background-color: #FDFDFF;
+	color: #233D4D;
+	padding: 14px 25px;
+	text-align: center;
+	text-decoration: none;
+	display: inline-block;
+}
+
+.button-a:hover, .button-b:hover {
+	background-color: #C6C5B9;
+	color: #233D4D;
+	scale: 105%;
+	transition: background-color .25s ease;
+}
+
+.top-bar {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 1rem;
+}
+
+hr {
+	border: none;
+	height: 4px;
+	background-color: #233D4D;
+	margin: 0;
+}
+
+button {
+	background-color: #FDFDFF;
+	color: #233D4D;
+	padding: 10px 16px;
+	text-align: center;
+	text_decoration: none;
+	display: inline-block;
+}
+
+button:hover {
+	background-color: #233D4D;
+	color: #FDFDFF;
+	scale: 105%;
+	transition: background-color .25s ease;
+}
+
+.search-form {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	
+}
+
+.search-input {
+	width: 250px;
+	padding: 0.5rem;
+	font-size: 1rem;
+	border: 1px solid #233D4D;
+}
+
+.book-result {
+	flex: 1 1 200px;
+	max-width: 250px;
+	align-items: center;
+	/*gap: 1rem;*/
+}
+
+.book-result h4,
+.book-result h5,
+.book-result p {
+	margin: 0.25rem 0;
+	line-height: 1.2;
+}
+
+.search-results {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 2rem;
+}
+
+.search-bar {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 1rem;
+}
+
+.page-container {
+	max-width: 800px;
+	margin: 0 auto;
+}
