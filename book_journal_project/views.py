@@ -65,25 +65,43 @@ def home(request):
                             book_title = "Unknown Title"
                             
                         if not existing_book:
-                            logger.info(f'[Book Import: "{book_title}"] No existing book found, attempting to import.')
-                            
+                            logger.info(f'[Book Import "{book_title}"]: No existing book found, attempting to import.')
+
+                            # set genres
                             try:
-                                main_genre = Genres(genre=results[i]['volumeInfo']['mainCategory'])
-                            except Exception as e:
-                                logger.warning(f'[Book Import: "{book_title}"] mainCategory could not be found or does not exist. Setting to None.')
-                                logger.debug(f'volumeInfo:\n{volume_info}')
-                                logger.debug(f'Error:\n{e}')
-                                main_genre = None
-                            
-                            try:
-                                genres = [genre for genre in results[i]['volumeInfo']['categories']]
-                                genre_objects = [Genres(genre=genre) for genre in genres]
+                                genres = [g for g in volume_info['categories']]
+                                if isinstance(genres, list):
+                                    for g in genres:
+                                        if isinstance(g, str):
+                                            # check for genre in db if exists, set
+                                            db_genre = Genres.objects.get(genre=g)
+                                            if not db_genre:
+                                                # create and set genre
+                                                g = Genres(genre=g)
+                                                try:
+                                                    logger.debug(f'[Database]: attempting to save genre: "{g.genre}"')
+                                                    g.full_clean() # check for validation errors
+                                                    g.save() # save genre to db
+                                                    logger.debug(f'[Database]: genre save success: "{g.genre}"')
+                                                    main_genre = g # set genre
+                                                    logger.debug(f'[Book Import "{book_title}"]: Genre set to "{main_genre.genre}"')
+                                                except Exception as e:
+                                                    logger.error(f'[Database]: save failed, genre: "{g.genre}" -- Error\n{e}')
+                                                except ValidationError as e:
+                                                    logger.error(f'[Database]: save failed, validation error:\n{e}')
+                                            else:
+                                                # if genre in db, set genre
+                                                logger.debug(f'[Book Import "{book_title}"]: Genre in DB, setting genre to "{db_genre.genre}"')
+                                                main_genre = db_genre
+                                        else:
+                                            logger.error(f'Book Import "{book_title}"]: Genre {g} is not type str, but type {type(g)}')
                             except Exception as e:
                                 logger.warning(f'[Book Import: "{book_title}"] genres could not be added. Setting to None.')
                                 logger.debug(f'volumeInfo:\n{volume_info}')
                                 logger.debug(f'Error:\n{e}')
                                 genre_objects = None
                             
+                            # set cover image
                             try:
                                 image_url = results[i]['volumeInfo']['imageLinks']['thumbnail']
                                 try:
@@ -259,9 +277,10 @@ def home(request):
                             logger.info(f'[Book Import: "{query}"] Book already exists in the database.')
 
     # Render the HTML template index.html
+    logger.debug(f'stored_results:\n{stored_results}')
     return render(request, 'index.html', {
                   "form": form,
-                  "results": stored_results,
+                  "stored_results": stored_results,
                   })
 
 def register(request):
