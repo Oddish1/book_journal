@@ -6,7 +6,7 @@ from django.contrib.auth.forms import AuthenticationForm
 from .forms import RegisterForm, BookSearchForm
 from django.conf import settings
 from datetime import datetime
-from library.models import Book, Genres, Authors
+from library.models import Book, Genres, Authors, Covers
 from PIL import Image
 from io import BytesIO
 from django.core.files.base import ContentFile
@@ -40,7 +40,7 @@ def home(request):
                     results = data.get("items", [])
                     for i in range(0, len(results)):
                         volume_info = results[i]['volumeInfo']
-                        
+
                         # extract isbn
                         isbn_13 = None
                         for identifier in volume_info.get('industryIdentifiers', []):
@@ -63,7 +63,7 @@ def home(request):
                             book_title = volume_info['title']
                         except:
                             book_title = "Unknown Title"
-                            
+
                         if not existing_book:
                             logger.info(f'[Book Import "{book_title}"]: No existing book found, attempting to import.')
 
@@ -74,8 +74,7 @@ def home(request):
                                     for g in genres:
                                         if isinstance(g, str):
                                             # check for genre in db if exists, set
-                                            db_genre = Genres.objects.get(genre=g)
-                                            if not db_genre:
+                                            if not Genres.objects.filter(genre=g).exists():
                                                 # create and set genre
                                                 g = Genres(genre=g)
                                                 try:
@@ -91,35 +90,51 @@ def home(request):
                                                     logger.error(f'[Database]: save failed, validation error:\n{e}')
                                             else:
                                                 # if genre in db, set genre
-                                                logger.debug(f'[Book Import "{book_title}"]: Genre in DB, setting genre to "{db_genre.genre}"')
-                                                main_genre = db_genre
+                                                main_genre = Genres.objects.get(genre=g)
+                                                logger.debug(f'[Book Import "{book_title}"]: Genre in DB, setting genre to "{main_genre.genre}"')
                                         else:
-                                            logger.error(f'Book Import "{book_title}"]: Genre {g} is not type str, but type {type(g)}')
+                                            logger.error(f'[Book Import "{book_title}"]: Genre {g} is not type str, but type {type(g)}')
                             except Exception as e:
                                 logger.warning(f'[Book Import: "{book_title}"] genres could not be added. Setting to None.')
                                 logger.debug(f'volumeInfo:\n{volume_info}')
                                 logger.debug(f'Error:\n{e}')
                                 genre_objects = None
-                            
+
                             # set cover image
                             try:
-                                image_url = results[i]['volumeInfo']['imageLinks']['thumbnail']
-                                try:
-                                    img_response = requests.get(image_url)
-                                    if img_response.status_code == 200:
-                                        image = Image.open(BytesIO(img_response.content))
-                                        image_io = BytesIO()
-                                        image.save(image_io, format='PNG')
-                                        cover_file = ContentFile(image_io.getvalue(), name=f"{isbn_13}.png")
-                                except Exception as e:
-                                    logger.error(f'[Image Download: "{book_title}"] Image failed to download.')
-                                    logger.debug(f'Image link: {image_url}')
-                                    logger.debug(f'Error:\n{e}')
+                                cover_image_url = volume_info['imageLinks']['thumbnail']
+                                logger.debug(f'[Image Download "{book_title}"]: image URL ({cover_image_url})')
+                                # check if in db already
+                                if not Covers.objects.filter(image_url=cover_image_url).exists():
+                                    # download and create Cover then set cover_image
+                                    logger.debug(f'[Book Import: "{book_title}"]: Cover not in DB, attempting to download.')
+                                    try:
+                                        img_response = requests.get(cover_image_url)
+                                        if img_response.status_code == 200:
+                                            logger.debug(f'[Image Download "{book_title}"]: Good URL response, attempting download.')
+                                            image = Covers(image_url=cover_image_url, image=img_response.content)
+                                            #image = Image.open(BytesIO(img_response.content))
+                                            #image_io = BytesIO()
+                                            image.full_clean() # check for validation erros
+                                            # image.save() # save to db
+                                            cover_file = image # set cover_image
+                                            logger.debug(f'[Image Download "{book_title}"]: Successfully saved to DB.')
+                                            #cover_file = ContentFile(image_io.getvalue(), name=f"{isbn_13}.png")
+                                    except ValidationError as e:
+                                        logger.error(f'[Image Download: "{book_title}"] Validation error: \n{e}')
+                                    except Exception as e:
+                                        logger.error(f'[Image Download: "{book_title}"] Image failed to download.')
+                                        logger.debug(f'Image link: {cover_image_url}')
+                                        logger.debug(f'Error:\n{e}')
+                                else:
+                                    logger.debug(f'[Book Import "{book_title}"]: Cover in DB, setting image.')
+                                    cover_file = db_image
                             except Exception as e:
                                 logger.warning(f'[Book Import: "{book_title}"] thumbnail_cover could not be added. Setting to None.')
                                 logger.debug(f'volumeInfo:\n{volume_info}')
                                 logger.debug(f'Error:\n{e}')
 
+                            # set author
                             try:
                                 name = results[i]['volumeInfo']['authors'][0],
                                 main_author = Authors(name=name)

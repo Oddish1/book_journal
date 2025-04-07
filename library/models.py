@@ -42,7 +42,9 @@ class List(models.Model):
 
 class Covers(models.Model):
     # represents the cover image
-    image = models.ImageField(upload_to='book_covers/', null=True, blank=True)
+    image = models.ImageField(upload_to='book_covers/', null=True)
+    # represents the url of original image (used to verify if in db or not)
+    image_url = models.URLField(null=True)
 
 
 class Genres(models.Model):
