@@ -314,6 +314,7 @@ def home(request):
                         else:
                             logger.info(f'[Book Import: "{query}"] Book already exists in the database.')
             else:
+                # add extra search stuff here
                 stored_results = results
                 logger.debug(f'DB FETCH:\n{results}')
     # Render the HTML template index.html

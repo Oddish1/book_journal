@@ -8,7 +8,7 @@ This is being developed for my capstone project.
   - [X] Fetch book details
   - [ ] Fetch author details
 - [ ] Implement Books
-  - [ ] Auto-Add Books from API to DB
+  - [X] Auto-Add Books from API to DB
   - [ ] Book Details Page
 - [ ] Implement Journal
   - [ ] Journal Page (sort by book)
