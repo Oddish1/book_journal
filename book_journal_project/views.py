@@ -9,7 +9,7 @@ from datetime import datetime
 from library.models import Book, Genres, Authors, Covers
 from PIL import Image
 from io import BytesIO
-from django.core.files.base import ContentFile
+from django.core.files.base import ContentFile, File
 from django.core.exceptions import ValidationError
 import logging
 
@@ -46,12 +46,14 @@ def home(request):
                         for identifier in volume_info.get('industryIdentifiers', []):
                             if identifier['type'] == 'ISBN_13':
                                 isbn_13 = identifier['identifier']
+                                logger.debug(f'[ISBN]: Found isbn_13 {isbn_13}')
                                 break
                         if not isbn_13:
                             isbn_10 = None
                             for identifier in volume_info.get('industryIdentifiers', []):
                                 if identifier['type'] == 'ISBN_10':
                                     isbn_10 = identifier['identifier']
+                                    logger.debug(f'[ISBN]: Found isbn_10 {isbn_10}')
                                     break
                             isbn_13 = isbn_10 # use isbn-10 if isbn-13 isn't found
 
@@ -81,7 +83,7 @@ def home(request):
                                                     logger.debug(f'[Database]: attempting to save genre: "{g.genre}"')
                                                     g.full_clean() # check for validation errors
                                                     g.save() # save genre to db
-                                                    logger.debug(f'[Database]: genre save success: "{g.genre}"')
+                                                    logger.info(f'[Database]: genre save success: "{g.genre}"')
                                                     main_genre = g # set genre
                                                     logger.debug(f'[Book Import "{book_title}"]: Genre set to "{main_genre.genre}"')
                                                 except Exception as e:
@@ -91,7 +93,7 @@ def home(request):
                                             else:
                                                 # if genre in db, set genre
                                                 main_genre = Genres.objects.get(genre=g)
-                                                logger.debug(f'[Book Import "{book_title}"]: Genre in DB, setting genre to "{main_genre.genre}"')
+                                                logger.info(f'[Book Import "{book_title}"]: Genre in DB, setting genre to "{main_genre.genre}"')
                                         else:
                                             logger.error(f'[Book Import "{book_title}"]: Genre {g} is not type str, but type {type(g)}')
                             except Exception as e:
@@ -109,81 +111,93 @@ def home(request):
                                     # download and create Cover then set cover_image
                                     logger.debug(f'[Book Import: "{book_title}"]: Cover not in DB, attempting to download.')
                                     try:
-                                        img_response = requests.get(cover_image_url)
+                                        img_response = requests.get(cover_image_url, stream=True)
                                         if img_response.status_code == 200:
                                             logger.debug(f'[Image Download "{book_title}"]: Good URL response, attempting download.')
-                                            image = Covers(image_url=cover_image_url, image=img_response.content)
-                                            #image = Image.open(BytesIO(img_response.content))
-                                            #image_io = BytesIO()
-                                            image.full_clean() # check for validation erros
-                                            # image.save() # save to db
-                                            cover_file = image # set cover_image
-                                            logger.debug(f'[Image Download "{book_title}"]: Successfully saved to DB.')
-                                            #cover_file = ContentFile(image_io.getvalue(), name=f"{isbn_13}.png")
+                                            cover = Covers(image_url=cover_image_url)
+                                            filename=f'{isbn_13}.png'
+                                            cover.image.save(filename, ContentFile(img_response.content), save=True)
+                                            cover_file = cover # set cover_image
+                                            logger.info(f'[Image Download "{book_title}"]: Successfully saved to DB.')
                                     except ValidationError as e:
                                         logger.error(f'[Image Download: "{book_title}"] Validation error: \n{e}')
                                     except Exception as e:
                                         logger.error(f'[Image Download: "{book_title}"] Image failed to download.')
                                         logger.debug(f'Image link: {cover_image_url}')
-                                        logger.debug(f'Error:\n{e}')
+                                        logger.error(f'Error:\n{e}')
                                 else:
-                                    logger.debug(f'[Book Import "{book_title}"]: Cover in DB, setting image.')
-                                    cover_file = db_image
+                                    logger.info(f'[Book Import "{book_title}"]: Cover in DB, setting image.')
+                                    cover_file = Covers.objects.get(image_url=cover_image_url)
                             except Exception as e:
                                 logger.warning(f'[Book Import: "{book_title}"] thumbnail_cover could not be added. Setting to None.')
                                 logger.debug(f'volumeInfo:\n{volume_info}')
-                                logger.debug(f'Error:\n{e}')
+                                logger.error(f'Error:\n{e}')
 
-                            # set author
-                            try:
-                                name = results[i]['volumeInfo']['authors'][0],
-                                main_author = Authors(name=name)
-                            except Exception as e:
-                                logger.warning(f'[Book Import: "{book_title}"] author could not be added. Setting to None.')
-                                logger.debug(f'volumeInfo:\n{volume_info}')
-                                logger.debug(f'Error:\n{e}')
-                                main_author = None
-
+                            # add authors
                             try:
                                 authors_list = volume_info['authors']
-                                authors = [author for author in authors_list]
+                                logger.debug(f'[Book Import "{book_title}"]: found authors ({authors_list})')
+                                authors = []
+                                for author in authors_list:
+                                    # check if exists in db
+                                    if not Authors.objects.filter(name=author).exists():
+                                        # create author
+                                        logger.debug(f'[Database]: Author not found, attempting to save to database.')
+                                        a = Authors(name=author)
+                                        a.full_clean() # check for validation errors
+                                        a.save() # save to db
+                                        logger.info(f'[Database]: Author {a.name} successfully saved.')
+                                        authors.append(a)
+                                    else:
+                                        authors.append(Authors.objects.get(name=author))
+                                        logger.info(f'[Book Import: "{book_title}"]: Author in DB. Adding to authors list.')
                             except Exception as e:
                                 logger.warning(f'[Book Import: "{book_title}"] authors could not be added. Setting to None.')
                                 logger.debug(f'volumeInfo:\n{volume_info}')
                                 logger.debug(f'Error:\n{e}')
                                 authors = None
+                            except ValidationError as e:
+                                logger.error(f'Validation Error when adding author! Error:\n{e}')
 
+                            # add title
                             try:
-                                title = results[i]['volumeInfo']['title']
+                                title = book_title
+                                logger.debug(f'[Book Import "{book_title}"]: Added title {title}')
                             except Exception as e:
                                 logger.warning(f'[Book Import: "{book_title}"] title could not be added. Setting to None.')
                                 logger.debug(f'volumeInfo:\n{volume_info}')
                                 logger.debug(f'Error:\n{e}')
 
+                            # add page_count
                             try:
-                                page_count = results[i]['volumeInfo']['pageCount']
+                                page_count = volume_info['pageCount']
+                                logger.debug(f'[Book Import "{book_title}"]: Added page count {page_count}')
                             except Exception as e:
                                 logger.warning(f'[Book Import: "{book_title}"] page_count could not be added. Setting to None.')
                                 logger.debug(f'volumeInfo:\n{volume_info}')
                                 logger.debug(f'Error:\n{e}')
 
+                            # add average rating
                             try:
-                                average_rating = results[i]['volumeInfo']['averageRating']
+                                average_rating = float(volume_info['averageRating'])
+                                logger.debug(f'[Book Import "{title}"]: Added average rating {average_rating}')
                             except Exception as e:
                                 logger.warning(f'[Book Import: "{book_title}"] average_rating could not be added. Setting to None.')
                                 logger.debug(f'volumeInfo:\n{volume_info}')
                                 logger.debug(f'Error:\n{e}')
                             
+                            # add ratings count
                             try:
-                                ratings_count = results[i]['volumeInfo']['ratingsCount']
+                                ratings_count = int(volume_info['ratingsCount'])
+                                logger.debug(f'[Book Import "{title}"]: Added ratings count {ratings_count}')
                             except Exception as e:
                                 logger.warning(f'[Book Import: "{book_title}"] ratings_count could not be added. Setting to None.')
                                 logger.debug(f'volumeInfo:\n{volume_info}')
                                 logger.debug(f'Error:\n{e}')
                             
-
+                            # add publisher
                             try:
-                                publisher = results[i]['volumeInfo']['publisher']
+                                publisher = volume_info['publisher']
                                 if isinstance(publisher, list):
                                     try:
                                         publishers = [pub for pub in publisher]
@@ -191,106 +205,117 @@ def home(request):
                                     except Exception as e:
                                         logger.error(f'[Adding Publishers: "{book_title}"] unable to join publishers into single string.')
                                         logger.debug(f'Error: {e}')
+                                logger.debug(f'[Book Import "{book_title}"]: Added publisher "{publisher}"')
                             except Exception as e:
                                 logger.warning(f'[Book Import: "{book_title}" publisher could not be added. Setting to None.')
                                 logger.debug(f'volumeInfo:\n{volume_info}')
                                 logger.debug(f'Error:\n{e}')
                                 publisher = None
 
+                            # add publisher date
                             try:
                                 publisher_date = volume_info['publishedDate']
                                 try:
                                     date = datetime.strptime(publisher_date, "%Y-%m-%d")
-                                    date = datetime.strftime(date, "%B %d, %Y")
+                                    date = datetime.strftime(date, "%Y-%m-%d")
                                 except Exception as e:
                                     logger.warning(f'[Date Conversion "{book_title}"]: date not in "Y-m-d" format. Trying different format.')
                                     logger.debug(f'Error:\n{e}')
                                     try:
                                         date = datetime.strptime(publisher_date, "%Y")
-                                        date = datetime.strftime(date, "%Y")
+                                        date = datetime.strftime(date, "%Y-%m-%d")
                                         logger.info(f'[Date Conversion "{book_title}"]: date stored in "Y" format: {date}')
                                     except Exception as e:
-                                        logger.warning(f'[Date Conversion "{book_title}"]: date not in "Y" format. Attempting to set date from string value if possible.')
+                                        logger.warning(f'[Date Conversion "{book_title}"]: date not in "Y" format. Trying different format.')
                                         logger.debug(f'Error:\n{e}')
                                         try:
-                                            if isinstance(publisher_date, str):
-                                                date = publisher_date
+                                            date = datetime.strptime(publisher_date, "%Y-%m")
+                                            date = datetime.strftime(date, "%Y-%m-%d")
                                         except Exception as e:
-                                            logger.warning(f'[Date Conversion "{book_title}"] date not a string. Setting publisher_date to None.')
-                                            logger.debug(f'Error:\n{e}')
-                                            date = None
+                                            logger.warning(f'[Date Conversion "{book_title}"]: date not in "Y-M format. Attempting to set date from string value if possible.')
+                                            try:
+                                                if isinstance(publisher_date, str):
+                                                    date = publisher_date
+                                            except Exception as e:
+                                                logger.warning(f'[Date Conversion "{book_title}"] date not a string. Setting publisher_date to None.')
+                                                logger.debug(f'Error:\n{e}')
+                                                date = None
                             except Exception as e:
                                 logger.error(f'[Book Import "{book_title}"] unable to set date.')
                                 logger.debug(f'Error:\n{e}')
-                                
+
+                            # add description
                             try:
                                 description = results[i]['volumeInfo']['description']
+                                logger.info(f'[Book Import "{book_title}"]: Added description')
                             except Exception as e:
                                 logger.warning(f'[Book Import "{book_title}"] unable to set description. Setting to None.')
                                 logger.debug(f'volumeInfo:\n{volume_info}')
                                 logger.debug(f'Error:\n{e}')
                                 description = None
 
+                            # add print type
                             try:
                                 print_type = results[i]['volumeInfo']['printType'].lower()
+                                logger.info(f'[Book Import "{book_title}"]: Added print type "{print_type}"')
                             except Exception as e:
                                 logger.warning(f'[Book Import "{book_title}"] unable to set print_type. Setting to None.')
+                                print_type = None
                                 logger.debug(f'volumeInfo:\n{volume_info}')
                                 logger.debug(f'Error:\n{e}')
 
+                            # add language
                             try:
+                                logger.debug("Trying to set language")
                                 language = results[i]['volumeInfo']['language']
                                 if isinstance(language, str):
-                                    continue
+                                    logger.debug("language is str")
                                 if isinstance(language, list):
+                                    logger.debug('language is list')
                                     langauges = [lang for lang in language]
                                     language = " ,".join(languages)
                                 else:
                                     logger.warning(f'[Book Import "{book_title}"] unable to set language. Setting to None.')
                                     logger.debug(f'volumeInfo:\n{volume_info}')
                                     language = None
+                                logger.info(f'[Book Import "{book_title}"]: Added language "{language}"')
                             except Exception as e:
                                 logger.error(f'[Book Import "{book_title}"] error while setting language.')
                                 logger.debug(f'Error:\n{e}')
 
-                            try:
-                                isbn = isbn_13 
-                            except Exception as e:
-                                logger.error(f'[Book Import "{book_title}"] unable to set isbn.')
-                                logger.debug(f'Error:\n{e}')
-
+                            logger.debug(f'checkpoint!')
                             try:
                                 logger.debug(f'[Book Import "{book_title}"] Attempting to save book.')
                                 new_book = Book(
                                     main_genre = main_genre,
-                                    genres = genre_objects,
                                     thumbnail_cover = cover_file,
-                                    covers = Covers(image=None),
-                                    main_author = main_author,
-                                    authors = authors,
                                     title = title,
                                     page_count = page_count,
                                     average_rating = average_rating,
                                     ratings_count = ratings_count,
                                     publisher = publisher,
-                                    published_date = published_date,
+                                    published_date = date,
                                     description = description,
                                     print_type = print_type,
                                     language = language,
                                     isbn = isbn_13)
                                 new_book.full_clean() # trigger validation errors before saving
                                 new_book.save()
+                                logger.debug('checkpoint2')
+                                new_book.authors.set(authors)
                                 stored_results.append(new_book)
                                 logger.info(f'[Book Import "{book_title}"] Successfully imported.')
                             except ValidationError as e:
-                                logger.error(f'Validation error for"{book_title}":\n{e}')
+                                logger.error(f'Validation error for "{book_title}":\n{e}')
                             except Exception as e:
                                 logger.error(f'Book import failed.')
                                 logger.debug(f'volumeInfo:\n{volume_info}')
                                 logger.info(f'Error:\n{e}')
                         else:
                             logger.info(f'[Book Import: "{query}"] Book already exists in the database.')
-
+            else:
+                stored_results = results
+                logger.debug(f'DB FETCH:\n{results}')
     # Render the HTML template index.html
     logger.debug(f'stored_results:\n{stored_results}')
     return render(request, 'index.html', {

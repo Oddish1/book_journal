@@ -24,19 +24,14 @@
 					<div class="search-results">
 						{% for book in stored_results %}
 							<div class="book-result">
-								{% if book.volumeInfo.imageLinks.thumbnail %}
-									<img src="{{ book.volumeInfo.imageLinks.thumbnail }}" alt="Book cover">
-								{% endif %}
-								<h4>{{ book.volumeInfo.title }}</h4>
-								<h5>{{ book.volumeInfo.authors|join:", " }}</h5>
-								<p>
-									{% for category in book.volumeInfo.categories %}
-										{{ category }}{% if not forloop.last %}, {% endif %}
-									{% endfor %}
-								</p>
-								<p>{% if book.volumeInfo.mainCategory %}{{ book.volumeInfo.mainCategory }}{% endif %}</p>
-								<p>{{ book.volumeInfo.publishedDate }}</p>
-								<p>{{ book.volumeInfo.pageCount }} pages</p>
+								<img src="/media/{{ book.thumbnail_cover.image }}" alt="Book cover">
+								<h4>{{ book.title }}</h4>
+								{% for author in book.authors.all %}
+									<h5>{{ author.name }}{% if not forloop.last %}, {% endif %}</h5>
+								{% endfor %}
+								<p>{{ book.genres.genre }}</p>
+								<p>{{ book.published_date }}</p>
+								<p>{{ book.page_count }} pages</p>
 							</div>
 						{% endfor %}
 					</div>

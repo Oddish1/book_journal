@@ -56,45 +56,41 @@ class Authors(models.Model):
     # represents the author's name
     name = models.CharField(max_length=200)
     # datetime.date object representing the date the author was born
-    birth_date = models.DateField()
+    birth_date = models.DateField(null=True, blank=True)
     # datetime.date object representing the date the author died
-    death_date = models.DateField(null=True)
+    death_date = models.DateField(null=True, blank=True)
     # text field representing the author's biography
-    biography = models.TextField(max_length=2000, null=True)
+    biography = models.TextField(max_length=2000, null=True, blank=True)
 
 
 class Book(models.Model):
     # foreign key linking to Genres.id representing the main genre of the book
-    main_genre = models.ForeignKey(Genres, on_delete=models.CASCADE, null=True)
-    genres = models.ManyToManyField(Genres, related_name="books")
+    main_genre = models.ForeignKey(Genres, on_delete=models.CASCADE, null=True, blank=True)
+    genres = models.ManyToManyField(Genres, related_name="genres")
     # foreign key linking to Covers.id representing the thumbnail cover
     thumbnail_cover = models.ForeignKey(Covers, on_delete=models.CASCADE, default=None)
     covers = models.ManyToManyField(Covers, related_name="covers", default=None)
-    # foreign key linking to Authors.id representing the main author
-    main_author = models.ForeignKey(Authors, on_delete=models.CASCADE, null=True)
     authors = models.ManyToManyField(Authors, related_name="authors", default=None)
     # foreign key linking to List.id representing the list the book is in
-    list = models.ForeignKey(List, on_delete=models.CASCADE, null=True)
+    list = models.ForeignKey(List, on_delete=models.CASCADE, null=True, blank=True)
     # represents the book title, max length of 500 characters
     title = models.CharField(max_length=500)
-    # represents the book subtitle, max length of 500 characters
-    subtitle = models.CharField(max_length=500, null=True)
     # integer representing the number of pages in the book
-    page_count = models.IntegerField(null=True)
+    page_count = models.IntegerField(null=True, blank=True)
     # float representing the average rating given by users
-    average_rating = models.FloatField(null=True)
+    average_rating = models.FloatField(null=True, blank=True)
     # integer representing the number of ratings given by users
     ratings_count = models.IntegerField(default=0)
     # represents the book publisher
-    publisher = models.CharField(max_length=500, null=True)
+    publisher = models.CharField(max_length=500, null=True, blank=True)
     # represents the date published
-    published_date = models.DateField(null=True)
+    published_date = models.DateField(null=True, blank=True)
     # represents a summary/description of the book
-    description = models.TextField(max_length=1000, null=True)
+    description = models.TextField(max_length=1000, null=True, blank=True)
     # represents the print type of the book (Hardcover, EBook, Mass Market Paperback)
-    print_type = models.CharField(max_length=200, null=True)
+    print_type = models.CharField(max_length=200, null=True, blank=True)
     # represents the language the book is published in
-    language = models.CharField(max_length=200, null=True)
+    language = models.CharField(max_length=200, null=True, blank=True)
     # represents the isbn of the book
     isbn = models.CharField(max_length=50, null=True)
 
