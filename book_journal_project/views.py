@@ -3,10 +3,10 @@ from urllib.parse import quote_plus
 from django.shortcuts import render, redirect, HttpResponse
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.forms import AuthenticationForm
-from .forms import RegisterForm, BookSearchForm
+from .forms import RegisterForm, BookSearchForm, NewJournalForm
 from django.conf import settings
 from datetime import datetime
-from library.models import Book, Genres, Authors, Covers
+from library.models import Book, Genres, Authors, Covers, Journal, Tags
 from PIL import Image
 from io import BytesIO
 from django.core.files.base import ContentFile, File
@@ -342,3 +342,60 @@ def books(request, book_id):
     context = {"book": book,
                "page_title": book.title.lower()}
     return HttpResponse(template.render(context, request))
+
+
+# regular journal "home" page
+def journal(request):
+    journals = Journal.objects.order_by("-created_at")[:10]
+    template = loader.get_template("journal/index.html")
+    context = {"journals": journals,
+               "page_title": "journal"}
+    return HttpResponse(template.render(context, request))
+
+
+# page for looking at journals for specific book
+def book_journal(request, book_id):
+    return HttpResponse("This page is for looking at journals for a specific book.")
+
+
+def journal_page(request, journal_id):
+    return HttpResponse("This page is for looking at a specific journal entry that has already been made.")
+
+
+def new_journal(request):
+    if request.method == "POST":
+        logger.debug("[New Journal]: POST request")
+        # TODO get currently reading book list to choose from in form
+        new_journal_form = NewJournalForm(request.POST)
+        if new_journal_form.is_valid():
+            logger.debug("[New Journal]: Journal form is valid")
+            # parse and create tags if dont exist
+            tags = new_journal_form.cleaned_data["tags"]
+            logger.debug(f'[New Journal]: Unprocessed Tags:\n{tags}')
+            if tags:
+                tag_objects = []
+                tags = tags.strip()
+                tags = tags.split(",")
+                for tag in tags:
+                    tag = tag.strip().lower()
+                    if not Tags.objects.filter(tag=tag).exists():
+                        logger.debug(f'[New Journal]: Tag "{tag}" not found, attempting to create new tag.')
+                        t = Tags(tag=tag)
+                        t.save()
+                        logger.info(f'[Tag]: New tag "{t.tag}" saved.')
+                    else:
+                        logger.debug(f'[New Journal]: Tag "{tag}" exists in DB, adding to to journal.')
+                        t = Tags.objects.filter(tag=tag).first()
+                        tag_objects.append(t)
+                new_journal_form.cleaned_data["tags"] = tag_objects
+                logger.debug(f'[New Journal]: Cleaned Data:\n{new_journal_form.cleaned_data}')
+            return redirect("journal")
+        else:
+            new_journal_form = NewJournalForm()
+    else:
+        new_journal_form = NewJournalForm()
+    template = loader.get_template("journal/new_journal.html")
+    context = {"page_title": "new journal",
+               "form": new_journal_form}
+    return HttpResponse(template.render(context, request))
+

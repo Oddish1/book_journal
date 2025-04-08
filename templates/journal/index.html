@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block custom-head %}
+	{% load static %}
+	<meta charset="UTF-8">
+	<meta name="description" content="A place to journal about the books you read.">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" href="{% static 'index.css' %}">
+{% endblock custom-head %}
+
+{% block content %}
+	<body>
+		<a class="button-a" href="/journal/new-journal">New Journal</a>
+		{% if not journals %}
+			<p>It doesn't look like you have created any journals yet. Create one with the button above!</p>
+		{% else %}
+			<hr>
+			<br>
+			{% for journal in journals %}
+				<div class="journal-result">
+					<h3>{{ journal.title }}</h3>
+					{% if journal.page %}
+					<a href="/books/{{ journal.book.id }}"><h4>{{ journal.book.title }} | page {{ journal.page }}</h4></a>
+					{% else %}
+					<a href="/books/{{ journal.book.id }}"><h4>{{ journal.book.title }}</h4></a>
+					{% endif %}
+					<p>{{ journal.created_at }}</p>
+					{% if journal.tags.all %}
+						<p class="tags">
+							{% for tag in journal.tags.all %}
+							{{ tag.tag }}{% if not forloop.last %}, {% endif %}
+							{% endfor %}
+						</p>
+					{% endif %}
+					<hr>
+					<br>
+					<p>{{ journal.journal_text }}</p>
+				</div>
+			{% endfor %}
+		{% endif %}
+	</body>
+{% endblock content %}

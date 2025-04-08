@@ -20,6 +20,7 @@ This is being developed for my capstone project.
 
 ## Development Backlog
 
+- [ ] Optimize database transactions
 - [ ] Search
 - [ ] Recommendations
 - [ ] UI

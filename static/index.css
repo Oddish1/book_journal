@@ -104,6 +104,11 @@ button:hover {
 
 div.top-data {
 	display: flex;
+	flex-wrap: wrap;
 	justify-content: space-evenly;
 }
 
+div.journal-result {
+	border: 1px solid #233D4d;
+	border-radius: 5px;
+}
