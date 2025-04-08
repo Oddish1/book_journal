@@ -11,6 +11,7 @@ from PIL import Image
 from io import BytesIO
 from django.core.files.base import ContentFile, File
 from django.core.exceptions import ValidationError
+from django.template import loader
 import logging
 
 logger = logging.getLogger('book_journal')
@@ -177,24 +178,6 @@ def home(request):
                                 logger.debug(f'volumeInfo:\n{volume_info}')
                                 logger.debug(f'Error:\n{e}')
 
-                            # add average rating
-                            try:
-                                average_rating = float(volume_info['averageRating'])
-                                logger.debug(f'[Book Import "{title}"]: Added average rating {average_rating}')
-                            except Exception as e:
-                                logger.warning(f'[Book Import: "{book_title}"] average_rating could not be added. Setting to None.')
-                                logger.debug(f'volumeInfo:\n{volume_info}')
-                                logger.debug(f'Error:\n{e}')
-                            
-                            # add ratings count
-                            try:
-                                ratings_count = int(volume_info['ratingsCount'])
-                                logger.debug(f'[Book Import "{title}"]: Added ratings count {ratings_count}')
-                            except Exception as e:
-                                logger.warning(f'[Book Import: "{book_title}"] ratings_count could not be added. Setting to None.')
-                                logger.debug(f'volumeInfo:\n{volume_info}')
-                                logger.debug(f'Error:\n{e}')
-                            
                             # add publisher
                             try:
                                 publisher = volume_info['publisher']
@@ -291,8 +274,6 @@ def home(request):
                                     thumbnail_cover = cover_file,
                                     title = title,
                                     page_count = page_count,
-                                    average_rating = average_rating,
-                                    ratings_count = ratings_count,
                                     publisher = publisher,
                                     published_date = date,
                                     description = description,
@@ -310,7 +291,7 @@ def home(request):
                             except Exception as e:
                                 logger.error(f'Book import failed.')
                                 logger.debug(f'volumeInfo:\n{volume_info}')
-                                logger.info(f'Error:\n{e}')
+                                logger.error(f'Error:\n{e}')
                         else:
                             logger.info(f'[Book Import: "{query}"] Book already exists in the database.')
             else:
@@ -319,10 +300,10 @@ def home(request):
                 logger.debug(f'DB FETCH:\n{results}')
     # Render the HTML template index.html
     logger.debug(f'stored_results:\n{stored_results}')
-    return render(request, 'index.html', {
-                  "form": form,
-                  "stored_results": stored_results,
-                  })
+    context = {"form": form,
+               "stored_results": stored_results,
+               "page_title": "home"}
+    return render(request, 'index.html', context)
 
 def register(request):
     if request.method == "POST":
@@ -333,7 +314,9 @@ def register(request):
             return redirect("home")
     else:
         form = RegisterForm()
-    return render(request, "register.html", {"form": form})
+        context = {"form": form,
+                   "page_title": "register"}
+    return render(request, "register.html", context)
 
 def login_view(request):
     if request.method == "POST":
@@ -344,12 +327,18 @@ def login_view(request):
             return redirect("home")
     else:
         form = AuthenticationForm()
-    return render(request, "login.html", {"form": form})
+        context = {"form": form,
+                   "page_title": "login"}
+    return render(request, "login.html", context)
 
 def logout_view(request):
     logout(request)
     return redirect("home")
 
 
-def book(request, book_id):
-    return HttpResponse(f"You're looking at book {book_id}")
+def books(request, book_id):
+    book = Book.objects.get(id=book_id)
+    template = loader.get_template("books.html")
+    context = {"book": book,
+               "page_title": book.title.lower()}
+    return HttpResponse(template.render(context, request))

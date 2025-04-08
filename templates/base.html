@@ -1,12 +1,37 @@
+<!DOCTYPE html>
 <html>
 	<head>
-		<title>{% block title %}BookJournal{% endblock %}</title>
+		{% load static %}
+		<title>{{ page_title }}</title>
+		<link rel="shortcut icon" type="image/png" href="{% static 'images/favicon.ico' %}">
+		{% block custom-head %}{% endblock custom-head %}
 	</head>
 
 	<body>
-		<div id="content" name="content">
-			{% block content %}
-			{% endblock %}
+		<div class="page-container">
+			<nav class="top-bar">
+				<h1>BookJournal</h1>
+				<div class="nav-buttons">
+					<a class="{% if page_title == 'home' %}button-b{% else %} button-a{% endif %}" href="/">home</a>
+					<a class="{% if page_title == 'library' %}button-b{% else %}button-a{% endif %}" href="/library">library</a>
+					<a class="{% if page_title == 'journal' %}button-b{% else %}button-a{% endif %}" href="/journal">journal</a>
+					<a class="{% if page_title == 'about' %}button-b{% else %} button-a{% endif %}" href="/about">about</a>
+					{% if user.is_authenticated %}
+						<a class="button-a" href="/logout/">sign out</a>
+					{% else %}
+						<a class="button-a" href="/login/">sign in</a>
+					{% endif %}
+				</div>
+			</nav>
+			<div id="content" name="content">
+				{% block content %}
+				{% endblock %}
+			</div>
+			<br>
+			<hr>
+			<footer>
+				<p>&copy; 2025 BookJournal. All rights reserved.</p>
+			</footer>
 		</div>
 	</body>
 </html>

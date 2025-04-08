@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block custom-head %}
+	{% load static %}
+	<meta charset="UTF-8">
+	<meta name="description" content="{{ book.title }}: {{ book.description }}">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" href="{% static 'index.css' %}">
+{% endblock custom-head %}
+
+{% block content %}
+	<hr>
+	<br>
+	{% if book %}
+		<div class="top-data">
+			<img src="/media/{{ book.thumbnail_cover.image }}" alt="Book Cover">
+			<div class="top-text-data">
+				<h1>{{ book.title }}</h1>
+				{% if book.authors.all %}
+					{% for author in book.authors.all %}
+						<h3>{{ author.name }}{%if not forloop.last %}, {% endif %}</h3>
+					{% endfor %}
+				{% endif %}
+				{% if book.print_type %}<p>Print Type: {{ book.print_type }}</p>{% endif %}
+				{% if book.language %}<p>Language: {{ book.language }}</p>{% endif %}
+				{% if book.publisher and book.published_date %}<p>Publisher: {{ book.publisher }}; {{ book.published_date }}</p>
+				{% elif book.published_date %}<p>Published on: {{ book.published_date }}</p>{% endif %}
+				{% if book.page_count and book.page_count > 0 %}<p>{{ book.page_count }} pages</p>{% endif %}
+				{% if book.genres.all %}
+					<h4>Genres:</h4>
+					{% for genre in book.genres.all %}
+						<h4>{{ genre.genre }}{% if not forloop.last %}, {% endif %}</h4>
+					{% endfor %}
+				{% endif %}
+			</div>
+		</div>
+		{% if book.description %}
+		<br>
+		<hr>
+		<p>{{ book.description }}</p>
+		{% endif %}
+	{% else %}
+		<p>Oops! Looks like this book doesn't exist!<p>
+	{% endif %}
+{% endblock content %}

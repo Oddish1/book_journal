@@ -1,6 +1,7 @@
 .button-a:link, .button-a:visited {
 	background-color: #233D4D;
 	color: #FDFDFF;
+	border: 1px solid #233D4D;
 	padding: 14px 25px;
 	text-align: center;
 	text-decoration: none;
@@ -10,6 +11,7 @@
 .button-b:link, .button-b:visited {
 	background-color: #FDFDFF;
 	color: #233D4D;
+	border: 1px solid #233D4D;
 	padding: 14px 25px;
 	text-align: center;
 	text-decoration: none;
@@ -18,8 +20,9 @@
 
 .button-a:hover, .button-b:hover {
 	background-color: #C6C5B9;
+	border: unset;
 	color: #233D4D;
-	scale: 105%;
+	scale: 110%;
 	transition: background-color .25s ease;
 }
 
@@ -98,3 +101,9 @@ button:hover {
 	max-width: 800px;
 	margin: 0 auto;
 }
+
+div.top-data {
+	display: flex;
+	justify-content: space-evenly;
+}
+
