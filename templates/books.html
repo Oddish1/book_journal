@@ -31,6 +31,11 @@
 						<h4>{{ genre.genre }}{% if not forloop.last %}, {% endif %}</h4>
 					{% endfor %}
 				{% endif %}
+				<form method="POST">
+					{% csrf_token %}
+					{{ form.as_p }}
+					<button type="submit">Save</button>
+				</form>
 			</div>
 		</div>
 		{% if book.description %}

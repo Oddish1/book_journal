@@ -39,6 +39,9 @@ class List(models.Model):
     description = models.TextField(max_length=2000, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
+    def __str__(self):
+        return self.name
+
 
 class Covers(models.Model):
     # represents the cover image
@@ -51,6 +54,9 @@ class Genres(models.Model):
     # represents the genre (sci-fi, history, historical fiction)
     genre = models.CharField(max_length=200)
 
+    def __str__(self):
+        return self.genre
+
 
 class Authors(models.Model):
     # represents the author's name
@@ -62,6 +68,9 @@ class Authors(models.Model):
     # text field representing the author's biography
     biography = models.TextField(max_length=2000, null=True, blank=True)
 
+    def __str__(self):
+        return self.name
+
 
 class Book(models.Model):
     # foreign key linking to Genres.id representing the main genre of the book
@@ -72,7 +81,7 @@ class Book(models.Model):
     covers = models.ManyToManyField(Covers, related_name="covers", default=None)
     authors = models.ManyToManyField(Authors, related_name="authors", default=None)
     # foreign key linking to List.id representing the list the book is in
-    list = models.ForeignKey(List, on_delete=models.CASCADE, null=True, blank=True)
+    list = models.ManyToManyField(List, related_name="list", default=None)
     # represents the book title, max length of 500 characters
     title = models.CharField(max_length=500)
     # integer representing the number of pages in the book
@@ -93,6 +102,9 @@ class Book(models.Model):
     language = models.CharField(max_length=200, null=True, blank=True)
     # represents the isbn of the book
     isbn = models.CharField(max_length=50, null=True)
+
+    def __str__(self):
+        return self.title
 
 
 # data model for a user created journal entry

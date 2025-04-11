@@ -12,24 +12,23 @@ This is being developed for my capstone project.
   - [X] Book Details Page
 - [ ] Implement Journal
   - [X] Journal Page (sort by timestamp)
-  - [-] New Journal Page
+  - [-] New Journal Page (waiting on list implementation)
   - [ ] Journals on book page
   - [ ] Journals for specific book
 - [ ] Implement Lists
   - [ ] Lists Page
-  - [ ] Adding Book to List
-    - [ ] Book Page
-    - [ ] Journal Page for the Book
+  - [X] Adding Book to List
+    - [X] Book Page
   - [ ] Removing Book from List
-    - [ ] Book Page
-    - [ ] Journal Page for the Book
+    - [X] Book Page
+    - [ ] List Page
 
 ## Development Backlog
 
-- [ ] Optimize database transactions
 - [ ] Search
-- [ ] Recommendations
-- [ ] UI
+- [ ] Optimize database transactions
+
+- [ ] UI Tweaking
   - [ ] Homepage
   - [ ] Book Page
   - [ ] Library Page
@@ -37,6 +36,7 @@ This is being developed for my capstone project.
   - [ ] Login Page
   - [ ] Register Page
   - [ ] Journal Page
+- [ ] Recommendations
 
 ## Finished
 

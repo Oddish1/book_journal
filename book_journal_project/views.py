@@ -3,10 +3,10 @@ from urllib.parse import quote_plus
 from django.shortcuts import render, redirect, HttpResponse
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.forms import AuthenticationForm
-from .forms import RegisterForm, BookSearchForm, NewJournalForm
+from .forms import RegisterForm, BookSearchForm, NewJournalForm, ListDropDownForm
 from django.conf import settings
 from datetime import datetime
-from library.models import Book, Genres, Authors, Covers, Journal, Tags
+from library.models import Book, Genres, Authors, Covers, Journal, Tags, List
 from PIL import Image
 from io import BytesIO
 from django.core.files.base import ContentFile, File
@@ -310,6 +310,13 @@ def register(request):
         form = RegisterForm(request.POST)
         if form.is_valid():
             user = form.save()
+            # create default lists (currently reading, to be read)
+            # TODO error handling on list creation
+            currently_reading = List(user=user, name="Currently Reading", description="Currently reading")
+            currently_reading.save()
+            to_be_read = List(user=user, name="To Be Read", description="My TBR")
+            to_be_read.save()
+            # log user in and redirect home
             login(request, user)
             return redirect("home")
     else:
@@ -339,8 +346,20 @@ def logout_view(request):
 def books(request, book_id):
     book = Book.objects.get(id=book_id)
     template = loader.get_template("books.html")
+    if request.method == "POST":
+        form = ListDropDownForm(request.POST, user=request.user)
+        if form.is_valid():
+            selected_lists = form.cleaned_data['lists']
+            book.list.set(selected_lists)
+            book.save()
+            return redirect('books', book_id=book.id)
+    else:
+        form = ListDropDownForm(user=request.user, initial={
+                                'lists': book.list.all()
+        })
     context = {"book": book,
-               "page_title": book.title.lower()}
+               "page_title": book.title.lower(),
+               "form": form}
     return HttpResponse(template.render(context, request))
 
 

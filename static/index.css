@@ -106,9 +106,20 @@ div.top-data {
 	display: flex;
 	flex-wrap: wrap;
 	justify-content: space-evenly;
+	align-items: center;
+	gap: 1rem;
 }
 
 div.journal-result {
 	border: 1px solid #233D4d;
 	border-radius: 5px;
+}
+
+.top-data img {
+	max-height: 300px;
+	height: auto;
+	width: auto;
+	objext-fit: contain;
+	flex-shrink: 0;
+	display: block;
 }
