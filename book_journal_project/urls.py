@@ -30,4 +30,5 @@ urlpatterns = [
     path("books/<int:book_id>/", books, name="books"),
     path("journal/", journal, name="journal"),
     path("journal/new-journal", new_journal, name="new_journal"),
+    path("journal/new-journal/<int:book_id>", new_journal, name="new_journal_with_book"),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

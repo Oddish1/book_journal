@@ -11,9 +11,16 @@
 	<hr>
 	<br>
 	{% if book %}
-		<div class="top-data">
-			<img src="/media/{{ book.thumbnail_cover.image }}" alt="Book Cover">
-			<div class="top-text-data">
+		<div class="book-detail-container">
+			<div class="book-side">
+				<img src="/media/{{ book.thumbnail_cover.image }}" alt="Book Cover">
+				<form class="add-to-list" method="POST">
+					{% csrf_token %}
+					{{ form.as_p }}
+					<button type="submit">Save</button>
+				</form>
+			</div>
+			<div class="book-info">
 				<h1>{{ book.title }}</h1>
 				{% if book.authors.all %}
 					{% for author in book.authors.all %}
@@ -31,12 +38,14 @@
 						<h4>{{ genre.genre }}{% if not forloop.last %}, {% endif %}</h4>
 					{% endfor %}
 				{% endif %}
-				<form method="POST">
-					{% csrf_token %}
-					{{ form.as_p }}
-					<button type="submit">Save</button>
-				</form>
-			</div>
+				{% if currently_reading %}
+					{% for i in currently_reading %}
+						{% if i.id == book.id %}
+							<a class="button-b" href ="{% url 'new_journal_with_book' book.id %}">Add Journal Entry</a>
+						{% endif %}
+					{% endfor %}
+				{% endif %}
+							</div>
 		</div>
 		{% if book.description %}
 		<br>

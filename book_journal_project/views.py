@@ -332,6 +332,9 @@ def login_view(request):
             user = form.get_user()
             login(request, user)
             return redirect("home")
+        else:
+            context = {"form": form,
+                       "page_title": "login"}
     else:
         form = AuthenticationForm()
         context = {"form": form,
@@ -345,6 +348,9 @@ def logout_view(request):
 
 def books(request, book_id):
     book = Book.objects.get(id=book_id)
+    logger.debug(f'book: {book}')
+    currently_reading = Book.objects.filter(list=List.objects.get(user=request.user, name="Currently Reading"))
+    logger.debug(f'currently_reading: {currently_reading}')
     template = loader.get_template("books.html")
     if request.method == "POST":
         form = ListDropDownForm(request.POST, user=request.user)
@@ -358,6 +364,7 @@ def books(request, book_id):
                                 'lists': book.list.all()
         })
     context = {"book": book,
+               "currently_reading": currently_reading,
                "page_title": book.title.lower(),
                "form": form}
     return HttpResponse(template.render(context, request))
@@ -365,11 +372,14 @@ def books(request, book_id):
 
 # regular journal "home" page
 def journal(request):
-    journals = Journal.objects.order_by("-created_at")[:10]
-    template = loader.get_template("journal/index.html")
-    context = {"journals": journals,
-               "page_title": "journal"}
-    return HttpResponse(template.render(context, request))
+    if not request.user.is_authenticated:
+        return redirect("home")
+    else:
+        journals = Journal.objects.filter(user=request.user).order_by("-created_at")[:10]
+        template = loader.get_template("journal/index.html")
+        context = {"journals": journals,
+                   "page_title": "journal"}
+        return HttpResponse(template.render(context, request))
 
 
 # page for looking at journals for specific book
@@ -381,11 +391,13 @@ def journal_page(request, journal_id):
     return HttpResponse("This page is for looking at a specific journal entry that has already been made.")
 
 
-def new_journal(request):
+def new_journal(request, book_id=None):
+    if book_id:
+        book = Book.objects.filter(id=book_id.first())
     if request.method == "POST":
         logger.debug("[New Journal]: POST request")
         # TODO get currently reading book list to choose from in form
-        new_journal_form = NewJournalForm(request.POST)
+        new_journal_form = NewJournalForm(request.POST, user=request.user)
         if new_journal_form.is_valid():
             logger.debug("[New Journal]: Journal form is valid")
             # parse and create tags if dont exist
@@ -402,17 +414,35 @@ def new_journal(request):
                         t = Tags(tag=tag)
                         t.save()
                         logger.info(f'[Tag]: New tag "{t.tag}" saved.')
+                        tag_objects.append(t)
                     else:
                         logger.debug(f'[New Journal]: Tag "{tag}" exists in DB, adding to to journal.')
                         t = Tags.objects.filter(tag=tag).first()
                         tag_objects.append(t)
                 new_journal_form.cleaned_data["tags"] = tag_objects
                 logger.debug(f'[New Journal]: Cleaned Data:\n{new_journal_form.cleaned_data}')
-            return redirect("journal")
+            if new_journal_form.is_valid():
+                clean_data = new_journal_form.cleaned_data
+                new_journal = Journal(
+                        user = request.user,
+                        book = clean_data['book'],
+                        title = clean_data['title'],
+                        page = clean_data['page'],
+                        journal_text = clean_data['journal_text'],
+                        is_public = clean_data['is_public'],
+                )
+                new_journal.save()
+                new_journal.tags.set(clean_data['tags'])
+                new_journal.save()
+                logger.info(f'[New Journal]: Saved successfully!')
+                return redirect("journal")
         else:
-            new_journal_form = NewJournalForm()
+            initial_data = {}
+            if book:
+                initial_data['book'] = book
+            new_journal_form = NewJournalForm(user=request.user, initial=initial_data)
     else:
-        new_journal_form = NewJournalForm()
+        new_journal_form = NewJournalForm(user=request.user)
     template = loader.get_template("journal/new_journal.html")
     context = {"page_title": "new journal",
                "form": new_journal_form}

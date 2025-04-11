@@ -114,7 +114,7 @@ class Journal(models.Model):
     # a foreign key linking the Book.id
     book = models.ForeignKey(Book, on_delete=models.CASCADE)
     # a title for the journal entry
-    title = models.CharField(max_length=200, null=True)
+    title = models.CharField(max_length=200, null=True, blank=True)
     # a page number representing the page they are on
     page = models.IntegerField()
     # text space for the user to make a journal entry

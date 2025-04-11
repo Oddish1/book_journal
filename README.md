@@ -10,11 +10,10 @@ This is being developed for my capstone project.
 - [X] Implement Books
   - [X] Auto-Add Books from API to DB
   - [X] Book Details Page
-- [ ] Implement Journal
+- [X] Implement Journal
   - [X] Journal Page (sort by timestamp)
-  - [-] New Journal Page (waiting on list implementation)
-  - [ ] Journals on book page
-  - [ ] Journals for specific book
+  - [X] New Journal Page
+  - [X] Journals on book page
 - [ ] Implement Lists
   - [ ] Lists Page
   - [X] Adding Book to List

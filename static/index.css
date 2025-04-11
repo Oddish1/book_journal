@@ -102,7 +102,7 @@ button:hover {
 	margin: 0 auto;
 }
 
-div.top-data {
+div.book-detail-container {
 	display: flex;
 	flex-wrap: wrap;
 	justify-content: space-evenly;
@@ -113,13 +113,26 @@ div.top-data {
 div.journal-result {
 	border: 1px solid #233D4d;
 	border-radius: 5px;
+	padding: 1rem;
+	margin: 1rem;
 }
 
-.top-data img {
+.book-side img {
 	max-height: 300px;
 	height: auto;
 	width: auto;
 	objext-fit: contain;
 	flex-shrink: 0;
 	display: block;
+}
+
+hr.journal-hr {
+	height: 1px;
+}
+
+div.journal-heading {
+	display: flex;
+	justify-content: space-evenly;
+	align-items: center;
+	gap: 1rem;
 }
