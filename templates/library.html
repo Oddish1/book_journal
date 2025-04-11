@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block custom-head %}
+	{% load static %}
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" href="{% static 'index.css' %}">
+{% endblock custom-head %}
+
+{% block content %}
+	<body>
+		<h2>{{ user.username }}'s Library</h2>
+		{% if currently_reading %}
+			<hr>
+			<h3>Currently Reading</h3>
+			<div class="currently-reading-books">
+				{% for book in currently_reading %}
+					<div class="book-card">
+						<img src="/media/{{ book.thumbnail_cover.image }}" alt="Book Cover">
+						<h4>{{ book.title }}</h4>
+						<a class="button-b" href="{% url 'new_journal_with_book' book.id %}">Update</a>
+					</div>
+				{% endfor %}
+			</div>
+		{% endif %}
+	</body>
+{% endblock content %}

@@ -4,9 +4,8 @@ This is being developed for my capstone project.
 
 ## Currently in Progress
 
-- [~] API Integration
+- [X] API Integration
   - [X] Fetch book details
-  - [ ] Fetch author details
 - [X] Implement Books
   - [X] Auto-Add Books from API to DB
   - [X] Book Details Page
@@ -21,6 +20,11 @@ This is being developed for my capstone project.
   - [ ] Removing Book from List
     - [X] Book Page
     - [ ] List Page
+- [ ] Library Page
+  - [ ] styling
+  - [X] currently reading (w/ link to new journal for the book)
+  - [ ] user's lists
+  - [ ] latest journals (10)
 
 ## Development Backlog
 

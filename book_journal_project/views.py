@@ -375,20 +375,11 @@ def journal(request):
     if not request.user.is_authenticated:
         return redirect("home")
     else:
-        journals = Journal.objects.filter(user=request.user).order_by("-created_at")[:10]
+        journals = Journal.objects.filter(user=request.user).order_by("-created_at")
         template = loader.get_template("journal/index.html")
         context = {"journals": journals,
                    "page_title": "journal"}
         return HttpResponse(template.render(context, request))
-
-
-# page for looking at journals for specific book
-def book_journal(request, book_id):
-    return HttpResponse("This page is for looking at journals for a specific book.")
-
-
-def journal_page(request, journal_id):
-    return HttpResponse("This page is for looking at a specific journal entry that has already been made.")
 
 
 def new_journal(request, book_id=None):
@@ -448,3 +439,31 @@ def new_journal(request, book_id=None):
                "form": new_journal_form}
     return HttpResponse(template.render(context, request))
 
+
+def library(request):
+    if not request.user.is_authenticated:
+        return redirect("home")
+    else:
+        # lists a dictionary of { "name": [BookObjects] }
+        lists = {}
+        user_lists = List.objects.filter(user=request.user)
+        for lst in user_lists:
+            books = Book.objects.filter(list=lst)
+            lists[lst.name] = books
+        logger.debug(f'lists with books: {lists}')
+        # currently_reading a list of Book objects
+        currently_reading = lists['Currently Reading']
+        logger.debug(f'currently_reading: {currently_reading}')
+        # latest_journals a list of 10 most recent Journal Objects
+        latest_journals = Journal.objects.filter(user=request.user).order_by("-created_at")[:10]
+        logger.debug(f'latest_journals: {latest_journals}')
+        user = request.user
+        logger.debug(f'user: {user.username}')
+        template = loader.get_template("library.html")
+        context = {"page_title": "library",
+                   "currently_reading": currently_reading,
+                   "lists": lists,
+                   "latest_journals": latest_journals,
+                   "user": user,
+        }
+        return HttpResponse(template.render(context, request))
