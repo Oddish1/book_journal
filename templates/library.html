@@ -21,6 +21,23 @@
 					</div>
 				{% endfor %}
 			</div>
+			<br>
+			<hr>
+			<h3>{{ user.username }}'s Lists</h3>
+			<div class="user-lists">
+				{% for name, lst in lists.items %}
+					<div class="list-card">
+						<h4 class="list-title">{{ name }}</h4>
+						<div class="lists">
+							<ul>
+							{% for item in lst %}
+								<li>{{ item.title }}</li>
+							{% endfor %}
+							</ul>
+						</div>
+					</div>
+				{% endfor %}
+			</div>
 		{% endif %}
 	</body>
 {% endblock content %}

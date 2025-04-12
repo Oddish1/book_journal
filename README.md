@@ -23,7 +23,7 @@ This is being developed for my capstone project.
 - [ ] Library Page
   - [ ] styling
   - [X] currently reading (w/ link to new journal for the book)
-  - [ ] user's lists
+  - [X] user's lists
   - [ ] latest journals (10)
 
 ## Development Backlog
