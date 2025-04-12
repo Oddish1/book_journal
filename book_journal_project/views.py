@@ -383,8 +383,10 @@ def journal(request):
 
 
 def new_journal(request, book_id=None):
+    logger.debug(f'Book ID: {book_id}')
     if book_id:
-        book = Book.objects.filter(id=book_id.first())
+        book = Book.objects.get(id=book_id)
+        logger.debug(f'[New Journal From book_id]: book is {book}')
     if request.method == "POST":
         logger.debug("[New Journal]: POST request")
         # TODO get currently reading book list to choose from in form
@@ -427,13 +429,10 @@ def new_journal(request, book_id=None):
                 new_journal.save()
                 logger.info(f'[New Journal]: Saved successfully!')
                 return redirect("journal")
-        else:
-            initial_data = {}
-            if book:
-                initial_data['book'] = book
-            new_journal_form = NewJournalForm(user=request.user, initial=initial_data)
     else:
-        new_journal_form = NewJournalForm(user=request.user)
+        initial_data = {'book': book} if book else None
+        new_journal_form = NewJournalForm(user=request.user, initial=initial_data)
+        logger.debug(f'[New Journal From book_id]: initial book data is\n{new_journal_form.initial['book']}')
     template = loader.get_template("journal/new_journal.html")
     context = {"page_title": "new journal",
                "form": new_journal_form}

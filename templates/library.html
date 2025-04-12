@@ -16,7 +16,7 @@
 				{% for book in currently_reading %}
 					<div class="book-card">
 						<img src="/media/{{ book.thumbnail_cover.image }}" alt="Book Cover">
-						<h4>{{ book.title }}</h4>
+						<h4 class="book-title">{{ book.title }}</h4>
 						<a class="button-b" href="{% url 'new_journal_with_book' book.id %}">Update</a>
 					</div>
 				{% endfor %}
