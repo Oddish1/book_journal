@@ -14,7 +14,7 @@
 			<h3>Currently Reading</h3>
 			<div class="currently-reading-books">
 				{% for book in currently_reading %}
-					<div class="book-card">
+					<div class="book-card" href="/books/{{ book.id }}">
 						<img src="/media/{{ book.thumbnail_cover.image }}" alt="Book Cover">
 						<h4 class="book-title">{{ book.title }}</h4>
 						<a class="button-b" href="{% url 'new_journal_with_book' book.id %}">Update</a>
@@ -37,6 +37,38 @@
 						</div>
 					</div>
 				{% endfor %}
+			</div>
+			<br>
+			<hr>
+			<h3>{{ user.username }}'s Latest Journals</h3>
+			<div class="user-latest-journals">
+				{% for journal in latest_journals %}
+					<a class="journal-card" href="/books/{{ journal.book.id }}">
+					<div>
+						{% if journal.title %}
+							<h4>{{ journal.title }}</h4>
+						{% endif %}
+						{% if journal.page %}
+							<h4>{{ journal.book.title }} | page {{ journal.page }}</h4>
+						{% else %}
+							<h4>{{ journal.book.title }}</h4>
+						{% endif %}
+							<p>{{ journal.created_at }}</p>
+						{% if journal.tags.all %}
+							<h5 class="tags">
+								{% for tag in journal.tags.all %}
+								{{ tag.tag }}{% if not forloop.last %}, {% endif %}
+								{% endfor %}
+							</h5>
+						{% endif %}
+						{% if journal.journal_text %}
+							<hr class="journal-hr">
+							<br>
+							<p>{{ journal.journal_text }}</p>
+						{% endif %}
+					</div>
+					</a>
+					{% endfor %}
 			</div>
 		{% endif %}
 	</body>

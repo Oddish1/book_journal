@@ -453,8 +453,8 @@ def library(request):
         # currently_reading a list of Book objects
         currently_reading = lists['Currently Reading']
         logger.debug(f'currently_reading: {currently_reading}')
-        # latest_journals a list of 10 most recent Journal Objects
-        latest_journals = Journal.objects.filter(user=request.user).order_by("-created_at")[:10]
+        # latest_journals a list of 5 most recent Journal Objects
+        latest_journals = Journal.objects.filter(user=request.user).order_by("-created_at")[:5]
         logger.debug(f'latest_journals: {latest_journals}')
         user = request.user
         logger.debug(f'user: {user.username}')

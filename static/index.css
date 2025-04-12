@@ -111,7 +111,7 @@ div.book-detail-container {
 }
 
 div.journal-result {
-	border: 1px solid #233D4d;
+	border: 1px solid #233D4D;
 	border-radius: 5px;
 	padding: 1rem;
 	margin: 1rem;
@@ -151,6 +151,8 @@ div.book-card {
 }
 
 div.book-card:hover {
+	border-color: #6EC8FF;
+	box-shadow: 4px 4px 12px #6EC8FF;
 	scale: 105%;
 	transition: scale 0.2s ease;
 }
@@ -164,3 +166,33 @@ div.currently-reading-books {
 	flex-wrap: wrap;
 	gap: 2rem;
 }
+
+div.user-latest-journals {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 2rem;
+}
+
+a.journal-card {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	text-align: center;
+	text-decoration: none;
+	color: inherit;
+	border: 2px solid #233D4D;
+	border-radius: 5px;
+	padding: 1rem;
+	margin: 0 auto;
+	box-shadow: 4px 4px 12px #233D4D;
+	width: 500px;
+	background-color: #FFF;
+}
+
+a.journal-card:hover {
+	border-color: #6EC8FF;
+	box-shadow: 4px 4px 12px #6EC8FF;
+	scale: 105%;
+	transition: scale 0.2s ease;
+}
+
