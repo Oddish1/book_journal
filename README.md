@@ -13,15 +13,13 @@ This is being developed for my capstone project.
   - [X] Journal Page (sort by timestamp)
   - [X] New Journal Page
   - [X] Journals on book page
-- [ ] Implement Lists
-  - [ ] Lists Page
+- [X] Implement Lists
   - [X] Adding Book to List
     - [X] Book Page
-  - [ ] Removing Book from List
+  - [X] Removing Book from List
     - [X] Book Page
-    - [ ] List Page
-- [ ] Library Page
-  - [ ] styling
+- [X] Library Page
+  - [X] styling
   - [X] currently reading (w/ link to new journal for the book)
   - [X] user's lists
   - [X] latest journals (10)

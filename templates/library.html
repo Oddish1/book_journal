@@ -8,67 +8,61 @@
 
 {% block content %}
 	<body>
-		<h2>{{ user.username }}'s Library</h2>
-		{% if currently_reading %}
-			<hr>
-			<h3>Currently Reading</h3>
-			<div class="currently-reading-books">
-				{% for book in currently_reading %}
-					<div class="book-card" href="/books/{{ book.id }}">
-						<img src="/media/{{ book.thumbnail_cover.image }}" alt="Book Cover">
-						<h4 class="book-title">{{ book.title }}</h4>
-						<a class="button-b" href="{% url 'new_journal_with_book' book.id %}">Update</a>
-					</div>
-				{% endfor %}
-			</div>
-			<br>
-			<hr>
-			<h3>{{ user.username }}'s Lists</h3>
-			<div class="user-lists">
-				{% for name, lst in lists.items %}
-					<div class="list-card">
-						<h4 class="list-title">{{ name }}</h4>
-						<div class="lists">
-							<ul>
+		<h2>Your Library</h2>
+		<br>
+		<hr>
+		<h3>Your Lists</h3>
+		<div class="user-lists">
+			{% for name, lst in lists.items %}
+				<div class="list-card">
+					<h4 class="list-title">{{ name }}</h4>
+					<div class="list-carousel">
+						{% if lst %}
 							{% for item in lst %}
-								<li>{{ item.title }}</li>
+								<a class="list-book-card hover-card" href="/books/{{ item.id }}">
+									<img src="/media/{{ item.thumbnail_cover.image }}" alt="Book Cover">
+									<h4>{{ item.title }}</h4>
+								</a>
 							{% endfor %}
-							</ul>
-						</div>
+						{% else %}
+							<p>This list is empty! Try adding a book...</p>
+						{% endif %}
 					</div>
-				{% endfor %}
-			</div>
-			<br>
-			<hr>
+				</div>
+			{% endfor %}
+		</div>
+		<br>
+		<hr>
+		{% if latest_journals %}
 			<h3>{{ user.username }}'s Latest Journals</h3>
 			<div class="user-latest-journals">
 				{% for journal in latest_journals %}
-					<a class="journal-card" href="/books/{{ journal.book.id }}">
-					<div>
-						{% if journal.title %}
-							<h4>{{ journal.title }}</h4>
-						{% endif %}
-						{% if journal.page %}
-							<h4>{{ journal.book.title }} | page {{ journal.page }}</h4>
-						{% else %}
-							<h4>{{ journal.book.title }}</h4>
-						{% endif %}
-							<p>{{ journal.created_at }}</p>
-						{% if journal.tags.all %}
-							<h5 class="tags">
-								{% for tag in journal.tags.all %}
-								{{ tag.tag }}{% if not forloop.last %}, {% endif %}
-								{% endfor %}
-							</h5>
-						{% endif %}
-						{% if journal.journal_text %}
-							<hr class="journal-hr">
-							<br>
-							<p>{{ journal.journal_text }}</p>
-						{% endif %}
-					</div>
+					<a class="journal-card hover-card" href="/books/{{ journal.book.id }}">
+						<div>
+							{% if journal.title %}
+								<h4>{{ journal.title }}</h4>
+							{% endif %}
+							{% if journal.page %}
+								<h4>{{ journal.book.title }} | page {{ journal.page }}</h4>
+							{% else %}
+								<h4>{{ journal.book.title }}</h4>
+							{% endif %}
+								<p>{{ journal.created_at }}</p>
+							{% if journal.tags.all %}
+								<h5 class="tags">
+									{% for tag in journal.tags.all %}
+									{{ tag.tag }}{% if not forloop.last %}, {% endif %}
+									{% endfor %}
+								</h5>
+							{% endif %}
+							{% if journal.journal_text %}
+								<hr class="journal-hr">
+								<br>
+								<p>{{ journal.journal_text }}</p>
+							{% endif %}
+						</div>
 					</a>
-					{% endfor %}
+				{% endfor %}
 			</div>
 		{% endif %}
 	</body>

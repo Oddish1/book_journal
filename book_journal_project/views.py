@@ -300,9 +300,12 @@ def home(request):
                 logger.debug(f'DB FETCH:\n{results}')
     # Render the HTML template index.html
     logger.debug(f'stored_results:\n{stored_results}')
+    currently_reading = Book.objects.filter(list=List.objects.get(user=request.user, name="Currently Reading"))
+    logger.debug(f'currently_reading({type(currently_reading)}): {currently_reading}')
     context = {"form": form,
                "stored_results": stored_results,
-               "page_title": "home"}
+               "page_title": "home",
+               "currently_reading": currently_reading}
     return render(request, 'index.html', context)
 
 def register(request):

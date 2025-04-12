@@ -34,6 +34,19 @@
 						</div>
 					{% endfor %}
 				</div>
+			{% else %}
+				{% if currently_reading %}
+					<hr>
+					<h3>Currently Reading</h3>
+					<div class="list-carousel">
+						{% for book in currently_reading %}
+							<a class="list-book-card hover-card" href="{% url 'new_journal_with_book' book.id %}">
+								<img src="/media/{{ book.thumbnail_cover.image }}" alt="Book Cover">
+								<h4 class="book-title">{{ book.title }}</h4>
+							</a>
+						{% endfor %}
+				</div>
+				{% endif %}
 			{% endif %}
 		{% else %}
 			<h1>Welcome to BookJournal!</h1>
