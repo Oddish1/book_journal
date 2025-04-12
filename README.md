@@ -24,7 +24,7 @@ This is being developed for my capstone project.
   - [ ] styling
   - [X] currently reading (w/ link to new journal for the book)
   - [X] user's lists
-  - [ ] latest journals (10)
+  - [X] latest journals (10)
 
 ## Development Backlog
 
