@@ -21,9 +21,17 @@
 				<div class="search-results">
 					{% for book in stored_results %}
 						<div class="book-result">
-							<a href="/books/{{ book.id }}">
-								<img src="/media/{{ book.thumbnail_cover.image }}" alt="Book cover">
-							</a>
+							{% if book.thumbnail_cover %}
+								<a href="/books/{{ book.id }}">
+									<img src="/media/{{ book.thumbnail_cover.image }}" alt="Book cover">
+								</a>
+							{% elif cover_image_url %}
+								<a href="/books/{{ book.id }}">
+									<img src="{{ book.cover_image_url }}">
+								</a>
+							{% else %}
+								<p>No cover available</p>
+							{% endif %}
 							<h4>{{ book.title }}</h4>
 							{% for author in book.authors.all %}
 								<h5>{{ author.name }}{% if not forloop.last %}, {% endif %}</h5>
