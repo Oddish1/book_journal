@@ -4,6 +4,27 @@ This is being developed for my capstone project.
 
 ## Currently in Progress
 
+- [ ] Search
+- [ ] Optimize database transactions
+- [ ] Recommendations
+
+- [ ] UI Tweaking
+  - [ ] Homepage
+  - [ ] Book Page
+  - [ ] Library Page
+  - [ ] Recommendations Page
+  - [ ] Login Page
+  - [ ] Register Page
+  - [ ] Journal Page
+
+## Development Backlog
+
+- [ ] Email Integration (password reset, etc.)
+- [ ] Public User Profiles
+- [ ] Refine/Unify Styling
+
+## Finished
+
 - [X] API Integration
   - [X] Fetch book details
 - [X] Implement Books
@@ -23,23 +44,6 @@ This is being developed for my capstone project.
   - [X] currently reading (w/ link to new journal for the book)
   - [X] user's lists
   - [X] latest journals (10)
-
-## Development Backlog
-
-- [ ] Search
-- [ ] Optimize database transactions
-
-- [ ] UI Tweaking
-  - [ ] Homepage
-  - [ ] Book Page
-  - [ ] Library Page
-  - [ ] Recommendations Page
-  - [ ] Login Page
-  - [ ] Register Page
-  - [ ] Journal Page
-- [ ] Recommendations
-
-## Finished
 
 - [X] Data Models
 - [X] Authentication
