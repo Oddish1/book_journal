@@ -225,8 +225,9 @@ def home(request):
                                     except Exception as e:
                                         logger.warning(f'[Date Conversion "{book_title}"]: date not in "Y-M format. Attempting to set date from string value if possible.')
                                         try:
-                                            if isinstance(publisher_date, str):
-                                                date = publisher_date
+                                            date = datetime.strptime("1111-01-01", "%Y-%m-%d")
+                                            date = datetime.strftime(date, "%Y-%m-%d")
+                                            logger.warning(f'[Date Conversion "{book_title}"] couldn\'t parse date, setting to {date}')
                                         except Exception as e:
                                             logger.warning(f'[Date Conversion "{book_title}"] date not a string. Setting publisher_date to None.')
                                             logger.debug(f'Error:\n{e}')
@@ -375,6 +376,23 @@ def logout_view(request):
 
 def books(request, book_id):
     book = Book.objects.get(id=book_id)
+    reviews = Reviews.objects.filter(book=book)
+    num_reviews = reviews.count()
+    if num_reviews > 0:
+        ratings_sum = 0
+        for review in reviews:
+            ratings_sum += review.rating
+        average_rating = ratings_sum / num_reviews
+    else:
+        average_rating = 0
+    stars = []
+    for i in range(1, 6):
+        if average_rating >= i:
+            stars.append("full")
+        elif average_rating >= i - 0.5:
+            stars.append("half")
+        else:
+            stars.append("empty")
     logger.debug(f'book: {book}')
     currently_reading = Book.objects.filter(list=List.objects.get(user=request.user, name="Currently Reading"))
     logger.debug(f'currently_reading: {currently_reading}')
@@ -398,7 +416,10 @@ def books(request, book_id):
     context = {"book": book,
                "currently_reading": currently_reading,
                "page_title": book.title.lower(),
-               "form": form}
+               "form": form,
+               "num_reviews": num_reviews,
+               "average_rating": average_rating,
+               "stars": stars}
     return HttpResponse(template.render(context, request))
 
 
@@ -468,9 +489,15 @@ def new_journal(request, book_id=None):
                 logger.info(f'[New Journal]: Saved successfully!')
                 return redirect("journal")
     else:
-        initial_data = {'book': book} if book else None
+        if book_id:
+            initial_data = {'book': book} if book else None
+        else:
+            initial_data = {}
         new_journal_form = NewJournalForm(user=request.user, initial=initial_data)
-        logger.debug(f'[New Journal From book_id]: initial book data is\n{new_journal_form.initial['book']}')
+        if book_id:
+            logger.debug(f'[New Journal From book_id]: initial book data is\n{new_journal_form.initial['book']}')
+        else:
+            logger.debug(f'[New Journal]: No book_id, initial data is {initial_data}')
     template = loader.get_template("journal/new_journal.html")
     context = {"page_title": "new journal",
                "form": new_journal_form}

@@ -7,11 +7,11 @@ This is being developed for my capstone project.
 - [X] Search
 - [X] Optimize database transactions
 - [ ] Recommendations
-  - [ ] Set finished in journal entry
-  - [ ] Prompt user for reviews if finished and not reviewed
-  - [ ] Review form + storage
+  - [X] Set finished in journal entry
+  - [X] Prompt user for reviews if finished and not reviewed
+  - [X] Review form + storage
   - [ ] Review Algorithm
-  - [ ] Show Reviews on book page
+  - [X] Show Reviews on book page
   - [ ] Show User reviews on library page
 
 - [ ] UI Tweaking
@@ -28,6 +28,8 @@ This is being developed for my capstone project.
 - [ ] Email Integration (password reset, etc.)
 - [ ] Public User Profiles
 - [ ] Refine/Unify Styling
+  - [ ] add scroll box to lists on book page
+- [ ] Move to PostreSQL db
 
 ## Finished
 
