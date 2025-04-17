@@ -4,10 +4,10 @@ from urllib.parse import quote_plus
 from django.shortcuts import render, redirect, HttpResponse
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.forms import AuthenticationForm
-from .forms import RegisterForm, BookSearchForm, NewJournalForm, ListDropDownForm
+from .forms import RegisterForm, BookSearchForm, NewJournalForm, ListDropDownForm, NewReviewForm
 from django.conf import settings
 from datetime import datetime
-from library.models import Book, Genres, Authors, Covers, Journal, Tags, List
+from library.models import Book, Genres, Authors, Covers, Journal, Tags, List, Reviews
 from PIL import Image
 from io import BytesIO
 from django.core.files.base import ContentFile, File
@@ -383,8 +383,13 @@ def books(request, book_id):
         form = ListDropDownForm(request.POST, user=request.user)
         if form.is_valid():
             selected_lists = form.cleaned_data['lists']
+            logger.debug(f'selected_lists: {selected_lists}')
             book.list.set(selected_lists)
             book.save()
+            if selected_lists.filter(user=request.user, name="Finished").exists():
+                book.list.remove(List.objects.get(user=request.user, name="Currently Reading"))
+                book.save()
+                return redirect('library')
             return redirect('books', book_id=book.id)
     else:
         form = ListDropDownForm(user=request.user, initial={
@@ -476,7 +481,7 @@ def library(request):
     if not request.user.is_authenticated:
         return redirect("home")
     else:
-        # lists a dictionary of { "name": [BookObjects] }
+                # lists a dictionary of { "name": [BookObjects] }
         lists = {}
         user_lists = List.objects.filter(user=request.user)
         for lst in user_lists:
@@ -491,11 +496,51 @@ def library(request):
         logger.debug(f'latest_journals: {latest_journals}')
         user = request.user
         logger.debug(f'user: {user.username}')
+        # all of a user's reviewed books
+        reviews = Reviews.objects.filter(user=request.user)
+        logger.debug(f'reviews: {reviews}')
+        # books the user hasn't reviewed yet
+        reviewed_book_ids = reviews.values_list('book_id', flat=True)
+        need_reviews = lists['Finished'].exclude(id__in=reviewed_book_ids)
+
+        logger.debug(f'need_reviews: {need_reviews}')
         template = loader.get_template("library.html")
         context = {"page_title": "library",
                    "currently_reading": currently_reading,
                    "lists": lists,
+                   "reviews": reviews,
+                   "need_reviews": need_reviews,
                    "latest_journals": latest_journals,
                    "user": user,
+        }
+        return HttpResponse(template.render(context, request))
+
+
+def new_review(request, book_id=None):
+    if not request.user.is_authenticated:
+        return redirect("home")
+    else:
+        if book_id:
+            book = Book.objects.get(id=book_id)
+        if request.method == "POST":
+            form = NewReviewForm(request.POST, user=request.user)
+            if form.is_valid():
+                clean_data = form.cleaned_data
+                new_review = Reviews(
+                    book = book,
+                    user = request.user,
+                    rating = clean_data['rating'],
+                    title = clean_data['title'],
+                    review = clean_data['review']
+                )
+                new_review.save()
+                return redirect("library")
+        else:
+            initial_data = {'book': book} if book else None
+            form = NewReviewForm(user=request.user, initial=initial_data)
+        template = loader.get_template('new_review.html')
+        context = {
+            "page_title": "new review",
+            "form": form
         }
         return HttpResponse(template.render(context, request))

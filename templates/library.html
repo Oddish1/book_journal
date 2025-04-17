@@ -11,6 +11,21 @@
 		<h2>Your Library</h2>
 		<br>
 		<hr>
+		{% if need_reviews %}
+			<div class="list-card">
+				<h3 class="list-title">Please Leave a Review</h3>
+				<div class="list-carousel">
+					{% for book in need_reviews %}
+						<a class="list-book-card hover-card" href="/new-review/{{ book.id }}">
+							<img src="/media/{{ book.thumbnail_cover.image }}" alt="Book Cover">
+							<h4>{{ book.title }}</h4>
+						</a>
+					{% endfor %}
+				</div>
+			</div>
+		<br>
+		<hr>
+		{% endif %}
 		<h3>Your Lists</h3>
 		<div class="user-lists">
 			{% for name, lst in lists.items %}

@@ -16,7 +16,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import include, path
-from .views import home, register, login_view, logout_view, books, journal, new_journal, library
+from .views import home, register, login_view, logout_view, books, journal, new_journal, library, new_review
 from django.conf import settings
 from django.conf.urls.static import static
 
@@ -31,4 +31,5 @@ urlpatterns = [
     path("journal/", journal, name="journal"),
     path("journal/new-journal", new_journal, name="new_journal"),
     path("journal/new-journal/<int:book_id>", new_journal, name="new_journal_with_book"),
+    path("new-review/<int:book_id>", new_review, name="new_review"),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
