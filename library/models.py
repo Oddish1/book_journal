@@ -130,6 +130,8 @@ class Journal(models.Model):
     # a boolean representing if the journal entry able to be viewed by the
     # public or not, for moderation purposes
     is_approved = models.BooleanField(default=False)
+    # a boolean representing if the user finished the book
+    is_finished = models.BooleanField(default=False)
     tags = models.ManyToManyField("Tags", related_name="journals")
 
 

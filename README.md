@@ -4,9 +4,15 @@ This is being developed for my capstone project.
 
 ## Currently in Progress
 
-- [ ] Search
-- [ ] Optimize database transactions
+- [X] Search
+- [X] Optimize database transactions
 - [ ] Recommendations
+  - [ ] Set finished in journal entry
+  - [ ] Prompt user for reviews if finished and not reviewed
+  - [ ] Review form + storage
+  - [ ] Review Algorithm
+  - [ ] Show Reviews on book page
+  - [ ] Show User reviews on library page
 
 - [ ] UI Tweaking
   - [ ] Homepage

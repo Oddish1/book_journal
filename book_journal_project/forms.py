@@ -27,6 +27,7 @@ class NewJournalForm(forms.Form):
         queryset=Book.objects.none(), # defualt empty
         required=True,
         label='Book')
+    is_finished = forms.BooleanField(label='Finish', required=False)
     title = forms.CharField(label='Journal Title', max_length=200, required=False)
     page = forms.IntegerField(label='Page Number')
     journal_text = forms.CharField(label='Journal Entry', max_length=10000, required=False)

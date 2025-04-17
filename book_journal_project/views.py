@@ -341,6 +341,8 @@ def register(request):
             currently_reading.save()
             to_be_read = List(user=user, name="To Be Read", description="My TBR")
             to_be_read.save()
+            finished = List(user=user, name="Finished", description="Finished reading")
+            finished.save()
             # log user in and redirect home
             login(request, user)
             return redirect("home")
@@ -400,6 +402,7 @@ def journal(request):
     if not request.user.is_authenticated:
         return redirect("home")
     else:
+        # if finished books with no review, prompt user to review books
         journals = Journal.objects.filter(user=request.user).order_by("-created_at")
         template = loader.get_template("journal/index.html")
         context = {"journals": journals,
@@ -448,10 +451,15 @@ def new_journal(request, book_id=None):
                         page = clean_data['page'],
                         journal_text = clean_data['journal_text'],
                         is_public = clean_data['is_public'],
+                        is_finished = clean_data['is_finished'],
                 )
                 new_journal.save()
                 new_journal.tags.set(clean_data['tags'])
                 new_journal.save()
+                if new_journal.is_finished:
+                    # remove from currently reading and add to finished list
+                    new_journal.book.list.remove(List.objects.get(user=request.user, name="Currently Reading"))
+                    new_journal.book.list.add(List.objects.get(user=request.user, name="Finished"))
                 logger.info(f'[New Journal]: Saved successfully!')
                 return redirect("journal")
     else:
