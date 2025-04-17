@@ -251,3 +251,32 @@ a.journal-card {
 	margin: 0;
 }
 
+.user-latest-reviews {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 2rem;
+}
+
+.review-card {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	text-align: center;
+	text-decoration: none;
+	color: inherit;
+	border: 2px solid #233D4D;
+	border-radius: 5px;
+	padding: 1rem;
+	margin: 0 auto;
+	box-shadow: 4px 4px 12px #233D4D;
+	width: 500px;
+	background-color: #FFF;
+}
+
+.checked {
+	color: orange;
+}
+
+.library-ratings {
+	padding-top: 1rem;
+}

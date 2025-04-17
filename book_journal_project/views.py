@@ -522,14 +522,29 @@ def library(request):
         latest_journals = Journal.objects.filter(user=request.user).order_by("-created_at")[:5]
         logger.debug(f'latest_journals: {latest_journals}')
         user = request.user
-        logger.debug(f'user: {user.username}')
-        # all of a user's reviewed books
-        reviews = Reviews.objects.filter(user=request.user)
-        logger.debug(f'reviews: {reviews}')
+       # all of a user's reviewed books
+        user_reviews = Reviews.objects.filter(user=request.user)[:5]
+        logger.debug(f'reviews: {user_reviews}')
         # books the user hasn't reviewed yet
-        reviewed_book_ids = reviews.values_list('book_id', flat=True)
+        reviewed_book_ids = user_reviews.values_list('book_id', flat=True)
         need_reviews = lists['Finished'].exclude(id__in=reviewed_book_ids)
-
+        reviews = []
+        for review in user_reviews:
+            item = []
+            title = review.book.title
+            item.append(review)
+            stars = []
+            rating = review.rating
+            for i in range(1, 6):
+                if rating >= i:
+                    stars.append("full")
+                elif rating >= i - 0.5:
+                    stars.append("half")
+                else:
+                    stars.append("empty")
+            item.append(stars)
+            reviews.append(item)
+        logger.debug(f'reviews: {reviews}')
         logger.debug(f'need_reviews: {need_reviews}')
         template = loader.get_template("library.html")
         context = {"page_title": "library",

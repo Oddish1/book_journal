@@ -12,7 +12,7 @@ This is being developed for my capstone project.
   - [X] Review form + storage
   - [ ] Review Algorithm
   - [X] Show Reviews on book page
-  - [ ] Show User reviews on library page
+  - [X] Show User reviews on library page
 
 - [ ] UI Tweaking
   - [ ] Homepage

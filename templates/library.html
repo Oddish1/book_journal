@@ -4,6 +4,7 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<link rel="stylesheet" href="{% static 'index.css' %}">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 {% endblock custom-head %}
 
 {% block content %}
@@ -48,8 +49,36 @@
 		</div>
 		<br>
 		<hr>
+		{% if reviews %}
+			<h3>Your Latest Reviews</h3>
+			<div class="user-latest-reviews">
+				{% for review, stars in reviews %}
+						<a class="review-card hover-card" href="/books/{{ review.book.id }}">
+						<h4>{{ review.book.title }}</h4>
+						<img src="/media/{{ review.book.thumbnail_cover.image }}" alt="Book Cover"></img>
+						<div class="library-ratings">
+							<div class="rating-element">
+								{% for star in stars %}
+									{% if star == "full" %}
+										<i class="fa-solid fa-star checked"></i>
+									{% elif star == "half" %}
+										<i class="fa-solid fa-star-half-stroke checked"></i>
+									{% else %}
+										<i class="fa-regular fa-star"></i>
+									{% endif %}
+								{% endfor %}
+							</div>
+						</div>
+						<h5>{{ review.title }}</h5>
+						<p>{{ review.review }}</p>
+						</a>
+				{% endfor %}
+			</div>
+			<br>
+			<hr>
+		{% endif %}
 		{% if latest_journals %}
-			<h3>{{ user.username }}'s Latest Journals</h3>
+			<h3>Your Latest Journals</h3>
 			<div class="user-latest-journals">
 				{% for journal in latest_journals %}
 					<a class="journal-card hover-card" href="/books/{{ journal.book.id }}">
