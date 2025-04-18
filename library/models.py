@@ -151,6 +151,8 @@ class UserRecommendations(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     # foreign key linking to Book.id representing the book being recommended
     book = models.ForeignKey(Book, on_delete=models.CASCADE)
+    # score from the recommendation model
+    score = models.FloatField(null=True)
     # auto-generated datetime object for when the recommendation is being made
     created_at = models.DateTimeField(auto_now_add=True)
 

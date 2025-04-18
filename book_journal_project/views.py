@@ -7,7 +7,8 @@ from django.contrib.auth.forms import AuthenticationForm
 from .forms import RegisterForm, BookSearchForm, NewJournalForm, ListDropDownForm, NewReviewForm
 from django.conf import settings
 from datetime import datetime
-from library.models import Book, Genres, Authors, Covers, Journal, Tags, List, Reviews
+from library.models import Book, Genres, Authors, Covers, Journal, Tags, List, Reviews, UserRecommendations
+from library.recommender import content_based_recommendations
 from PIL import Image
 from io import BytesIO
 from django.core.files.base import ContentFile, File
@@ -46,7 +47,7 @@ def extract_genre(volume_info):
         logger.info(f'[Extracting Genres]: Found genres {genres}')
     except Exception as e:
         logger.error(f'[Extracting Genres]: Error:\n{e}')
-        genres = []
+        genres = ['None']
     return genres
 
 
@@ -75,7 +76,6 @@ def home(request):
     form = BookSearchForm()
     stored_results = []
     results = []
-
     if request.method == "GET" and "query" in request.GET:
         form = BookSearchForm(request.GET)
         if form.is_valid():
@@ -108,6 +108,7 @@ def home(request):
                     cover_cache = {}
                     new_books = []
                     book_author_links = [] # (book, authors) tuples for many to many relationsip
+                    book_genre_links = [] # (book, genres) tuples for many to many relationship
                     stored_results = []
 
                     for result in api_results:
@@ -120,15 +121,17 @@ def home(request):
                             book_title = "Unknown Title"
 
                         # genres
+                        genres = []
                         genre_names = extract_genre(volume_info)
                         for genre_name in genre_names:
                             genre = genre_cache.get(genre_name)
                             if not genre:
                                 try:
-                                    Genres.objects.filter(genre=genre_name).first()
+                                    genre = Genres.objects.get(genre=genre_name)
                                 except Genres.DoesNotExist:
                                     genre = Genres(genre=genre_name)
                                     genre_cache[genre_name] = genre # hold for later bulk_create
+                            genres.append(genre)
 
                         # authors
                         try:
@@ -277,7 +280,6 @@ def home(request):
 
                         try:
                             new_book = Book(
-                                main_genre = genre,
                                 thumbnail_cover = cover,
                                 title = title,
                                 page_count = page_count,
@@ -289,6 +291,7 @@ def home(request):
                                 isbn = isbn)
                             new_books.append(new_book)
                             book_author_links.append((new_book, authors))
+                            book_genre_links.append((new_book, genres))
                         except ValidationError as e:
                             logger.error(f'Validation error for "{book_title}":\n{e}')
                         except Exception as e:
@@ -309,6 +312,16 @@ def home(request):
                         if saved_book:
                             saved_book.authors.set(authors)
                             saved_book.save()
+                        else:
+                            logger.warning(f'[Book Import]: Could not find saved_book for ISBN: {book.isbn}')
+                    all_genres = set(g.genre for _, genres in book_genre_links for g in genres)
+                    saved_genres = {g.genre: g for g in Genres.objects.filter(genre__in=all_genres)}
+                    book_genre_links = [(book, [saved_genres[g.genre] for g in genres]) for book, genres in book_genre_links]
+                    for book, genres in book_genre_links:
+                        saved_book = Book.objects.filter(isbn=book.isbn).first()
+                        if saved_book:
+                            saved_book.genres.set(genres)
+                            saved_book.save()
                             stored_results.append(saved_book)
                         else:
                             logger.warning(f'[Book Import]: Could not find saved_book for ISBN: {book.isbn}')
@@ -319,10 +332,12 @@ def home(request):
     # Render the HTML template index.html
     if request.user.is_authenticated:
         currently_reading = Book.objects.filter(list=List.objects.get(user=request.user, name="Currently Reading"))
+        recommendations = UserRecommendations.objects.filter(user=request.user)
         context = {"form": form,
                "stored_results": stored_results,
                "page_title": "home",
-               "currently_reading": currently_reading}
+               "currently_reading": currently_reading,
+                "recommendations": recommendations}
         return render(request, 'index.html', context)
         logger.debug(f'currently_reading({type(currently_reading)}): {currently_reading}')
     logger.debug(f'stored_results:\n{stored_results}')
@@ -377,23 +392,19 @@ def logout_view(request):
 def books(request, book_id):
     book = Book.objects.get(id=book_id)
     reviews = Reviews.objects.filter(book=book)
-    num_reviews = reviews.count()
-    if num_reviews > 0:
-        ratings_sum = 0
-        for review in reviews:
-            ratings_sum += review.rating
-        average_rating = ratings_sum / num_reviews
-    else:
-        average_rating = 0
+    num_reviews = book.ratings_count
+    average_rating = book.average_rating
     stars = []
     for i in range(1, 6):
-        if average_rating >= i:
+        if average_rating == None:
+            stars.append("empty")
+        elif average_rating >= i:
             stars.append("full")
         elif average_rating >= i - 0.5:
             stars.append("half")
         else:
             stars.append("empty")
-    logger.debug(f'book: {book}')
+    logger.debug(f'book: {book}\nrating: {average_rating} ({num_reviews})')
     currently_reading = Book.objects.filter(list=List.objects.get(user=request.user, name="Currently Reading"))
     logger.debug(f'currently_reading: {currently_reading}')
     template = loader.get_template("books.html")
@@ -523,7 +534,7 @@ def library(request):
         logger.debug(f'latest_journals: {latest_journals}')
         user = request.user
        # all of a user's reviewed books
-        user_reviews = Reviews.objects.filter(user=request.user)[:5]
+        user_reviews = Reviews.objects.filter(user=request.user)
         logger.debug(f'reviews: {user_reviews}')
         # books the user hasn't reviewed yet
         reviewed_book_ids = user_reviews.values_list('book_id', flat=True)
@@ -546,6 +557,7 @@ def library(request):
             reviews.append(item)
         logger.debug(f'reviews: {reviews}')
         logger.debug(f'need_reviews: {need_reviews}')
+        last_read_book = Book.objects.filter(list=List.objects.get(user=request.user, name="Finished")).first()
         template = loader.get_template("library.html")
         context = {"page_title": "library",
                    "currently_reading": currently_reading,
@@ -564,10 +576,19 @@ def new_review(request, book_id=None):
     else:
         if book_id:
             book = Book.objects.get(id=book_id)
+            average_rating = book.average_rating
+            ratings_count = book.ratings_count
         if request.method == "POST":
             form = NewReviewForm(request.POST, user=request.user)
             if form.is_valid():
                 clean_data = form.cleaned_data
+                if average_rating is not None:
+                    average_rating = average_rating * ratings_count
+                    ratings_count += 1
+                    average_rating = (average_rating + clean_data['rating']) / ratings_count
+                else:
+                    average_rating = clean_data['rating']
+                    ratings_count += 1
                 new_review = Reviews(
                     book = book,
                     user = request.user,
@@ -576,6 +597,10 @@ def new_review(request, book_id=None):
                     review = clean_data['review']
                 )
                 new_review.save()
+                book.average_rating = average_rating
+                book.ratings_count = ratings_count
+                book.save()
+                logger.debug(f'Book Rating: {average_rating} ({ratings_count})')
                 return redirect("library")
         else:
             initial_data = {'book': book} if book else None
@@ -586,3 +611,26 @@ def new_review(request, book_id=None):
             "form": form
         }
         return HttpResponse(template.render(context, request))
+
+# TODO generate recommendations when new review is submitted.
+def generate_recommendations(request):
+    if not request.user.is_authenticated:
+        return redirect("home")
+    last_review = Reviews.objects.filter(user=request.user).order_by('-created_at').first()
+    if last_review:
+        recs, scores = content_based_recommendations(request.user)
+        # clear out old recommendations
+        UserRecommendations.objects.filter(user=request.user).delete()
+        recs = recs.reset_index()
+        logger.debug(f'RECS: {None if recs.empty else recs}')
+        logger.debug(f'SCORES: {None if scores.size == 0 else scores}')
+        for idx, title in recs['title'].items():
+            score = scores[idx]
+            book = Book.objects.filter(title__iexact=title).first()
+            UserRecommendations.objects.create(
+                user=request.user,
+                book=book,
+                score=score
+            )
+        logger.info("Recommendations updated!")
+    return redirect("home")

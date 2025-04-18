@@ -10,11 +10,13 @@ This is being developed for my capstone project.
   - [X] Set finished in journal entry
   - [X] Prompt user for reviews if finished and not reviewed
   - [X] Review form + storage
-  - [ ] Review Algorithm
+  - [X] Recommendation Algorithm
+  - [X] Add ratings to books on db for easier lookup
   - [X] Show Reviews on book page
   - [X] Show User reviews on library page
+  - [ ] Generate recommendations when user submits new review
 
-- [ ] UI Tweaking
+- [ ] UI Tweaking (remove cards, remove book titles, simplify display)
   - [ ] Homepage
   - [ ] Book Page
   - [ ] Library Page
@@ -22,6 +24,10 @@ This is being developed for my capstone project.
   - [ ] Login Page
   - [ ] Register Page
   - [ ] Journal Page
+
+- [ ] Individual Review page for full review
+- [ ] Add link on review count on book page
+- [ ] Review page aggregated by book for link from book page
 
 ## Development Backlog
 
