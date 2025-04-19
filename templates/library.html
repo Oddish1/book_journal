@@ -43,7 +43,7 @@
 			<h3>Your Latest Reviews</h3>
 			<div class="list-carousel">
 				{% for review, stars in reviews %}
-					<a class="book-card hover-card" href="/books/{{ review.book.id }}">
+					<a class="book-card hover-card" href="/reviews/{{ review.id }}">
 						<img src="/media/{{ review.book.thumbnail_cover.image }}" alt="Book Cover"></img>
 						<div class="library-ratings">
 							<div class="rating-element">

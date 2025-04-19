@@ -18,7 +18,7 @@ This is being developed for my capstone project.
 
 - [ ] UI Tweaking (remove cards, remove book titles, simplify display)
   - [X] Homepage
-  - [ ] Book Page
+  - [X] Book Page
     - [X] split in thirds only book details scroll -> book image | book details | list functionality)
     - [X] review aggregation link
   - [X] Library Page
@@ -32,7 +32,7 @@ This is being developed for my capstone project.
     - [ ] New Reviews
   - [ ] About Page
 
-- [ ] Individual Review pages for full review
+- [X] Individual Review pages for full review
 - [X] Add link on review count on book page leading to aggregated reviews for that book
 
 ## Development Backlog

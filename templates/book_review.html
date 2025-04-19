@@ -55,28 +55,24 @@
 							{% endif %}
 						</div>
 					</div>
-					{% if review_data %}
+					{% if review %}
 						<hr class="thin">
-						<h2>Reviews</h2>
-						{% for review, stars in review_data %}
-							<a class="no-decoration" href="/reviews/{{ review.id }}">
-								<div class="individual-review">
-									<h4>{{ review.user.username }}</h4>
-									{% for star in stars %}
-										{% if star == "full" %}
-											<i class="fa-solid fa-star checked"></i>
-										{% elif star == "half" %}
-											<i class="fa-solid fa-star-half-stroke checked"></i>
-										{% else %}
-											<i class="fa-regular fa-star"></i>
-										{% endif %}
-									{% endfor %}
-									<p>{{ review.created_at }}</p>
-									<h3>{{ review.title }}</h3>
-									<p>{{ review.review }}</p>
-								</div>
-							</a>
+						<h2>{{ review.user.username }}'s Review</h2>
+						{% for star in stars %}
+							{% if star == "full" %}
+								<i class="fa-solid fa-star checked"></i>
+							{% elif star == "half" %}
+								<i class="fa-solid fa-star-half-stroke checked"></i>
+							{% else %}
+								<i class="fa-regular fa-star"></i>
+							{% endif %}
 						{% endfor %}
+						<p><strong>Created:</strong> {{ review.created_at }}</p>
+						<h3>{{ review.title }}</h3>
+						{% if review.review %}
+							<p>{{ review.review }}</p>
+						{% endif %}
+					</div>
 					{% endif %}
 				</div>
 			</div>

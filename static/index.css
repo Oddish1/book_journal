@@ -355,3 +355,14 @@ p.wide-spacing {
 	border-radius: 8px;
 	margin-bottom: 1rem;
 }
+
+.no-decoration,
+.no-decoration *:not(.checked) {
+	text-decoration: none;
+	color: inherit;
+}
+
+.no-decoration:hover,
+.no-decoration:hover *:not(.checked) {
+	background-color: #E9EBED;
+}

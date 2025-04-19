@@ -639,6 +639,8 @@ def generate_recommendations(request):
             return redirect("home")
 
 def book_reviews_aggregate(request, book_id):
+    if not request.user.is_authenticated:
+        return redirect("home")
     book = Book.objects.get(id=book_id)
     book_reviews = Reviews.objects.filter(book=book)
     if book.average_rating:
@@ -679,5 +681,31 @@ def book_reviews_aggregate(request, book_id):
     }
     return HttpResponse(template.render(context, request))
 
-def book_review(request):
-    return None
+def book_review(request, review_id):
+    if not request.user.is_authenticated:
+        return redirect("home")
+    review = Reviews.objects.get(id=review_id)
+    book = review.book
+    if review:
+        rating = review.rating
+    else:
+        rating = None
+        stars = []
+    if rating:
+        stars = []
+        for i in range(1, 6):
+            if rating >= i:
+                stars.append("full")
+            elif rating >= i - 0.5:
+                stars.append("half")
+            else:
+                stars.append("empty")
+    template = loader.get_template('book_review.html')
+    context = {
+            "page_title": "review",
+            "review": review,
+            "rating": rating,
+            "stars": stars,
+            "book": book,
+    }
+    return HttpResponse(template.render(context, request))
