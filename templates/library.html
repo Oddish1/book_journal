@@ -15,7 +15,7 @@
 			<h3 class="list-title">Please Leave a Review</h3>
 			<div class="list-carousel">
 				{% for book in need_reviews %}
-					<a class="list-book-card hover-card" href="/new-review/{{ book.id }}">
+					<a class="list-book-card hover-card" href="/reviews/new-review/{{ book.id }}">
 						<img src="/media/{{ book.thumbnail_cover.image }}" alt="Book Cover">
 					</a>
 				{% endfor %}

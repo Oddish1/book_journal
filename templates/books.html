@@ -9,67 +9,74 @@
 {% endblock custom-head %}
 
 {% block content %}
-	<hr>
-	<br>
 	{% if book %}
-		<div class="book-detail-container">
-			<div class="book-side">
+		<div class="book-info-container">
+			<div class="book-left-side">
 				<img src="/media/{{ book.thumbnail_cover.image }}" alt="Book Cover">
+			</div>
+			<div class="book-middle-section">
+				<div class="book-header">
+					<div class="book-data">
+						<h1 class="book-title">{{ book.title }}</h1>
+						{% if book.authors.all %}
+							{% for author in book.authors.all %}
+								<h3>{{ author.name }}{%if not forloop.last %}, {% endif %}</h3>
+							{% endfor %}
+						{% endif %}
+						{% if book.page_count and book.page_count > 0 %}<p>{{ book.page_count }} pages</p>{% endif %}
+						{% if book.print_type %}<p><strong>Print Type:</strong> {{ book.print_type }}</p>{% endif %}
+						{% if book.language %}<p><strong>Language:</strong> {{ book.language }}</p>{% endif %}
+						{% if book.publisher and book.published_date %}<p><strong>Publisher:</strong> {{ book.publisher }}; {{ book.published_date }}</p>
+						{% elif book.published_date %}<p><strong>Published on:</strong> {{ book.published_date }}</p>{% endif %}
+						{% if book.genres.all %}
+							<h4>Genres:</h4>
+							{% for genre in book.genres.all %}
+								<p>{{ genre.genre }}{% if not forloop.last %}, {% endif %}</p>
+							{% endfor %}
+						{% endif %}
+						{% if num_reviews > 0 %}
+							<div class="ratings">
+								<p class="rating-element">{{ average_rating }}</p>
+								<div class="rating-element">
+									{% for star in stars %}
+										{% if star == "full" %}
+											<i class="fa-solid fa-star checked"></i>
+										{% elif star == "half" %}
+											<i class="fa-solid fa-star-half-stroke checked"></i>
+										{% else %}
+											<i class="fa-regular fa-star"></i>
+										{% endif %}
+									{% endfor %}
+								</div>
+								<a href="/reviews/book/{{ book.id }}"><p class="rating-element">({{ num_reviews }})</p></a>
+							</div>
+						{% endif %}
+					</div>
+					{% if currently_reading %}
+						<div class="new-journal-entry-btn">
+							{% for i in currently_reading %}
+								{% if i.id == book.id %}
+									<a class="button-b" href ="{% url 'new_journal_with_book' book.id %}">Add Journal Entry</a>
+								{% endif %}
+							{% endfor %}
+						</div>
+					{% endif %}
+				</div>
+				{% if book.description %}
+					<br>
+					<hr class="thin">
+					<br>
+					<p class="wide-spacing">{{ book.description }}</p>
+				{% endif %}
+			</div>
+			<div class="book-right-side">
 				<form class="add-to-list" method="POST">
 					{% csrf_token %}
 					{{ form.as_p }}
 					<button type="submit">Save</button>
 				</form>
 			</div>
-			<div class="book-info">
-				<h1 class="book-title">{{ book.title }}</h1>
-				{% if book.authors.all %}
-					{% for author in book.authors.all %}
-						<h3>{{ author.name }}{%if not forloop.last %}, {% endif %}</h3>
-					{% endfor %}
-				{% endif %}
-				{% if book.print_type %}<p>Print Type: {{ book.print_type }}</p>{% endif %}
-				{% if book.language %}<p>Language: {{ book.language }}</p>{% endif %}
-				{% if book.publisher and book.published_date %}<p>Publisher: {{ book.publisher }}; {{ book.published_date }}</p>
-				{% elif book.published_date %}<p>Published on: {{ book.published_date }}</p>{% endif %}
-				{% if book.page_count and book.page_count > 0 %}<p>{{ book.page_count }} pages</p>{% endif %}
-				{% if book.genres.all %}
-					<h4>Genres:</h4>
-					{% for genre in book.genres.all %}
-						<h4>{{ genre.genre }}{% if not forloop.last %}, {% endif %}</h4>
-					{% endfor %}
-				{% endif %}
-				{% if num_reviews > 0 %}
-					<div class="ratings">
-						<p class="rating-element">{{ average_rating }}</p>
-						<div class="rating-element">
-							{% for star in stars %}
-								{% if star == "full" %}
-									<i class="fa-solid fa-star checked"></i>
-								{% elif star == "half" %}
-									<i class="fa-solid fa-star-half-stroke checked"></i>
-								{% else %}
-									<i class="fa-regular fa-star"></i>
-								{% endif %}
-							{% endfor %}
-						</div>
-						<p class="rating-element">({{ num_reviews }})</p>
-					</div>
-				{% endif %}
-				{% if currently_reading %}
-					{% for i in currently_reading %}
-						{% if i.id == book.id %}
-							<a class="button-b" href ="{% url 'new_journal_with_book' book.id %}">Add Journal Entry</a>
-						{% endif %}
-					{% endfor %}
-				{% endif %}
-							</div>
 		</div>
-		{% if book.description %}
-		<br>
-		<hr>
-		<p>{{ book.description }}</p>
-		{% endif %}
 	{% else %}
 		<p>Oops! Looks like this book doesn't exist!<p>
 	{% endif %}

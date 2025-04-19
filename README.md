@@ -19,8 +19,8 @@ This is being developed for my capstone project.
 - [ ] UI Tweaking (remove cards, remove book titles, simplify display)
   - [X] Homepage
   - [ ] Book Page
-    - [ ] split in thirds only book details scroll -> book image | book details | list functionality)
-    - [ ] add scroll box to lists on book page
+    - [X] split in thirds only book details scroll -> book image | book details | list functionality)
+    - [ ] review aggregation link
   - [X] Library Page
   - [ ] Login Page
   - [ ] Register Page

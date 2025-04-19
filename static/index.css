@@ -131,14 +131,6 @@ hr {
 	padding: 1rem;
 }
 
-div.book-detail-container {
-	display: flex;
-	flex-wrap: wrap;
-	justify-content: space-evenly;
-	align-items: center;
-	gap: 1rem;
-}
-
 .journal-results {
 	display: flex;
 	flex-wrap: wrap;
@@ -156,15 +148,6 @@ div.book-detail-container {
 .journal-result h3, h4, h5, p {
 	margin: 0.25rem 0;
 	line-height: 1.2;
-}
-
-.book-side img {
-	max-height: 300px;
-	height: auto;
-	width: auto;
-	objext-fit: contain;
-	flex-shrink: 0;
-	display: block;
 }
 
 div.journal-heading {
@@ -309,3 +292,52 @@ div.journal-heading {
 footer {
 	text-align: center;
 }
+
+.book-info-container {
+	display: flex;
+	height: 75vh;
+	overflow: hidden;
+	gap: 2rem;
+	padding: 1rem;
+}
+
+.book-left-side,
+.book-right-side {
+	flex: 0 0 200px;
+	position: sticky;
+	top: 1rem;
+	align-self: flex-start;
+}
+
+.book-left-side img {
+	max-width: 100%;
+	height: auto;
+	display: block;
+}
+
+.book-middle-section {
+	flex: 1 1 auto;
+	overflow-y: auto;
+	padding-right: 1rem;
+}
+
+p.wide-spacing {
+	line-height: 1.5;
+	text-indent: 4rem;
+}
+
+.book-header {
+	display: flex;
+	justify-content: space-between;
+	align-items: stretch;
+	gap: 1rem;
+}
+
+.book-data {
+	flex: 1;
+}
+.new-journal-entry-btn {
+	display: flex;
+	align-items: flex-end;
+}
+
