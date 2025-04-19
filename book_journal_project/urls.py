@@ -16,7 +16,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import include, path
-from .views import home, register, login_view, logout_view, books, journal, new_journal, library, new_review, generate_recommendations
+from .views import home, register, login_view, logout_view, books, journal, new_journal, library, new_review, generate_recommendations, book_reviews_aggregate, book_review
 from django.conf import settings
 from django.conf.urls.static import static
 
@@ -31,6 +31,8 @@ urlpatterns = [
     path("journal/", journal, name="journal"),
     path("journal/new-journal", new_journal, name="new_journal"),
     path("journal/new-journal/<int:book_id>", new_journal, name="new_journal_with_book"),
-    path("new-review/<int:book_id>", new_review, name="new_review"),
     path("recommendations", generate_recommendations, name="generate_recommendations"),
+    path("reviews/new-review/<int:book_id>", new_review, name="new_review"),
+    path("reviews/book/<int:book_id>", book_reviews_aggregate, name="book_reviews_aggregate"),
+    path("reviews/<int:review_id>", book_review, name="book_review"),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

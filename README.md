@@ -20,7 +20,7 @@ This is being developed for my capstone project.
   - [X] Homepage
   - [ ] Book Page
     - [X] split in thirds only book details scroll -> book image | book details | list functionality)
-    - [ ] review aggregation link
+    - [X] review aggregation link
   - [X] Library Page
   - [ ] Login Page
   - [ ] Register Page
@@ -33,7 +33,7 @@ This is being developed for my capstone project.
   - [ ] About Page
 
 - [ ] Individual Review pages for full review
-- [ ] Add link on review count on book page leading to aggregated reviews for that book
+- [X] Add link on review count on book page leading to aggregated reviews for that book
 
 ## Development Backlog
 

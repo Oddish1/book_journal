@@ -82,14 +82,6 @@ button:hover {
 	transition: background-color .25s ease;
 }
 
-
-hr {
-	border: none;
-	height: 4px;
-	background-color: #233D4D;
-	margin: 0;
-}
-
 .search-form {
 	margin-left: auto;
 	display: flex;
@@ -214,7 +206,23 @@ a.journal-card {
 }
 
 hr.thin {
+	border: none;
 	height: 1px;
+	background-color: #233D4D;
+}
+
+hr.dotted {
+	border: none;
+	height: 4px;
+	background-image: radial-gradient(#233D4D 2px, transparent 2px);
+	background-size: 10px 10px;
+	background-repeat: repeat-x;
+}
+
+hr.dashed {
+	border: none;
+	border-top: 2px dashed #233D4D;
+	margin: 1rem 0;
 }
 
 div.journal-heading {
@@ -341,3 +349,9 @@ p.wide-spacing {
 	align-items: flex-end;
 }
 
+.individual-review {
+	padding: 1rem;
+	border: 0.05rem solid #233D4D;
+	border-radius: 8px;
+	margin-bottom: 1rem;
+}

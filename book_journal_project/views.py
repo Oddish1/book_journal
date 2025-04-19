@@ -393,7 +393,10 @@ def books(request, book_id):
     book = Book.objects.get(id=book_id)
     reviews = Reviews.objects.filter(book=book)
     num_reviews = book.ratings_count
-    average_rating = round(book.average_rating, 2)
+    if book.average_rating:
+        average_rating = round(book.average_rating, 2)
+    else:
+        average_rating = None
     stars = []
     for i in range(1, 6):
         if average_rating == None:
@@ -634,3 +637,47 @@ def generate_recommendations(request):
     last_review = Reviews.objects.filter(user=request.user).order_by('-created_at').first()
     if last_review:
             return redirect("home")
+
+def book_reviews_aggregate(request, book_id):
+    book = Book.objects.get(id=book_id)
+    book_reviews = Reviews.objects.filter(book=book)
+    if book.average_rating:
+        average_rating = round(book.average_rating, 2)
+        num_reviews = book.ratings_count
+        average_stars = []
+        for i in range(1, 6):
+            if average_rating >= i:
+                average_stars.append("full")
+            elif average_rating >= i - 0.5:
+                average_stars.append("half")
+            else:
+                average_stars.append("empty")
+    else:
+        average_rating = None
+        num_reviews = 0
+    stars = []
+    for review in book_reviews:
+        rating = review.rating
+        rating_stars = []
+        for i in range(1, 6):
+            if rating >= i:
+                rating_stars.append("full")
+            elif rating >= i -0.5:
+                rating_stars.append("half")
+            else:
+                rating_stars.append("empty")
+        stars.append(rating_stars)
+    review_data = zip(book_reviews, stars)
+    template = loader.get_template('review_aggregation.html')
+    context = {
+            "page_title": "reviews",
+            "review_data": review_data,
+            "book": book,
+            "average_rating": average_rating,
+            "num_reviews": num_reviews,
+            "average_stars": average_stars,
+    }
+    return HttpResponse(template.render(context, request))
+
+def book_review(request):
+    return None
