@@ -8,16 +8,10 @@
 {% endblock custom-head %}
 
 {% block content %}
-	<body>
+	<div class="content-container">
 		{% if user.is_authenticated %}
-			<h2>Welcome Back {{user.username}}!</h2>
-			<form method="get" class="search-form">
-				{{ form.as_p }}
-				<button type="submit">Search</button>
-			</form>
+			<h2 class="home-greeting">Welcome Back {{user.username}}!</h2>
 			{% if stored_results %}
-				<hr>
-				<br>
 				<div class="search-results">
 					{% for book in stored_results %}
 						<div class="book-result">
@@ -44,11 +38,11 @@
 				</div>
 			{% else %}
 			{% if currently_reading %}
-					<hr>
+					<hr class="thin">
 					<h3>Currently Reading</h3>
 					<div class="list-carousel">
 						{% for book in currently_reading %}
-							<a class="book-card hover-card" href="{% url 'new_journal_with_book' book.id %}">
+							<a class="journal-card hover-card" href="{% url 'new_journal_with_book' book.id %}">
 								<img src="/media/{{ book.thumbnail_cover.image }}" alt="Book Cover">
 							</a>
 						{% endfor %}
@@ -56,6 +50,7 @@
 				{% endif %}
 			{% endif %}
 			{% if recommendations %}
+				<hr class="thin">
 				<h3>Recommended</h3>
 				<div class="list-carousel">
 					{% for recommendation in recommendations %}
@@ -72,5 +67,5 @@
 			<h2>Let's Get Started</h2>
 			<a class=button-a href="register/">sign up</a> <a class=button-b href="login/">sign in</a>
 		{% endif %}
-	</body>
+	</div>
 {% endblock content %}

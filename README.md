@@ -17,24 +17,29 @@ This is being developed for my capstone project.
   - [X] Generate recommendations when user submits new review
 
 - [ ] UI Tweaking (remove cards, remove book titles, simplify display)
-  - [ ] Homepage
+  - [X] Homepage
   - [ ] Book Page
-  - [ ] Library Page
-  - [ ] Recommendations Page
+    - [ ] split in thirds only book details scroll -> book image | book details | list functionality)
+    - [ ] add scroll box to lists on book page
+  - [X] Library Page
   - [ ] Login Page
   - [ ] Register Page
   - [ ] Journal Page
+    - [ ] Journal Home
+    - [ ] Individual Journal Pages
+    - [ ] Pages that link to journals need individual journal links
+    - [ ] New Journals
+    - [ ] New Reviews
+  - [ ] About Page
 
-- [ ] Individual Review page for full review
-- [ ] Add link on review count on book page
-- [ ] Review page aggregated by book for link from book page
+- [ ] Individual Review pages for full review
+- [ ] Add link on review count on book page leading to aggregated reviews for that book
 
 ## Development Backlog
 
 - [ ] Email Integration (password reset, etc.)
 - [ ] Public User Profiles
 - [ ] Refine/Unify Styling
-  - [ ] add scroll box to lists on book page
 - [ ] Move to PostreSQL db
 
 ## Finished

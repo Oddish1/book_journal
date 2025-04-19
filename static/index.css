@@ -1,8 +1,43 @@
+.page-container {
+	max-width: 1250px;
+	margin: 0 auto;
+}
+
+.content-container {
+	max-width: 900px;
+	margin: 0 auto;
+}
+
+.nav-buttons {
+	display: flex;
+	justify: left;
+	gap: 1rem;
+}
+
+.top-bar {
+	display: flex;
+	align-items: center;
+	flex-wrap: wrap;
+	padding: 1rem;
+}
+
+.nav-left {
+	display: flex;
+	align-items: center;
+	gap: 1rem;
+	flex-wrap: wrap;
+}
+
+.nav-title {
+	font-size: 1.5rem;
+	margin: 0;
+	padding-right: 1rem;
+}
+
 .button-a:link, .button-a:visited {
 	background-color: #233D4D;
 	color: #FDFDFF;
 	border: 1px solid #233D4D;
-	padding: 14px 25px;
 	text-align: center;
 	text-decoration: none;
 	display: inline-block;
@@ -12,10 +47,15 @@
 	background-color: #FDFDFF;
 	color: #233D4D;
 	border: 1px solid #233D4D;
-	padding: 14px 25px;
 	text-align: center;
 	text-decoration: none;
 	display: inline-block;
+}
+
+.button-a:link, .button-a:visited,
+.button-b:link, .button-b:visited {
+	padding: 10px 15px;
+	font-size: 0.95rem;
 }
 
 .button-a:hover, .button-b:hover {
@@ -24,20 +64,6 @@
 	color: #233D4D;
 	scale: 110%;
 	transition: background-color .25s ease;
-}
-
-.top-bar {
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
-	padding: 1rem;
-}
-
-hr {
-	border: none;
-	height: 4px;
-	background-color: #233D4D;
-	margin: 0;
 }
 
 button {
@@ -56,7 +82,16 @@ button:hover {
 	transition: background-color .25s ease;
 }
 
+
+hr {
+	border: none;
+	height: 4px;
+	background-color: #233D4D;
+	margin: 0;
+}
+
 .search-form {
+	margin-left: auto;
 	display: flex;
 	align-items: center;
 	gap: 0.5rem;
@@ -74,7 +109,6 @@ button:hover {
 	flex: 1 1 200px;
 	max-width: 250px;
 	align-items: center;
-	/*gap: 1rem;*/
 }
 
 .book-result h4,
@@ -97,11 +131,6 @@ button:hover {
 	padding: 1rem;
 }
 
-.page-container {
-	max-width: 800px;
-	margin: 0 auto;
-}
-
 div.book-detail-container {
 	display: flex;
 	flex-wrap: wrap;
@@ -110,11 +139,23 @@ div.book-detail-container {
 	gap: 1rem;
 }
 
-div.journal-result {
-	border: 1px solid #233D4D;
-	border-radius: 5px;
-	padding: 1rem;
-	margin: 1rem;
+.journal-results {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 2rem;
+}
+
+.journal-result {
+	flex: 1 1 250px;
+	max-width: 300px;
+	align-items: center;
+	text-align: center;
+	padding: 0.5rem;
+}
+
+.journal-result h3, h4, h5, p {
+	margin: 0.25rem 0;
+	line-height: 1.2;
 }
 
 .book-side img {
@@ -126,10 +167,6 @@ div.journal-result {
 	display: block;
 }
 
-hr.journal-hr {
-	height: 1px;
-}
-
 div.journal-heading {
 	display: flex;
 	justify-content: space-evenly;
@@ -137,24 +174,28 @@ div.journal-heading {
 	gap: 1rem;
 }
 
-a.book-card {
-	display: flex;
-	flex-direction: column;
-	align-items: center;
+.book-card {
+	flex: 0 0 auto;
 	text-align: center;
 	text-decoration: none;
 	color: inherit;
-	border: 2px solid #233D4d;
-	border-radius: 5px;
-	padding: 1rem;
-	width: 150px;
-	box-shadow: 4px 4px 12px rgba(0,0,0,0.25);
-	background-color: #FFF;
+	padding: 0.5rem;
+	width: 140px;
+}
+
+.journal-card img {
+	text-decoration: none;
+	color: inherit;
+	padding: 0.5rem;
+	width: 140px;
+}
+
+.journal-card:hover img {
+	scale: 105%;
+	transition: scale 0.2s ease;
 }
 
 .hover-card:hover {
-	border-color: #6EC8FF;
-	box-shadow: 4px 4px 12px #6EC8FF;
 	scale: 105%;
 	transition: scale 0.2s ease;
 }
@@ -180,19 +221,24 @@ div.user-latest-journals {
 }
 
 a.journal-card {
-	display: flex;
-	flex-direction: column;
+	flex: 0 0 auto;
 	align-items: center;
 	text-align: center;
 	text-decoration: none;
 	color: inherit;
-	border: 2px solid #233D4D;
-	border-radius: 5px;
-	padding: 1rem;
-	margin: 0 auto;
-	box-shadow: 4px 4px 12px #233D4D;
-	width: 500px;
-	background-color: #FFF;
+	padding: 0.5rem;
+	width: 200px;
+}
+
+hr.thin {
+	height: 1px;
+}
+
+div.journal-heading {
+	display: flex;
+	justify-content: space-evenly;
+	align-items: center;
+	gap: 1rem;
 }
 
 .list-card {
@@ -215,31 +261,6 @@ a.journal-card {
 
 .list-carousel::-webkit-scrollbar {
 	display: none;
-}
-
-
-.list-book-card {
-	flex: 0 0 auto;
-	width: 140px;
-	text-align: center;
-	border: 2px solid #233D4d;
-	border-radius: 5px;
-	padding: 0.5rem;
-	background-color: white;
-	box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.15);
-	text-decoration: none;
-	color: inherit;
-	scroll-snap-align: start;
-}
-
-.list-book-card img {
-	width: 100%;
-	border-radius: 4px;
-}
-
-.list-book-card h4 {
-	font-size: 1rem;
-	margin-top: 0.5rem;
 }
 
 .ratings {
@@ -279,4 +300,12 @@ a.journal-card {
 
 .library-ratings {
 	padding-top: 1rem;
+}
+
+.home-greeting {
+	text-align: center;
+}
+
+footer {
+	text-align: center;
 }

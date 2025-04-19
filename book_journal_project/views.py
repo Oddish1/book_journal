@@ -393,7 +393,7 @@ def books(request, book_id):
     book = Book.objects.get(id=book_id)
     reviews = Reviews.objects.filter(book=book)
     num_reviews = book.ratings_count
-    average_rating = book.average_rating
+    average_rating = round(book.average_rating, 2)
     stars = []
     for i in range(1, 6):
         if average_rating == None:
@@ -530,7 +530,7 @@ def library(request):
         currently_reading = lists['Currently Reading']
         logger.debug(f'currently_reading: {currently_reading}')
         # latest_journals a list of 5 most recent Journal Objects
-        latest_journals = Journal.objects.filter(user=request.user).order_by("-created_at")[:5]
+        latest_journals = Journal.objects.filter(user=request.user).order_by("-created_at")[:10]
         logger.debug(f'latest_journals: {latest_journals}')
         user = request.user
        # all of a user's reviewed books
@@ -555,6 +555,7 @@ def library(request):
                     stars.append("empty")
             item.append(stars)
             reviews.append(item)
+        reviews.reverse()
         logger.debug(f'reviews: {reviews}')
         logger.debug(f'need_reviews: {need_reviews}')
         last_read_book = Book.objects.filter(list=List.objects.get(user=request.user, name="Finished")).first()

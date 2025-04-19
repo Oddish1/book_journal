@@ -8,42 +8,40 @@
 {% endblock custom-head %}
 
 {% block content %}
-	<body>
+	<div class="content-container">
 		{% if not journals %}
 			<a class="button-a" href="/journal/new-journal">New Journal</a>
 			<p>It doesn't look like you have created any journals yet. Create one with the button above!</p>
 		{% else %}
-			<hr>
 			<div class="journal-heading">
-				<h2>Your Recent Journal Entries</h2>
+				<h2>Your Journal Entries</h2>
 				<a class="button-a" href="/journal/new-journal">New Journal</a>
 			</div>
-			<hr>
-			{% for journal in journals %}
-				<div class="journal-result">
-					{% if journal.title %}
-						<h3>{{ journal.title }}</h3>
-					{% endif %}
-					{% if journal.page %}
-					<a href="/books/{{ journal.book.id }}"><h4>{{ journal.book.title }} | page {{ journal.page }}</h4></a>
-					{% else %}
-					<a href="/books/{{ journal.book.id }}"><h4>{{ journal.book.title }}</h4></a>
-					{% endif %}
-					<p>{{ journal.created_at }}</p>
-					{% if journal.tags.all %}
-						<h5 class="tags">
-							{% for tag in journal.tags.all %}
-							{{ tag.tag }}{% if not forloop.last %}, {% endif %}
-							{% endfor %}
-						</h5>
-					{% endif %}
-					{% if journal.journal_text %}
-						<hr class="journal-hr">
-						<br>
-						<p>{{ journal.journal_text }}</p>
-					{% endif %}
-				</div>
-			{% endfor %}
+			<hr class="thin">
+			<div class="journal-results">
+				{% for journal in journals %}
+					<div class="journal-result">
+						<a class="journal-card" href="/books/{{ journal.book.id }}">
+							<img src="/media/{{ journal.book.thumbnail_cover.image }}" alt="Book Cover">
+						</a>
+						{% if journal.title %}
+							<h3>{{ journal.title }}</h3>
+							<hr class="thin">
+						{% endif %}
+						{% if journal.page %}
+						<h4>page {{ journal.page }}</h4>
+						{% endif %}
+						<p>{{ journal.created_at }}</p>
+						{% if journal.tags.all %}
+							<h5 class="tags">
+								{% for tag in journal.tags.all %}
+								{{ tag.tag }}{% if not forloop.last %}, {% endif %}
+								{% endfor %}
+							</h5>
+						{% endif %}
+					</div>
+				{% endfor %}
+			</div>
 		{% endif %}
-	</body>
+	</div>
 {% endblock content %}

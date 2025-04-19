@@ -10,25 +10,35 @@
 	<body>
 		<div class="page-container">
 			<nav class="top-bar">
-				<h1>BookJournal</h1>
-				<div class="nav-buttons">
-					<a class="{% if page_title == 'home' %}button-b{% else %} button-a{% endif %}" href="/">home</a>
-					<a class="{% if page_title == 'library' %}button-b{% else %}button-a{% endif %}" href="/library">library</a>
-					<a class="{% if page_title == 'journal' %}button-b{% else %}button-a{% endif %}" href="/journal">journal</a>
-					<a class="{% if page_title == 'about' %}button-b{% else %} button-a{% endif %}" href="/about">about</a>
-					{% if user.is_authenticated %}
-						<a class="button-a" href="/logout/">sign out</a>
-					{% else %}
-						<a class="button-a" href="/login/">sign in</a>
-					{% endif %}
+				<div class="nav-left">
+					<h1 class="nav-title">BookJournal</h1>
+					<div class="nav-buttons">
+						<a class="{% if page_title == 'home' %}button-b{% else %} button-a{% endif %}" href="/">home</a>
+						<a class="{% if page_title == 'library' %}button-b{% else %}button-a{% endif %}" href="/library">library</a>
+						<a class="{% if page_title == 'journal' %}button-b{% else %}button-a{% endif %}" href="/journal">journal</a>
+						<a class="{% if page_title == 'about' %}button-b{% else %} button-a{% endif %}" href="/about">about</a>
+						{% if user.is_authenticated %}
+							<a class="button-a" href="/logout/">sign out</a>
+						{% else %}
+							<a class="button-a" href="/login/">sign in</a>
+						{% endif %}
+					</div>
 				</div>
+				{% if page_title == 'home' %}
+					<form method="get" class="search-form">
+						{{ form.as_p }}
+						<button type="submit">Search</button>
+					</form>
+				{% endif %}
+
 			</nav>
+			<hr class="thin">
 			<div id="content" name="content">
 				{% block content %}
 				{% endblock %}
 			</div>
 			<br>
-			<hr>
+			<hr class="thin">
 			<footer>
 				<p>&copy; 2025 BookJournal. All rights reserved.</p>
 			</footer>
