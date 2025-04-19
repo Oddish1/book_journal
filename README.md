@@ -6,7 +6,7 @@ This is being developed for my capstone project.
 
 - [X] Search
 - [X] Optimize database transactions
-- [ ] Recommendations
+- [X] Recommendations
   - [X] Set finished in journal entry
   - [X] Prompt user for reviews if finished and not reviewed
   - [X] Review form + storage
@@ -14,7 +14,7 @@ This is being developed for my capstone project.
   - [X] Add ratings to books on db for easier lookup
   - [X] Show Reviews on book page
   - [X] Show User reviews on library page
-  - [ ] Generate recommendations when user submits new review
+  - [X] Generate recommendations when user submits new review
 
 - [ ] UI Tweaking (remove cards, remove book titles, simplify display)
   - [ ] Homepage

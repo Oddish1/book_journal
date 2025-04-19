@@ -43,33 +43,29 @@
 					{% endfor %}
 				</div>
 			{% else %}
-			<form action="{% url 'generate_recommendations' %}" method="POST">
-			{% csrf_token %}
-			<button type="submit">Update Recommendations</button>
-			</form>
-			{% if recommendations %}
-				<h3>Recommended</h3>
-				<div class="list-carousel">
-					{% for recommendation in recommendations %}
-						<a href="/books/{{ recommendation.book.id }}">
-							<img src="/media/{{ recommendation.book.thumbnail_cover.image }}" alt="Book cover">
-						</a>
-					{% endfor %}
-				</div>
-			{% endif %}
 			{% if currently_reading %}
 					<hr>
 					<h3>Currently Reading</h3>
 					<div class="list-carousel">
 						{% for book in currently_reading %}
-							<a class="list-book-card hover-card" href="{% url 'new_journal_with_book' book.id %}">
+							<a class="book-card hover-card" href="{% url 'new_journal_with_book' book.id %}">
 								<img src="/media/{{ book.thumbnail_cover.image }}" alt="Book Cover">
-								<h4 class="book-title">{{ book.title }}</h4>
 							</a>
 						{% endfor %}
 				</div>
 				{% endif %}
 			{% endif %}
+			{% if recommendations %}
+				<h3>Recommended</h3>
+				<div class="list-carousel">
+					{% for recommendation in recommendations %}
+						<a class="book-card hover-card" href="/books/{{ recommendation.book.id }}">
+							<img src="/media/{{ recommendation.book.thumbnail_cover.image }}" alt="Book cover">
+						</a>
+					{% endfor %}
+				</div>
+			{% endif %}
+
 		{% else %}
 			<h1>Welcome to BookJournal!</h1>
 			<p>A place to track and reflect on your reading.</p>

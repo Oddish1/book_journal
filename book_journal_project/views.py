@@ -601,7 +601,22 @@ def new_review(request, book_id=None):
                 book.ratings_count = ratings_count
                 book.save()
                 logger.debug(f'Book Rating: {average_rating} ({ratings_count})')
-                return redirect("library")
+                recs, scores = content_based_recommendations(request.user)
+                # clear out old recommendations
+                UserRecommendations.objects.filter(user=request.user).delete()
+                recs = recs.reset_index()
+                logger.debug(f'RECS: {None if recs.empty else recs}')
+                logger.debug(f'SCORES: {None if scores.size == 0 else scores}')
+                for idx, title in recs['title'].items():
+                    score = scores[idx]
+                    book = Book.objects.filter(title__iexact=title).first()
+                    UserRecommendations.objects.create(
+                        user=request.user,
+                        book=book,
+                        score=score
+                    )
+                logger.info("Recommendations updated!")
+                return redirect("home")
         else:
             initial_data = {'book': book} if book else None
             form = NewReviewForm(user=request.user, initial=initial_data)
@@ -612,25 +627,9 @@ def new_review(request, book_id=None):
         }
         return HttpResponse(template.render(context, request))
 
-# TODO generate recommendations when new review is submitted.
 def generate_recommendations(request):
     if not request.user.is_authenticated:
         return redirect("home")
     last_review = Reviews.objects.filter(user=request.user).order_by('-created_at').first()
     if last_review:
-        recs, scores = content_based_recommendations(request.user)
-        # clear out old recommendations
-        UserRecommendations.objects.filter(user=request.user).delete()
-        recs = recs.reset_index()
-        logger.debug(f'RECS: {None if recs.empty else recs}')
-        logger.debug(f'SCORES: {None if scores.size == 0 else scores}')
-        for idx, title in recs['title'].items():
-            score = scores[idx]
-            book = Book.objects.filter(title__iexact=title).first()
-            UserRecommendations.objects.create(
-                user=request.user,
-                book=book,
-                score=score
-            )
-        logger.info("Recommendations updated!")
-    return redirect("home")
+            return redirect("home")
