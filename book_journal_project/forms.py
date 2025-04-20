@@ -22,7 +22,6 @@ class BookSearchForm(forms.Form):
                                                     'class': 'search-input'
                                                     }))
 
-# TODO create save method
 class NewJournalForm(forms.Form):
     book = forms.ModelChoiceField(
         queryset=Book.objects.none(), # defualt empty
@@ -88,14 +87,36 @@ class NewReviewForm(forms.Form):
     book = forms.ModelChoiceField(
         queryset=Book.objects.none(), # default empty
         required=True,
-        label='Book')
+        label='',
+        empty_label='Pick a Book'
+    )
     rating = forms.FloatField(
-        validators=[MinValueValidator(0),
-            MaxValueValidator(5)],
+        validators=[
+            MinValueValidator(0),
+            MaxValueValidator(5)
+        ],
         required=True,
-        label='Rating (0-5)')
-    title = forms.CharField(label='Review Title', max_length=200, required=False)
-    review = forms.CharField(label='Review', max_length=5000, required=False)
+        label='',
+        widget=NumberInput(attrs={
+            'placeholder': 'Rating (0-5)'
+        })
+    )
+    title = forms.CharField(label='',
+                            max_length=200,
+                            required=False,
+                            widget=TextInput(attrs={
+                                'placeholder': 'Review Title'
+                            })
+    )
+    review = forms.CharField(label='',
+                             max_length=5000,
+                             required=False,
+                             widget=forms.Textarea(attrs={
+                                'rows': 8,
+                                'placeholder': 'Write your review here...',
+                                'style': 'resize: vertical'
+                             })
+    )
 
     def __init__(self, *args, **kwargs):
         user = kwargs.pop('user')

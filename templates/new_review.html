@@ -8,13 +8,13 @@
 
 {% block content %}
 	<body>
-		<hr>
-		<br>
-		<h2>New Review</h2>
-		<form method="POST" class="new-review-form">
-			{% csrf_token %}
-			{{ form.as_p }}
-			<button type="submit">Save</button>
-		</form>
+		<div class="new-journal-content">
+			<h2>New Review</h2>
+			<form method="POST" class="new-journal-form">
+				{% csrf_token %}
+				{{ form.as_p }}
+				<button type="submit">Save</button>
+			</form>
+		</div>
 	</body>
 {% endblock content %}
