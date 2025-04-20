@@ -16,14 +16,14 @@ This is being developed for my capstone project.
   - [X] Show User reviews on library page
   - [X] Generate recommendations when user submits new review
 
-- [ ] UI Tweaking (remove cards, remove book titles, simplify display)
+- [X] UI Tweaking (remove cards, remove book titles, simplify display)
   - [X] Homepage
   - [X] Book Page
     - [X] split in thirds only book details scroll -> book image | book details | list functionality)
     - [X] review aggregation link
   - [X] Library Page
-  - [ ] Login Page
-  - [ ] Register Page
+  - [X] Login Page
+  - [X] Register Page
   - [X] Journal Page
     - [X] Journal Home
     - [X] Individual Journal Pages

@@ -62,10 +62,17 @@
 			{% endif %}
 
 		{% else %}
-			<h1>Welcome to BookJournal!</h1>
-			<p>A place to track and reflect on your reading.</p>
-			<h2>Let's Get Started</h2>
-			<a class=button-a href="register/">sign up</a> <a class=button-b href="login/">sign in</a>
+			<div class="non-auth-welcome">
+				<h1>Welcome to BookJournal!</h1>
+				<p>A place to track and reflect on your reading.</p>
+				<h2>Let's Get Started</h2>
+				<form method="GET" action="{% url 'login' %}">
+					<button class="form-input">Login</button>
+				</form>
+				<form method="GET" action ="{% url 'register' %}">
+					<button class="form-input">Register</button>
+				</form>
+			</div>
 		{% endif %}
 	</div>
 {% endblock content %}

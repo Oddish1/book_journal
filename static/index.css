@@ -418,3 +418,17 @@ p.normal-text {
 	padding-left: 0;
 	margin: 0.2rem 0;
 }
+
+.non-auth-welcome {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	text-align: center;
+	margin: 4rem auto;
+	padding: 2rem;
+	max-width: 600px;
+	border: 1px solid #233D4D;
+	border-radius: 8px;
+	background-color: #E9EBED;
+}
