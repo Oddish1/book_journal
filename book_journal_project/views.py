@@ -642,7 +642,7 @@ def book_reviews_aggregate(request, book_id):
     if not request.user.is_authenticated:
         return redirect("home")
     book = Book.objects.get(id=book_id)
-    book_reviews = Reviews.objects.filter(book=book)
+    book_reviews = Reviews.objects.filter(book=book, is_approved=True)
     if book.average_rating:
         average_rating = round(book.average_rating, 2)
         num_reviews = book.ratings_count
@@ -706,6 +706,19 @@ def book_review(request, review_id):
             "review": review,
             "rating": rating,
             "stars": stars,
+            "book": book,
+    }
+    return HttpResponse(template.render(context, request))
+
+def book_journal(request, journal_id):
+    if not request.user.is_authenticated:
+        return redirect("home")
+    journal = Journal.objects.get(id=journal_id)
+    book = journal.book
+    template = loader.get_template('book_journal.html')
+    context = {
+            "page_title": "journal",
+            "journal": journal,
             "book": book,
     }
     return HttpResponse(template.render(context, request))

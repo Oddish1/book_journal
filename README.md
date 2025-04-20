@@ -25,9 +25,9 @@ This is being developed for my capstone project.
   - [ ] Login Page
   - [ ] Register Page
   - [ ] Journal Page
-    - [ ] Journal Home
-    - [ ] Individual Journal Pages
-    - [ ] Pages that link to journals need individual journal links
+    - [X] Journal Home
+    - [X] Individual Journal Pages
+    - [X] Pages that link to journals need individual journal links
     - [ ] New Journals
     - [ ] New Reviews
   - [ ] About Page

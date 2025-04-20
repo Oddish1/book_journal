@@ -162,6 +162,9 @@ class Tags(models.Model):
     # represents the tag text
     tag = models.CharField(max_length=200)
 
+    def __str__(self):
+        return self.tag
+
 
 
 class Reviews(models.Model):
@@ -173,16 +176,16 @@ class Reviews(models.Model):
     rating = models.FloatField(null=True,
                                validators=[MinValueValidator(0), MaxValueValidator(5)])
     # represents a title for the review
-    title = models.CharField(max_length=200, null=True)
+    title = models.CharField(max_length=200, null=True, blank=True)
     # represents the text of the review
-    review = models.TextField(max_length=5000, null=True)
+    review = models.TextField(max_length=5000, null=True, blank=True)
     # a datetime object representing the timestamp the review was created at
     created_at = models.DateTimeField(auto_now_add=True)
     # a datetime object representing the timestamp the review was last edited
     updated_at = models.DateTimeField(auto_now=True)
     # a boolean representing if the review is approved (used for moderation)
     is_approved = models.BooleanField(default=False)
-    tags = models.ManyToManyField("Tags", related_name="reviews")
+    tags = models.ManyToManyField("Tags", related_name="reviews", blank=True)
 
 
 class BooksOwned(models.Model):
