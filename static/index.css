@@ -304,9 +304,9 @@ footer {
 .book-info-container {
 	display: flex;
 	height: 75vh;
-	overflow: hidden;
 	gap: 2rem;
 	padding: 1rem;
+	height: auto;
 }
 
 .book-left-side,
@@ -360,11 +360,12 @@ p.wide-spacing {
 .no-decoration *:not(.checked) {
 	text-decoration: none;
 	color: inherit;
+	background-color: #E9EBED;
 }
 
 .no-decoration:hover,
 .no-decoration:hover *:not(.checked) {
-	background-color: #E9EBED;
+	background-color: #D3D8DB;
 }
 
 .new-journal-content {

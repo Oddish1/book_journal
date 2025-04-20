@@ -24,12 +24,12 @@ This is being developed for my capstone project.
   - [X] Library Page
   - [ ] Login Page
   - [ ] Register Page
-  - [ ] Journal Page
+  - [X] Journal Page
     - [X] Journal Home
     - [X] Individual Journal Pages
     - [X] Pages that link to journals need individual journal links
     - [X] New Journals
-    - [ ] New Reviews
+    - [X] New Reviews
   - [ ] About Page
 
 - [X] Individual Review pages for full review
