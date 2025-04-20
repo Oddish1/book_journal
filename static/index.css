@@ -336,6 +336,12 @@ p {
 	margin-bottom: 1em;
 }
 
+p.normal-text {
+	font-size: 1rem;
+	font-weight: normal;
+	margin: 0.5rem 0;
+}
+
 .book-header {
 	display: flex;
 	justify-content: space-between;
@@ -383,24 +389,16 @@ p {
 	background-color: #E9EBED;
 }
 
-.new-journal-form {
-	display: flex;
-	flex-direction: column;
-	width: 80%;
-}
-
-.new-journal-form input[type="text"],
-.new-journal-form input[type="number"],
-.new-journal-form textarea,
-.new-journal-form select {
-	width: 80%;
+.form-input {
+	width: 100%;
+	min-width: 300px;
 	max-width: 500px;
 	padding: 0.5rem;
+	margin: 0.5rem 0;
 	box-sizing: border-box;
-	margin-bottom: 0.5rem;
 }
 
-.new-journal-form button {
+.form-input button {
 	max-width: 500px;
 	padding: 0.5rem 1rem;
 	margin-top: 1rem;
@@ -408,4 +406,15 @@ p {
 	cursor: pointer;
 	text-align: center;
 	box-sizing: border-box;
+}
+/* .new-journal-form input[type="text"], */
+/* .new-journal-form input[type="number"], */
+/* .new-journal-form textarea, */
+/* .new-journal-form select  */
+
+.errorlist {
+	color: red;
+	list-style-type: none;
+	padding-left: 0;
+	margin: 0.2rem 0;
 }

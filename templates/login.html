@@ -1,15 +1,31 @@
-<!DOCTYPE html>
-<html>
-	<head>
-		<title>Login</title>
-	</head>
-	<body>
+{% extends "base.html" %}
+{% block custom-head %}
+	{% load static %}
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" href="{% static 'index.css' %}">
+{% endblock custom-head %}
+
+{% block content %}
+	<div class="new-journal-content">
 		<h2>Login<h2>
 		<form method="POST">
 			{% csrf_token %}
-			{{ form.as_p }}
-			<button type="submit">Login</button>
+			{{ form.non_field_errors }}
+			{{ form.username.errors }}
+			{{ form.password.errors }}
+
+			<div>
+				{{ form.username }}
+			</div>
+			<div>
+				{{ form.password }}
+			</div>
+			<button class="form-input" type="submit">Login</button>
 		</form>
-		<p>Don't have an account? <a href="{% url 'register' %}">Register</a></p>
-	</body>
-</html>
+		<p class="normal-text">Don't have an account?</p>
+		<form method="GET" action="{% url 'register' %}">
+			<button class="form-input" type="submit">Register Now</button>
+		</form>
+	</div>
+{% endblock content %}

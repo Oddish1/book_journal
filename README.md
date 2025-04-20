@@ -30,7 +30,7 @@ This is being developed for my capstone project.
     - [X] Pages that link to journals need individual journal links
     - [X] New Journals
     - [X] New Reviews
-  - [ ] About Page
+  - [X] About Page
 
 - [X] Individual Review pages for full review
 - [X] Add link on review count on book page leading to aggregated reviews for that book

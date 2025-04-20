@@ -4,7 +4,7 @@ from urllib.parse import quote_plus
 from django.shortcuts import render, redirect, HttpResponse
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.forms import AuthenticationForm
-from .forms import RegisterForm, BookSearchForm, NewJournalForm, ListDropDownForm, NewReviewForm
+from .forms import RegisterForm, BookSearchForm, NewJournalForm, ListDropDownForm, NewReviewForm, LoginForm
 from django.conf import settings
 from datetime import datetime
 from library.models import Book, Genres, Authors, Covers, Journal, Tags, List, Reviews, UserRecommendations
@@ -364,13 +364,14 @@ def register(request):
             return redirect("home")
     else:
         form = RegisterForm()
-        context = {"form": form,
-                   "page_title": "register"}
+
+    context = {"form": form,
+               "page_title": "register"}
     return render(request, "register.html", context)
 
 def login_view(request):
     if request.method == "POST":
-        form = AuthenticationForm(data=request.POST)
+        form = LoginForm(data=request.POST)
         if form.is_valid():
             user = form.get_user()
             login(request, user)
@@ -379,7 +380,7 @@ def login_view(request):
             context = {"form": form,
                        "page_title": "login"}
     else:
-        form = AuthenticationForm()
+        form = LoginForm()
         context = {"form": form,
                    "page_title": "login"}
     return render(request, "login.html", context)

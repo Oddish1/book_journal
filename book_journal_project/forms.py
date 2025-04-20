@@ -1,20 +1,62 @@
 from django import forms
-from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth import get_user_model
 from django.conf import settings
 from library.models import Tags, List, Book
-from django.forms import ModelForm, TextInput, NumberInput
+from django.forms import ModelForm, TextInput, NumberInput, PasswordInput
 from django.core.validators import MinValueValidator, MaxValueValidator
 
 User = get_user_model()
 
 class RegisterForm(UserCreationForm):
-    email = forms.EmailField(required=True)
+    email = forms.EmailField(
+        required=True,
+        widget=forms.EmailInput(attrs={
+                'class': 'form-input',
+                'placeholder': 'Email'
+        })
+    )
+    username = forms.CharField(
+            widget=TextInput(attrs={
+                'class': 'form-input',
+                'placeholder': 'Username'
+            })
+    )
+    password1 = forms.CharField(
+            widget=PasswordInput(attrs={
+                'class': 'form-input',
+                'placeholder': 'Password'
+            })
+    )
+    password2 = forms.CharField(
+            widget=PasswordInput(attrs={
+                'class': 'form-input',
+                'placeholder': 'Confirm Password'
+            })
+    )
 
     class Meta:
         model = User
         fields = ["username", "email", "password1", "password2"]
 
+
+class LoginForm(AuthenticationForm):
+    username = forms.CharField(
+            widget=TextInput(attrs={
+                'class': 'form-input',
+                'placeholder': 'Username'
+            })
+    )
+    password = forms.CharField(
+            widget=PasswordInput(attrs={
+                'class': 'form-input',
+                'placeholder': 'Password'
+            })
+    )
+
+    class Meta:
+        model = User
+        fields = ["username", "password"]
 
 class BookSearchForm(forms.Form):
     query = forms.CharField(label='', max_length=200, widget=forms.TextInput(attrs={
@@ -33,19 +75,22 @@ class NewJournalForm(forms.Form):
                             max_length=200,
                             required=False,
                             widget=TextInput(attrs={
-                                'placeholder': 'Journal Title'
+                                'placeholder': 'Journal Title',
+                                'class': 'form-input'
                             })
     )
     page = forms.IntegerField(label='',
                               widget=NumberInput(attrs={
-                                'placeholder': 'Page Number'
+                                'placeholder': 'Page Number',
+                                'class': 'form-input'
                               })
     )
     tags = forms.CharField(label='',
                            max_length=200,
                            required=False,
                            widget=TextInput(attrs={
-                                'placeholder': 'tags, with, commas'
+                                'placeholder': 'tags, with, commas',
+                                'class': 'form-input'
                            })
     )
     journal_text = forms.CharField(
@@ -55,7 +100,8 @@ class NewJournalForm(forms.Form):
         widget=forms.Textarea(attrs={
                 'rows': 8,
                 'placeholder': 'Write your journal entry here...',
-                'style': 'resize: vertical'
+                'style': 'resize: vertical',
+                'class': 'form-input'
             })
     )
     is_public = forms.BooleanField(label='Make Public', required=False)
@@ -98,14 +144,16 @@ class NewReviewForm(forms.Form):
         required=True,
         label='',
         widget=NumberInput(attrs={
-            'placeholder': 'Rating (0-5)'
+            'placeholder': 'Rating (0-5)',
+            'class': 'form-input'
         })
     )
     title = forms.CharField(label='',
                             max_length=200,
                             required=False,
                             widget=TextInput(attrs={
-                                'placeholder': 'Review Title'
+                                'placeholder': 'Review Title',
+                                'class': 'form-input'
                             })
     )
     review = forms.CharField(label='',
@@ -114,7 +162,8 @@ class NewReviewForm(forms.Form):
                              widget=forms.Textarea(attrs={
                                 'rows': 8,
                                 'placeholder': 'Write your review here...',
-                                'style': 'resize: vertical'
+                                'style': 'resize: vertical',
+                                'class': 'form-input'
                              })
     )
 
