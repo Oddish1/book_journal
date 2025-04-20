@@ -28,7 +28,7 @@ This is being developed for my capstone project.
     - [X] Journal Home
     - [X] Individual Journal Pages
     - [X] Pages that link to journals need individual journal links
-    - [ ] New Journals
+    - [X] New Journals
     - [ ] New Reviews
   - [ ] About Page
 

@@ -366,3 +366,43 @@ p.wide-spacing {
 .no-decoration:hover *:not(.checked) {
 	background-color: #E9EBED;
 }
+
+.new-journal-content {
+	border: 0.05rem solid #233D4D;
+	border-radius: 8px;
+	padding: 1rem;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	text-align: center;
+	margin: 1rem 20rem 0 20rem;
+	background-color: #E9EBED;
+}
+
+.new-journal-form {
+	display: flex;
+	flex-direction: column;
+	width: 80%;
+}
+
+.new-journal-form input[type="text"],
+.new-journal-form input[type="number"],
+.new-journal-form textarea,
+.new-journal-form select {
+	width: 80%;
+	max-width: 500px;
+	padding: 0.5rem;
+	box-sizing: border-box;
+	margin-bottom: 0.5rem;
+}
+
+.new-journal-form button {
+	max-width: 500px;
+	padding: 0.5rem 1rem;
+	margin-top: 1rem;
+	font-size: 1rem;
+	cursor: pointer;
+	text-align: center;
+	box-sizing: border-box;
+}
