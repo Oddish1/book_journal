@@ -4,6 +4,31 @@ This is being developed for my capstone project.
 
 ## Currently in Progress
 
+- [ ] Email integration for password reset and mailing lists
+  - [ ] noreply email setup
+  - [ ] welcome template
+  - [ ] password reset template
+  - [ ] basic email list template (demonstration purposes only)
+  - [ ] email verification?
+- [ ] Public user profiles
+  - [ ] User profile editing page
+  - [ ] public user profile page
+  - [ ] populate user links on all pages publicly referencing users (reviews, journals, etc.)
+  - [ ] User following + email alerts
+- [ ] Auto-tagging system (sentiment analysis + keyword extraction)
+  - [ ] Reviews
+  - [ ] Journals
+  - [ ] Books (descriptions)
+- [ ] Refine/Unify Styling
+- [ ] Journal search
+- [ ] Journal filtering (keyword search, user-set tags)
+
+## Development Backlog
+
+- [ ] Move to PostreSQL db
+
+## Finished
+
 - [X] Search
 - [X] Optimize database transactions
 - [X] Recommendations
@@ -15,7 +40,6 @@ This is being developed for my capstone project.
   - [X] Show Reviews on book page
   - [X] Show User reviews on library page
   - [X] Generate recommendations when user submits new review
-
 - [X] UI Tweaking (remove cards, remove book titles, simplify display)
   - [X] Homepage
   - [X] Book Page
@@ -34,16 +58,6 @@ This is being developed for my capstone project.
 
 - [X] Individual Review pages for full review
 - [X] Add link on review count on book page leading to aggregated reviews for that book
-
-## Development Backlog
-
-- [ ] Email Integration (password reset, etc.)
-- [ ] Public User Profiles
-- [ ] Refine/Unify Styling
-- [ ] Move to PostreSQL db
-
-## Finished
-
 - [X] API Integration
   - [X] Fetch book details
 - [X] Implement Books
@@ -63,7 +77,6 @@ This is being developed for my capstone project.
   - [X] currently reading (w/ link to new journal for the book)
   - [X] user's lists
   - [X] latest journals (10)
-
 - [X] Data Models
 - [X] Authentication
   - [X] Registration
