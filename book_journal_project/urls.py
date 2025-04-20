@@ -16,7 +16,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import include, path
-from .views import home, register, login_view, logout_view, books, journal, new_journal, library, new_review, generate_recommendations, book_reviews_aggregate, book_review, book_journal
+from .views import home, register, login_view, logout_view, books, journal, new_journal, library, new_review, generate_recommendations, book_reviews_aggregate, book_review, book_journal, about
 from django.conf import settings
 from django.conf.urls.static import static
 
@@ -27,6 +27,7 @@ urlpatterns = [
     path("logout/", logout_view, name="logout"),
     path("library/", library, name="library"),
     path('admin/', admin.site.urls),
+    path('about/', about, name="about"),
     path("books/<int:book_id>/", books, name="books"),
     path("journal/", journal, name="journal"),
     path("journal/<int:journal_id>", book_journal, name="book_journal"),

@@ -722,3 +722,8 @@ def book_journal(request, journal_id):
             "book": book,
     }
     return HttpResponse(template.render(context, request))
+
+def about(request):
+    template = loader.get_template('about.html')
+    context = {'page_title': 'about'}
+    return HttpResponse(template.render(context, request))

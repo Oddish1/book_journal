@@ -70,7 +70,7 @@
 						<p><strong>Created:</strong> {{ review.created_at }}</p>
 						<h3>{{ review.title }}</h3>
 						{% if review.review %}
-							<p class="wide-spacing">{{ review.review }}</p>
+							{{ review.review|linebreaks }}
 						{% endif %}
 					</div>
 					{% endif %}

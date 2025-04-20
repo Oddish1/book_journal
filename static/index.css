@@ -329,9 +329,11 @@ footer {
 	padding-right: 1rem;
 }
 
-p.wide-spacing {
+p {
 	line-height: 1.5;
-	text-indent: 4rem;
+	text-indent: 1em;
+	margin-top: 1em;
+	margin-bottom: 1em;
 }
 
 .book-header {

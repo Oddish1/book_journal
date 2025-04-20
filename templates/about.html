@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block custom-head %}
+	{% load static %}
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" href="{% static 'index.css' %}">
+{% endblock custom-head %}
+
+{% block content %}
+<!-- All of the content below written by ChatGPT -->
+<div class="content-container">
+  <h1>About BookJournal</h1>
+
+  <p><strong>BookJournal</strong> is a web application designed to help readers track, reflect on, and share their reading experiences. Whether you're a casual reader or a dedicated book lover, BookJournal provides a space to document your journey through literature.</p>
+
+  <h2>What You Can Do</h2>
+  <ul>
+    <li><strong>Search and Save Books</strong>: Use the integrated Google Books API to discover and save books to your personal library.</li>
+    <li><strong>Track Your Reading</strong>: Log your progress with journal entries, noting the page you're on, your thoughts, and reflections.</li>
+    <li><strong>Write Reviews</strong>: Share your opinion with the community by writing and rating books you've read.</li>
+    <li><strong>Discover Through Others</strong>: Browse reviews from other readers to find new titles or see what others think about a book you're considering.</li>
+    <li><strong>Organize with Lists</strong>: Keep track of books you want to read, are currently reading, or have finished.</li>
+  </ul>
+
+  <h2>Why BookJournal?</h2>
+  <p>
+    BookJournal was created to combine the simplicity of personal journaling with the power of community-driven recommendations. Instead of just tracking what you’ve read, BookJournal encourages thoughtful reflection—capturing not just <em>what</em> you read, but <em>how</em> it made you feel.
+  </p>
+
+  <h2>Built With</h2>
+  <p>
+    BookJournal is developed using the Django web framework with a SQLite database backend. It also utilizes:
+  </p>
+  <ul>
+    <li>Google Books API for book metadata</li>
+    <li>FontAwesome for intuitive icons</li>
+    <li>A responsive, custom CSS design for accessibility across devices</li>
+  </ul>
+</div>
+{% endblock content %}
