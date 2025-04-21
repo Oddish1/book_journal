@@ -1,0 +1,9 @@
+Welcome to BookJournal, {{ user.username }}!
+
+Thanks for signing up! Now that your email is verified you can take advantage of everything BookJournal has to offer! I'd suggest starting by adding some books to your TBR or Currently Reading lists. You can also search for and mark books that you have already read and we'll come up with some recommendations for you!
+
+Click the button below to login and get started! Oh, and happy reading!
+
+{{ login_link }}
+
+- The BookJournal Team

@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block custom-head %}
+	{% load static %}
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" href="{% static 'index.css' %}">
+{% endblock custom-head %}
+
+{% block content %}
+  <h2>Check Your Email for Verification</h2>
+  <p>Before you get started using BookJournal, you need to verify your email address. We've sent a link to your email.</p>
+{% endblock content %}

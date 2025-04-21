@@ -1,0 +1,9 @@
+Welcome to Book Journal, {{ user.username }}!
+
+Thanks for signing up. Please verify your email address by clicking the link below:
+
+{{ verify_url }}
+
+If you didn't request this, you can ignore this email.
+
+- The BookJournal Team

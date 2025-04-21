@@ -2,20 +2,25 @@ import requests
 import threading
 from urllib.parse import quote_plus
 from django.shortcuts import render, redirect, HttpResponse
-from django.contrib.auth import login, logout, authenticate
+from django.contrib.auth import login, logout, authenticate, get_user_model
 from django.contrib.auth.forms import AuthenticationForm
-from .forms import RegisterForm, BookSearchForm, NewJournalForm, ListDropDownForm, NewReviewForm, LoginForm
+from django.contrib.auth.tokens import default_token_generator
+from .forms import RegisterForm, BookSearchForm, NewJournalForm, ListDropDownForm, NewReviewForm, LoginForm, PasswordResetForm, PasswordResetPasswordForm
 from django.conf import settings
 from datetime import datetime
-from library.models import Book, Genres, Authors, Covers, Journal, Tags, List, Reviews, UserRecommendations
+from library.models import Book, Genres, Authors, Covers, Journal, Tags, List, Reviews, UserRecommendations, User
 from library.recommender import content_based_recommendations
 from PIL import Image
 from io import BytesIO
 from django.core.files.base import ContentFile, File
 from django.core.exceptions import ValidationError
+from django.core.mail import EmailMultiAlternatives
 from django.template import loader
 import logging
 from django.db.models import Q, Case, When, IntegerField, Value, Sum
+from django.urls import reverse
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.utils.encoding import force_bytes
 
 logger = logging.getLogger('book_journal')
 
@@ -69,9 +74,70 @@ def download_cover(url, book_title, isbn):
         logger.debug(f'Image link: {cover_image_url}')
         logger.error(f'Error:\n{e}')
 
+def send_confirmation_email(user, verify_link):
+    subject = "Confirm your account"
+    from_email = "noreply@oddish1.com"
+    to_email = user.email
+
+    context = {
+            'user': user,
+            'verify_link': verify_link,
+    }
+
+    text_content = loader.render_to_string("email/confirmation_email.txt", context)
+    html_content = loader.render_to_string("email/confirmation_email.html", context)
+
+    msg = EmailMultiAlternatives(subject, text_content, from_email, [to_email])
+    msg.attach_alternative(html_content, "text/html")
+    msg.send()
+
+def send_welcome_email(user, login_link):
+    subject = "Welcome to BookJournal!"
+    from_email = "noreply@oddish1.com"
+    to_email = user.email
+
+    context = {
+            'user': user,
+            'login_link': login_link
+    }
+
+    text_content = loader.render_to_string("email/welcome_email.txt", context)
+    html_content = loader.render_to_string("email/welcome_email.html", context)
+
+    msg = EmailMultiAlternatives(subject, text_content, from_email, [to_email])
+    msg.attach_alternative(html_content, "text/html")
+    msg.send()
+
+def send_password_reset_email(user, reset_url):
+    subject = "Password Reset"
+    from_email = "noreply@oddish1.com"
+    to_email = user.email
+    context = {
+        'user': user,
+        'reset_link': reset_url
+    }
+    text_content = loader.render_to_string("email/password_reset.txt", context)
+    html_content = loader.render_to_string("email/password_reset.html", context)
+
+    msg = EmailMultiAlternatives(subject, text_content, from_email, [to_email])
+    msg.attach_alternative(html_content, "text/html")
+    msg.send()
+
+def send_password_reset_complete_email(user, login_link):
+    subject = "You Just Reset Your BookJournal Password"
+    from_email = "noreply@oddish1.com"
+    to_email = user.email
+    context = {
+        'user': user,
+        'login_link': login_link
+    }
+    text_content = loader.render_to_string("email/password_reset_complete.txt", context)
+    html_content = loader.render_to_string("email/password_reset_complete.html", context)
+    msg = EmailMultiAlternatives(subject, text_content, from_email, [to_email])
+    msg.attach_alternative(html_content, "text/html")
+    msg.send()
 
 # Create your views here.
-
 def home(request):
     form = BookSearchForm()
     stored_results = []
@@ -350,7 +416,9 @@ def register(request):
     if request.method == "POST":
         form = RegisterForm(request.POST)
         if form.is_valid():
-            user = form.save()
+            user = form.save(commit=False)
+            user.is_active = False # set false until verified
+            user.save()
             # create default lists (currently reading, to be read)
             # TODO error handling on list creation
             currently_reading = List(user=user, name="Currently Reading", description="Currently reading")
@@ -359,15 +427,25 @@ def register(request):
             to_be_read.save()
             finished = List(user=user, name="Finished", description="Finished reading")
             finished.save()
-            # log user in and redirect home
-            login(request, user)
-            return redirect("home")
+
+            uid = urlsafe_base64_encode(force_bytes(user.pk))
+            token = default_token_generator.make_token(user)
+
+            verify_url = request.build_absolute_uri(
+                    reverse('verify_email', kwargs={'uidb64': uid, 'token': token})
+            )
+
+            send_confirmation_email(user, verify_url)
+            return redirect("register_landing_page")
     else:
         form = RegisterForm()
 
     context = {"form": form,
                "page_title": "register"}
     return render(request, "register.html", context)
+
+def register_landing_page(request):
+    return render(request, 'register_verify.html')
 
 def login_view(request):
     if request.method == "POST":
@@ -389,6 +467,87 @@ def logout_view(request):
     logout(request)
     return redirect("home")
 
+def verify_email(request, uidb64, token):
+    try:
+        uid = urlsafe_base64_decode(uidb64).decode()
+        user = User.objects.get(pk=uid)
+    except (User.DoesNotExist, ValueError, TypeError):
+        user = None
+
+    if user is not None and default_token_generator.check_token(user, token):
+        user.is_active = True
+        user.save()
+        # send welcome email
+        login_url = request.build_absolute_uri(
+                    reverse('login')
+            )
+        send_welcome_email(user, login_url)
+        return render(request, 'verification_success.html')
+    else:
+        return render(request, 'verification_failed.html')
+
+def password_reset(request):
+    if request.method == "POST":
+        form = PasswordResetForm(data=request.POST)
+        if form.is_valid():
+            email = form.cleaned_data.get("email")
+            try:
+                user = User.objects.get(email=email)
+                uid = urlsafe_base64_encode(force_bytes(user.id))
+                token = default_token_generator.make_token(user)
+                reset_url = request.build_absolute_uri(
+                    reverse('password_reset_confirm', kwargs={'uidb64': uid, 'token': token})
+                )
+                send_password_reset_email(user, reset_url)
+                return redirect('password_reset_success')
+            except User.DoesNotExist:
+                return redirect('password_reset_fail')
+    else:
+        form = PasswordResetForm()
+    context = {
+        "page_title": "password reset",
+        "form": form
+    }
+    return render(request, 'password_reset.html', context)
+
+def password_reset_success(request):
+    context = {"page_title": "password reset"}
+    return render(request, 'password_reset_success.html', context)
+
+def password_reset_fail(request):
+    context = {"page_title": "password reset failed"}
+    return render(request, 'password_reset_fail.html', context)
+
+def password_reset_confirm(request, uidb64, token):
+    try:
+        uid = urlsafe_base64_decode(uidb64).decode()
+        user = User.objects.get(id=uid)
+    except (User.DoesNotExist, ValueError, TypeError, OverflowError):
+        user = None
+
+    if user is not None and default_token_generator.check_token(user, token):
+        if request.method == "POST":
+            form = PasswordResetPasswordForm(user, data=request.POST)
+            if form.is_valid():
+                # set new password
+                form.save()
+                login_link = request.build_absolute_uri(
+                        reverse('login')
+                )
+                send_password_reset_complete_email(user, login_link)
+                return redirect('password_reset_complete')
+        else:
+            form = PasswordResetPasswordForm(user)
+        context = {
+            "page_title": "password reset",
+            "form": form
+        }
+        return render(request, 'password_reset_confirm.html', context)
+    else:
+        return redirect('password_reset_fail')
+
+def password_reset_complete(request):
+    return render(request, 'password_reset_complete.html')
 
 def books(request, book_id):
     book = Book.objects.get(id=book_id)
@@ -523,7 +682,7 @@ def library(request):
     if not request.user.is_authenticated:
         return redirect("home")
     else:
-                # lists a dictionary of { "name": [BookObjects] }
+        # lists a dictionary of { "name": [BookObjects] }
         lists = {}
         user_lists = List.objects.filter(user=request.user)
         for lst in user_lists:

@@ -33,6 +33,13 @@ DEBUG = env('DEBUG')
 
 ALLOWED_HOSTS = []
 
+EMAIL_BACKEND = "anymail.backends.mailgun.EmailBackend"
+DEFAULT_FROM_EMAIL = env("DEFAULT_FROM_EMAIL")
+
+ANYMAIL = {
+    "MAILGUN_API_KEY": env("MAILGUN_API_KEY"),
+    "MAILGUN_SENDER_DOMAIN": "mailgun.oddish1.com",
+}
 
 # Application definition
 
@@ -44,6 +51,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'anymail',
     # custom apps
     'library',
 ]
@@ -140,6 +148,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 AUTH_USER_MODEL = 'library.User'
 
 GOOGLE_BOOKS_API_KEY = env("GOOGLE_BOOKS_API_KEY")
+MAILGUN_API_KEY = env("MAILGUN_API_KEY")
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'

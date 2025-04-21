@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <title>Verify Your Email</title>
+    <link rel="stylesheet" href="{% static 'index.css' %}">
+  </head>
+  <body>
+    <h2>Welcome to Book Journal, {{ user.username }}!</h2>
+    <p>Thanks for signing up. Please verify your email address by clicking the link below</p>
+    <p><a href="{{ verify_link }}">Verify your email</a></p>
+    <p>If you didn't request this, you can ignore this email.</p>
+    <br>
+    <p>- The BookJournal Team</p>
+  </body>
+</html>

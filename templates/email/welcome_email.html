@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <title>Welcome to BookJournal!</title>
+    <link rel="stylesheet" href="{% static 'index.css' %}">
+  </head>
+  <body>
+    <h2>Welcome to BookJournal, {{ user.username }}!</h2>
+    <p>Thanks for signing up! Now that your email is verified you can take advantage of everything BookJournal has to offer! I'd suggest starting by adding some books to your TBR or Currently Reading lists. You can also search for and mark books that you have already read and we'll come up with some recommendations for you!</p>
+    <p>Click the button below to login and get started! Oh, and happy reading!</p>
+    <a href="{{ login_link }}">Login</a>
+    <br>
+    <p>- The BookJournal Team</p>
+  </body>
+</html>

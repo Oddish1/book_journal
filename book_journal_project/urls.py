@@ -16,7 +16,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import include, path
-from .views import home, register, login_view, logout_view, books, journal, new_journal, library, new_review, generate_recommendations, book_reviews_aggregate, book_review, book_journal, about
+from .views import home, register, login_view, logout_view, books, journal, new_journal, library, new_review, generate_recommendations, book_reviews_aggregate, book_review, book_journal, about, verify_email, register_landing_page, password_reset, password_reset_success, password_reset_confirm, password_reset_complete, password_reset_fail
 from django.conf import settings
 from django.conf.urls.static import static
 
@@ -37,4 +37,11 @@ urlpatterns = [
     path("reviews/new-review/<int:book_id>", new_review, name="new_review"),
     path("reviews/book/<int:book_id>", book_reviews_aggregate, name="book_reviews_aggregate"),
     path("reviews/<int:review_id>", book_review, name="book_review"),
+    path('verify/<uidb64>/<token>/', verify_email, name='verify_email'),
+    path('register/verify', register_landing_page, name='register_landing_page'),
+    path('password-reset', password_reset, name='password_reset'),
+    path('password-reset/success', password_reset_success, name='password_reset_success'),
+    path('password-reset/fail', password_reset_fail, name='password_reset_fail'),
+    path('password-reset/<uidb64>/<token>/', password_reset_confirm, name='password_reset_confirm'),
+    path('password-reset/complete', password_reset_complete, name='password_reset_complete'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

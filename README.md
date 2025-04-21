@@ -4,12 +4,11 @@ This is being developed for my capstone project.
 
 ## Currently in Progress
 
-- [ ] Email integration for password reset and mailing lists
-  - [ ] noreply email setup
-  - [ ] welcome template
-  - [ ] password reset template
-  - [ ] basic email list template (demonstration purposes only)
-  - [ ] email verification?
+- [X] Email integration for password reset
+  - [X] noreply email setup
+  - [X] welcome template
+  - [X] password reset
+  - [X] email verification?
 - [ ] Public user profiles
   - [ ] User profile editing page
   - [ ] public user profile page
@@ -25,7 +24,7 @@ This is being developed for my capstone project.
 
 ## Development Backlog
 
-- [ ] Move to PostreSQL db
+- [X] Move to PostreSQL db
 
 ## Finished
 

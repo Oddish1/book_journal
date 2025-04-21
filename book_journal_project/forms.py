@@ -1,10 +1,11 @@
 from django import forms
-from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
+from django.contrib.auth.forms import UserCreationForm, AuthenticationForm, SetPasswordForm
 from django.contrib.auth import get_user_model
 from django.conf import settings
 from library.models import Tags, List, Book
 from django.forms import ModelForm, TextInput, NumberInput, PasswordInput
 from django.core.validators import MinValueValidator, MaxValueValidator
+from django.core.exceptions import ValidationError
 
 User = get_user_model()
 
@@ -172,3 +173,28 @@ class NewReviewForm(forms.Form):
         finished = List.objects.get(user=user, name="Finished")
         super().__init__(*args, **kwargs)
         self.fields['book'].queryset = Book.objects.filter(list=finished)
+
+
+class PasswordResetForm(forms.Form):
+    email = forms.EmailField(
+        required=True,
+        widget=forms.EmailInput(attrs={
+                'class': 'form-input',
+                'placeholder': 'Email'
+        })
+    )
+
+
+class PasswordResetPasswordForm(SetPasswordForm):
+    new_password1 = forms.CharField(
+            widget=PasswordInput(attrs={
+                'class': 'form-input',
+                'placeholder': 'New Password'
+            })
+    )
+    new_password2 = forms.CharField(
+            widget=PasswordInput(attrs={
+                'class': 'form-input',
+                'placeholder': 'Confirm Password'
+            })
+    )

@@ -77,7 +77,7 @@ class Book(models.Model):
     main_genre = models.ForeignKey(Genres, on_delete=models.CASCADE, null=True, blank=True)
     genres = models.ManyToManyField(Genres, related_name="genres")
     # foreign key linking to Covers.id representing the thumbnail cover
-    thumbnail_cover = models.ForeignKey(Covers, on_delete=models.CASCADE, default=None)
+    thumbnail_cover = models.ForeignKey(Covers, on_delete=models.CASCADE, default=None, null=True, blank=True)
     cover_image_url = models.URLField(null=True)
     covers = models.ManyToManyField(Covers, related_name="covers", default=None)
     authors = models.ManyToManyField(Authors, related_name="authors", default=None)
