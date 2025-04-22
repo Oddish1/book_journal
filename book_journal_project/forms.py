@@ -198,3 +198,42 @@ class PasswordResetPasswordForm(SetPasswordForm):
                 'placeholder': 'Confirm Password'
             })
     )
+
+
+class UserProfileForm(ModelForm):
+    is_public = forms.BooleanField(
+            required=False,
+            label="Make profile public",
+            widget=forms.CheckboxInput(attrs={'class': 'form-input'})
+    )
+
+    class Meta:
+        model = User
+        fields = ['first_name', 'last_name', 'email', 'profile_picture', 'bio', 'is_public']
+        widgets = {
+                'first_name': forms.TextInput(attrs={
+                    'class': 'form-input',
+                    'placeholder': 'First Name'
+                }),
+                'last_name': forms.TextInput(attrs={
+                    'class': 'form-input',
+                    'placeholder': 'Last Name'
+                }),
+                'email': forms.EmailInput(attrs={
+                    'class': 'form-input',
+                    'placeholder': 'Email'
+                }),
+                'bio': forms.Textarea(attrs={
+                    'class': 'form-input',
+                    'placeholder': 'Tell us about yourself'
+                }),
+                'profile_picture': forms.FileInput(attrs={
+                    'class': 'form-input'
+                }),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field_name in self.fields:
+            if field_name != 'email':
+                self.fields[field_name].required = False

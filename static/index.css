@@ -432,3 +432,34 @@ p.normal-text {
 	border-radius: 8px;
 	background-color: #E9EBED;
 }
+
+.checkbox-with-label {
+	display: inline-flex;
+	align-items: center;
+	justify-content: flex-start;
+	text-align: left;
+	gap: 0.5rem;
+	width: 100%;
+	margin: 0;
+}
+
+.checkbox-with-label label {
+	font-size: 1rem;
+	order: 1;
+	margin: 0;
+	display: inline-block;
+}
+
+.checkbox-with-label input[type="checkbox"] {
+	margin: 0;
+	padding: 0;
+	order: 2;
+	min-width: auto;
+	width: 16px;
+	height: 16px;
+}
+
+.profile-picture {
+	max-width: 100px;
+	max-height: 100px;
+}

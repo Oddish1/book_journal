@@ -10,7 +10,7 @@ This is being developed for my capstone project.
   - [X] password reset
   - [X] email verification?
 - [ ] Public user profiles
-  - [ ] User profile editing page
+  - [X] User profile editing page with image upload/optimization
   - [ ] public user profile page
   - [ ] populate user links on all pages publicly referencing users (reviews, journals, etc.)
   - [ ] User following + email alerts

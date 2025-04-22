@@ -5,7 +5,7 @@ from django.shortcuts import render, redirect, HttpResponse
 from django.contrib.auth import login, logout, authenticate, get_user_model
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.tokens import default_token_generator
-from .forms import RegisterForm, BookSearchForm, NewJournalForm, ListDropDownForm, NewReviewForm, LoginForm, PasswordResetForm, PasswordResetPasswordForm
+from .forms import RegisterForm, BookSearchForm, NewJournalForm, ListDropDownForm, NewReviewForm, LoginForm, PasswordResetForm, PasswordResetPasswordForm, UserProfileForm
 from django.conf import settings
 from datetime import datetime
 from library.models import Book, Genres, Authors, Covers, Journal, Tags, List, Reviews, UserRecommendations, User
@@ -886,4 +886,23 @@ def book_journal(request, journal_id):
 def about(request):
     template = loader.get_template('about.html')
     context = {'page_title': 'about'}
+    return HttpResponse(template.render(context, request))
+
+def profile(request):
+    if not request.user.is_authenticated:
+        return redirect("home")
+    user = request.user
+    if request.method == "POST":
+        form = UserProfileForm(request.POST, request.FILES, instance=user)
+        if form.is_valid():
+            form.save()
+            return redirect('profile')
+    else:
+        form = UserProfileForm(instance=user)
+    template = loader.get_template('profile.html')
+    context = {
+        'page_title': 'profile',
+        'user': user,
+        'form': form,
+    }
     return HttpResponse(template.render(context, request))

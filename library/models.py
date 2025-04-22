@@ -2,11 +2,44 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.conf import settings
 from django.core.validators import MinValueValidator, MaxValueValidator
+from PIL import Image
+from io import BytesIO
+from django.core.files.uploadedfile import InMemoryUploadedFile
 
 
 def user_directory_path(instance, filename):
-    # file will be uploaded to MEDIA_ROOT/user_<id>/<filename>
-    return f'user_{instance.id}/{filename}'
+    # file will be uploaded to MEDIA_ROOT/user_profile_pictures/user_<user.id>/avatar
+    return f'user_profile_pictures/user_{instance.id}/avatar'
+
+def optimize_image(image, max_width=1200, quality=85):
+    """
+    crop, resize, and compress the image to make it web-optimized.
+
+    parameters:
+    - image: the image file to process
+    - max_width: the maximum width for the image, teh height is adjusted to maintain the aspect ratio
+    - quality: the quality level for compression (1-100), where 100 is the best quality.
+
+    returns:
+    - an InMemoryUploadedFile containing the optimized image
+    """
+    img = Image.open(image)
+    img = img.convert("RGB")
+    img = img.crop(img.getbbox())
+    img_width, img_height = img.size
+
+    if img_width > max_width:
+        aspect_ration = img_height / float(img_width)
+        new_width = max_width
+        new_height = int(new_width * aspect_ratio)
+        img = img.resize((new_width, new_height), Image.ANTIALIAS)
+
+    img_io = BytesIO()
+    img.save(img_io, format='JPEG', quality=quality, optimize=True)
+    img_io.seek(0)
+
+    image_file = InMemoryUploadedFile(img_io, None, image.name, 'image/jpeg', img_io.tell(), None)
+    return image_file
 
 # data model for the user
 class User(AbstractUser):
@@ -22,6 +55,12 @@ class User(AbstractUser):
     account_type = models.CharField(max_length=2,
                                     choices=[("ad", "Administrator"), ("us", "Standard User")],
                                     default="us")
+    is_public = models.BooleanField(default=False)
+
+    def save(self, *args, **kwargs):
+        if self.profile_picture:
+            self.profile_picture = optimize_image(self.profile_picture)
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return self.username

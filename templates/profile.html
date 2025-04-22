@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block custom-head %}
+  {% load static %}
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="{% static 'index.css' %}">
+{% endblock custom-head %}
+
+{% block content %}
+  <div class="new-journal-content">
+    <h2>Your Profile</h2>
+    {% if user.profile_picture %}
+      <img src=" /media/user_profile_pictures/user_{{ user.id }}/avatar" alt="Profile Picture" class="profile-picture">
+    {% else %}
+      <img src="{% static 'images/default-avatar.jpg' %}" alt="Defualt Avatar" class="profile-picture">
+    {% endif %}
+    <form method="POST" enctype="multipart/form-data">
+      {% csrf_token %}
+      {{ form.non_field_errors }}
+      {{ form.first_name.errors }}
+      {{ form.last_name.errors }}
+      {{ form.email.errors }}
+      {{ form.bio.errors }}
+      {{ form.profile_picture.errors }}
+      {{ from.is_public.errors }}
+      <div>
+	{{ form.profile_picture }}
+      </div>
+      <div class="checkbox-with-label">
+	<label for="{{ form.is_public.id_for_label }}">{{ form.is_public.label }}</label>
+	{{ form.is_public }}
+      </div>
+      <div>
+	{{ form.first_name }}
+      </div>
+      <div>
+	{{ form.last_name }}
+      </div>
+      <div>
+	{{ form.email }}
+      </div>
+      <div>
+	{{ form.bio }}
+      </div>
+      <button class="form-input" type="submit">Save</button>
+    </form>
+  </div>
+{% endblock content %}
