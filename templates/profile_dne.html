@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block custom-head %}
+	{% load static %}
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" href="{% static 'index.css' %}">
+{% endblock custom-head %}
+
+{% block content %}
+	<div class="content-container">
+		<h2 class="home-greeting">Not a Valid User!</h2>
+		<p>It looks like this user does not exist. Please double check your link!</p>
+	</div>
+{% endblock content %}

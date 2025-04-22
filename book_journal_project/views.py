@@ -8,7 +8,7 @@ from django.contrib.auth.tokens import default_token_generator
 from .forms import RegisterForm, BookSearchForm, NewJournalForm, ListDropDownForm, NewReviewForm, LoginForm, PasswordResetForm, PasswordResetPasswordForm, UserProfileForm
 from django.conf import settings
 from datetime import datetime
-from library.models import Book, Genres, Authors, Covers, Journal, Tags, List, Reviews, UserRecommendations, User
+from library.models import Book, Genres, Authors, Covers, Journal, Tags, List, Reviews, UserRecommendations, User, UserFollow, BooksOwned
 from library.recommender import content_based_recommendations
 from PIL import Image
 from io import BytesIO
@@ -904,5 +904,68 @@ def profile(request):
         'page_title': 'profile',
         'user': user,
         'form': form,
+    }
+    return HttpResponse(template.render(context, request))
+
+def public_profile(request, username):
+    user = User.objects.filter(username=username).first()
+    if not user:
+        return redirect(reverse('profile_dne', kwargs={'username': username}))
+    if not user.is_public:
+        return redirect(reverse('profile_not_public', kwargs={'username': username}))
+    user_lists = List.objects.filter(user=user)
+    lists = []
+    for lst in user_lists:
+        books = Book.objects.filter(list=lst)
+        lists.append([lst.name, books])
+    user_journals = Journal.objects.filter(user=user, is_public=True)
+    user_followers = UserFollow.objects.filter(followed=user)
+    user_following = UserFollow.objects.filter(follower=user)
+    user_reviews = Reviews.objects.filter(user=user, is_approved=True)
+    reviews = []
+    for review in user_reviews:
+        r = []
+        r.append(review)
+        stars = []
+        rating = review.rating
+        if rating:
+            stars = []
+            for i in range(1, 6):
+                if rating >= i:
+                    stars.append("full")
+                elif rating >= i - 0.5:
+                    stars.append("half")
+                else:
+                    stars.append("empty")
+        r.append(stars)
+        reviews.append(r)
+    owned_books = BooksOwned.objects.filter(user=user)
+    user_data = {
+        'user': user,
+        'lists': lists,
+        'journals': user_journals,
+        'followers': user_followers,
+        'following': user_following,
+        'reviews': user_reviews,
+        'owned_books': owned_books
+    }
+    template = loader.get_template('public_profile.html')
+    context = {
+        'page_title': f'@{user.username}',
+        'user_data': user_data
+    }
+    return HttpResponse(template.render(context, request))
+
+def profile_not_public(request, username):
+    template = loader.get_template('profile_not_public.html')
+    context = {
+        'page_title': f'@{username} | private'
+    }
+    return HttpResponse(template.render(context, request))
+
+def profile_dne(request, username):
+    template = loader.get_template('profile_dne.html')
+    context = {
+        'page_title': f'@{username} | DNE'
     }
     return HttpResponse(template.render(context, request))

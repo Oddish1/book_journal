@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+{% block custom-head %}
+	{% load static %}
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" href="{% static 'index.css' %}">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+{% endblock custom-head %}
+
+{% block content %}
+	<div class="content-container">
+	<h2 class="home-greeting">@{{ user_data.user.username }}'s Library</h2>
+	<img class="profile-picture" src="/media/user_profile_pictures/user_{{ user_data.user.id }}/avatar">
+	<p><strong>Followers: </strong> {{ user_data.followers.count }}</p>
+	<p><strong>Following: </strong> {{ user_data.following.count }}</p>
+	{% if user_data.user.bio %}
+	      <h4>Bio</h4>
+	      <p>{{ user_data.user.bio|linebreaks }}</p>
+	{% endif %}
+	      <div class="user-lists">
+		      {% for name, lst in user_data.lists %}
+			      {% if lst %}
+			      <hr class="thin">
+			      <h4 class="list-title">{{ name }} ({{ lst.count }})</h4>
+			      <div class="list-carousel">
+				      {% if lst %}
+					      {% for item in lst %}
+						      <a class="list-book-card hover-card" href="/books/{{ item.id }}">
+							      <img src="/media/{{ item.thumbnail_cover.image }}" alt="Book Cover">
+						      </a>
+					      {% endfor %}
+				      {% endif %}
+			      </div>
+			      {% endif %}
+		      {% endfor %}
+		      <hr class="thin">
+	      </div>
+	      {% if user_data.reviews %}
+	      <h3>Reviews</h3>
+		      <div class="list-carousel">
+			      {% for review, stars in user_data.reviews %}
+				      <a class="book-card hover-card" href="/reviews/{{ review.id }}">
+					      <img src="/media/{{ review.book.thumbnail_cover.image }}" alt="Book Cover"></img>
+					      <div class="library-ratings">
+						      <div class="rating-element">
+							      {% for star in stars %}
+								      {% if star == "full" %}
+									      <i class="fa-solid fa-star checked"></i>
+								      {% elif star == "half" %}
+									      <i class="fa-solid fa-star-half-stroke checked"></i>
+								      {% else %}
+									      <i class="fa-regular fa-star"></i>
+								      {% endif %}
+							      {% endfor %}
+						      </div>
+					      </div>
+				      </a>
+			      {% endfor %}
+		      </div>
+	      {% endif %}
+	      {% if user_data.journals %}
+		      <h3>Journals</h3>
+		      <div class="list-carousel">
+			      {% for journal in user_data.journals %}
+				      <a class="journal-card hover-card" href="/journal/{{ journal.id }}">
+					      <div>
+						      <img src="/media/{{ journal.book.thumbnail_cover.image }}" alt="Book Cover">
+						      {% if journal.title %}
+							      <h4>{{ journal.title }}</h4>
+						      {% endif %}
+						      {% if journal.page %}
+							      <p>{{ journal.book.title }} | page {{ journal.page }}<p>
+						      {% else %}
+							      <p>{{ journal.book.title }}</p>
+						      {% endif %}
+					      </div>
+				      </a>
+			      {% endfor %}
+		      </div>
+		      <hr class="thin">
+	      {% endif %}
+	      {% if user_data.owned_books %}
+		      <hr class="thin">
+		      <h3>Owned Books</h3>
+		      <div class="list-carousel">
+				{% for book in user_data.owned_books %}
+					<a class="list-book-card hover-card" href="/books/{{ book.id }}" alt="Book Cover">
+						  <img src="/media/{{ book.thumbnail_cover.image }}" alt="Book Cover">
+					</a>
+				{% endfor %}
+	      {% endif %}
+	</div>
+{% endblock content %}

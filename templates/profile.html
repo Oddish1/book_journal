@@ -10,7 +10,7 @@
   <div class="new-journal-content">
     <h2>Your Profile</h2>
     {% if user.profile_picture %}
-      <img src=" /media/user_profile_pictures/user_{{ user.id }}/avatar" alt="Profile Picture" class="profile-picture">
+      <img src="/media/user_profile_pictures/user_{{ user.id }}/avatar" alt="Profile Picture" class="profile-picture">
     {% else %}
       <img src="{% static 'images/default-avatar.jpg' %}" alt="Defualt Avatar" class="profile-picture">
     {% endif %}

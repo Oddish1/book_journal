@@ -11,7 +11,7 @@ This is being developed for my capstone project.
   - [X] email verification?
 - [ ] Public user profiles
   - [X] User profile editing page with image upload/optimization
-  - [ ] public user profile page
+  - [X] public user profile page
   - [ ] populate user links on all pages publicly referencing users (reviews, journals, etc.)
   - [ ] User following + email alerts
 - [ ] Auto-tagging system (sentiment analysis + keyword extraction)

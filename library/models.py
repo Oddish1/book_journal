@@ -235,7 +235,7 @@ class Reviews(models.Model):
     # a datetime object representing the timestamp the review was last edited
     updated_at = models.DateTimeField(auto_now=True)
     # a boolean representing if the review is approved (used for moderation)
-    is_approved = models.BooleanField(default=False)
+    is_approved = models.BooleanField(default=True)
     tags = models.ManyToManyField("Tags", related_name="reviews", blank=True)
 
 
