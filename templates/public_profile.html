@@ -57,6 +57,7 @@
 				      </a>
 			      {% endfor %}
 		      </div>
+		      <hr class="thin">
 	      {% endif %}
 	      {% if user_data.journals %}
 		      <h3>Journals</h3>
@@ -77,7 +78,6 @@
 				      </a>
 			      {% endfor %}
 		      </div>
-		      <hr class="thin">
 	      {% endif %}
 	      {% if user_data.owned_books %}
 		      <hr class="thin">
@@ -88,6 +88,8 @@
 						  <img src="/media/{{ book.thumbnail_cover.image }}" alt="Book Cover">
 					</a>
 				{% endfor %}
+		      </div>
+		      <hr class="thin">
 	      {% endif %}
 	</div>
 {% endblock content %}

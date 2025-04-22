@@ -44,7 +44,7 @@
 						{% if journal.title %}
 							<h3>{{ journal.title }}</h3>
 						{% endif %}
-						<p><strong>Posted by:</strong> {{ journal.user.username }}</p>
+						<p><strong>Posted by:</strong> <a href="/profile/@{{ journal.user.username }}">{{ journal.user.username }}</a></p>
 						<p><strong>Created at:</strong> {{ journal.created_at }}</p>
 						{% if journal.page %}
 							<p><strong>Page:</strong> {{ journal.page }}</p>

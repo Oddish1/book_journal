@@ -57,7 +57,10 @@
 					</div>
 					{% if review %}
 						<hr class="thin">
-						<h2>{{ review.user.username }}'s Review</h2>
+						<h2>Review</h2>
+						<p><strong>Posted By:</strong> <a href="/profile/@{{ review.user.username }}">{{ review.user.username }}</a></p>
+						<p><strong>Created:</strong> {{ review.created_at }}</p>
+						<h3>{{ review.title }}</h3>
 						{% for star in stars %}
 							{% if star == "full" %}
 								<i class="fa-solid fa-star checked"></i>
@@ -67,8 +70,7 @@
 								<i class="fa-regular fa-star"></i>
 							{% endif %}
 						{% endfor %}
-						<p><strong>Created:</strong> {{ review.created_at }}</p>
-						<h3>{{ review.title }}</h3>
+
 						{% if review.review %}
 							{{ review.review|linebreaks }}
 						{% endif %}

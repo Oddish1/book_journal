@@ -917,15 +917,13 @@ def public_profile(request, username):
     lists = []
     for lst in user_lists:
         books = Book.objects.filter(list=lst)
-        lists.append([lst.name, books])
+        lists.append((lst.name, books))
     user_journals = Journal.objects.filter(user=user, is_public=True)
     user_followers = UserFollow.objects.filter(followed=user)
     user_following = UserFollow.objects.filter(follower=user)
     user_reviews = Reviews.objects.filter(user=user, is_approved=True)
     reviews = []
     for review in user_reviews:
-        r = []
-        r.append(review)
         stars = []
         rating = review.rating
         if rating:
@@ -937,8 +935,7 @@ def public_profile(request, username):
                     stars.append("half")
                 else:
                     stars.append("empty")
-        r.append(stars)
-        reviews.append(r)
+        reviews.append((review, stars))
     owned_books = BooksOwned.objects.filter(user=user)
     user_data = {
         'user': user,
@@ -946,7 +943,7 @@ def public_profile(request, username):
         'journals': user_journals,
         'followers': user_followers,
         'following': user_following,
-        'reviews': user_reviews,
+        'reviews': reviews,
         'owned_books': owned_books
     }
     template = loader.get_template('public_profile.html')
