@@ -5,6 +5,8 @@ from django.core.validators import MinValueValidator, MaxValueValidator
 from PIL import Image
 from io import BytesIO
 from django.core.files.uploadedfile import InMemoryUploadedFile
+import os
+from django.core.files.storage import default_storage
 
 
 def user_directory_path(instance, filename):
@@ -58,8 +60,18 @@ class User(AbstractUser):
     is_public = models.BooleanField(default=False)
 
     def save(self, *args, **kwargs):
+        try:
+            old = User.objects.get(pk=self.pk)
+        except User.DoesNotExist:
+            old = None
+
+        if old and old.profile_picture and old.profile_picture != self.profile_picture:
+            if default_storage.exists(old.profile_picture.path):
+                default_storage.delete(old.profile_picture.path)
+
         if self.profile_picture:
             self.profile_picture = optimize_image(self.profile_picture)
+
         super().save(*args, **kwargs)
 
     def __str__(self):
