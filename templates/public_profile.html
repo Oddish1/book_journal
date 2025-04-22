@@ -11,6 +11,16 @@
 	<div class="content-container">
 	<h2 class="home-greeting">@{{ user_data.user.username }}'s Library</h2>
 	<img class="profile-picture" src="/media/user_profile_pictures/user_{{ user_data.user.id }}/avatar">
+	{% if request.user != user_data.user %}
+		<form method="POST" action="{% url 'user_follow' username=user_data.user.username %}">
+			{% csrf_token %}
+			{% if is_following %}
+				<button class="form-input" type="submit" name="action" value="unfollow">Unfollow</button>
+			{% else %}
+				<button class="form-input" type="submit" name="action" value="follow">Follow</button>
+			{% endif %}
+		</form>
+	{% endif %}
 	<p><strong>Followers: </strong> {{ user_data.followers.count }}</p>
 	<p><strong>Following: </strong> {{ user_data.following.count }}</p>
 	{% if user_data.user.bio %}

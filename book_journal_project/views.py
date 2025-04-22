@@ -137,6 +137,22 @@ def send_password_reset_complete_email(user, login_link):
     msg.attach_alternative(html_content, "text/html")
     msg.send()
 
+def send_follow_email(user, follower, link):
+    subject = "You have a new follower!"
+    from_email = "noreply@oddish1.com"
+    to_email = user.email
+    follower_profile_link = link
+    context = {
+        'user': user,
+        'follower': follower,
+        'follower_profile_link': follower_profile_link,
+    }
+    text_content = loader.render_to_string("email/follow_email.txt", context)
+    html_content = loader.render_to_string("email/follow_email.html", context)
+    msg = EmailMultiAlternatives(subject, text_content, from_email, [to_email])
+    msg.attach_alternative(html_content, "text/html")
+    msg.send()
+
 # Create your views here.
 def home(request):
     form = BookSearchForm()
@@ -909,6 +925,9 @@ def profile(request):
 
 def public_profile(request, username):
     user = User.objects.filter(username=username).first()
+    is_following = False
+    if request.user.is_authenticated:
+        is_following = UserFollow.objects.filter(follower=request.user, followed=user).exists()
     if not user:
         return redirect(reverse('profile_dne', kwargs={'username': username}))
     if not user.is_public:
@@ -949,7 +968,8 @@ def public_profile(request, username):
     template = loader.get_template('public_profile.html')
     context = {
         'page_title': f'@{user.username}',
-        'user_data': user_data
+        'user_data': user_data,
+        'is_following': is_following,
     }
     return HttpResponse(template.render(context, request))
 
@@ -966,3 +986,27 @@ def profile_dne(request, username):
         'page_title': f'@{username} | DNE'
     }
     return HttpResponse(template.render(context, request))
+
+def user_follow(request, username):
+    if not request.user.is_authenticated:
+        return redirect('home')
+    if request.method == "POST":
+        user_to_follow = User.objects.get(username=username)
+        if user_to_follow == request.user:
+            return redirect('public_profile', username=username)
+        action = request.POST.get('action')
+        logger.debug(f'current action: {action}')
+        if action == 'follow':
+            follow = UserFollow.objects.get_or_create(
+                follower=request.user,
+                followed=user_to_follow
+            )
+            logger.debug(f'{request.user} followed {user_to_follow}')
+            link = request.build_absolute_uri(
+                    reverse('public_profile', kwargs={'username': request.user})
+            )
+            send_follow_email(user_to_follow, request.user, link)
+        elif action == 'unfollow':
+            UserFollow.objects.filter(follower=request.user, followed=user_to_follow).delete()
+            logger.debug(f'{request.user} unfollowed {user_to_follow}')
+    return redirect('public_profile', username=username)

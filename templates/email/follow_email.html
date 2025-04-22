@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>You Have A New Follower!</title>
+  </head>
+  <body>
+    <h2>{{ follower.username }} Followed You!</h2>
+    {% if follower.is_public %}
+      <p>Hi {{ user.username }}! It looks like you have a new follower. Click the link below to check out their profile!</p>
+      <a href="{{ follower_profile_link }}">{{ follower.username }}'s Profile</a>
+    {% else %}
+      <p>Hi {{ user.username }}! It looks like you have a new follower!</p>
+    {% endif %}
+    <br>
+    <p>- The BookJournal Team</p>
+  </body>
+</html>

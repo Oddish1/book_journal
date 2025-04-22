@@ -1,0 +1,10 @@
+{{ follower.username }} Followed You!
+{% if follower.is_public %}
+	Hi {{ user.username }}! It looks like you have a new follower. Click the link below to check out their profile!
+
+	{{ follower_profile_link }}
+{% else %}
+	Hi {{ user.username }}! It looks like you have a new follower!
+{% endif %}
+
+- The BookJournal Team

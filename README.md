@@ -9,16 +9,17 @@ This is being developed for my capstone project.
   - [X] welcome template
   - [X] password reset
   - [X] email verification?
-- [ ] Public user profiles
+- [X] Public user profiles
   - [X] User profile editing page with image upload/optimization
   - [X] public user profile page
   - [X] populate user links on all pages publicly referencing users (reviews, journals, etc.)
-  - [ ] User following + email alerts
+  - [X] User following + email alerts
 - [ ] Auto-tagging system (sentiment analysis + keyword extraction)
   - [ ] Reviews
   - [ ] Journals
   - [ ] Books (descriptions)
 - [ ] Refine/Unify Styling
+  - [ ] public profile page
 - [ ] Journal search
 - [ ] Journal filtering (keyword search, user-set tags)
 
