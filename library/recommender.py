@@ -41,7 +41,7 @@ def build_dataset():
         description = book.description if book.description else ""
         genres = [genre.genre for genre in book.genres.all()]
         genre_text = " ".join(genres)
-        combined_text = f'{genre_text} {description}'
+        combined_text = f'{genre_text}'
         combined_text = clean_text(combined_text)
         book_lst.append([book_id, title, author, genre_text, description, combined_text])
     books = pd.DataFrame(book_lst, columns=book_cols)
