@@ -10,77 +10,73 @@
 {% block content %}
 	<div class="content-container">
 		<h2 class="home-greeting">Your Library</h2>
-		<hr class="thin">
 		{% if need_reviews %}
-			<h3 class="list-title">Please Leave a Review</h3>
-			<div class="list-carousel">
-				{% for book in need_reviews %}
-					<a class="list-book-card hover-card" href="/reviews/new-review/{{ book.id }}">
-						<img src="/media/{{ book.thumbnail_cover.image }}" alt="Book Cover">
-					</a>
-				{% endfor %}
+			<div class="list-container">
+				<h3 class="list-title">Please Leave a Review</h3>
+				<div class="list-carousel">
+					{% for book in need_reviews %}
+						<a class="book-card hover-card" href="/reviews/new-review/{{ book.id }}">
+							<img src="/media/{{ book.thumbnail_cover.image }}" alt="Book Cover">
+						</a>
+					{% endfor %}
+				</div>
 			</div>
-		<hr class="thin">
 		{% endif %}
 		<div class="user-lists">
 			{% for name, lst in lists.items %}
-				<h4 class="list-title">{{ name }} ({{ lst.count }})</h4>
-				<div class="list-carousel">
-					{% if lst %}
-						{% for item in lst %}
-							<a class="list-book-card hover-card" href="/books/{{ item.id }}">
-								<img src="/media/{{ item.thumbnail_cover.image }}" alt="Book Cover">
-							</a>
-						{% endfor %}
-					{% else %}
-						<p>This list is empty! Try adding a book...</p>
-					{% endif %}
+				<div class="list-container">
+					<h4 class="list-title">{{ name }} ({{ lst.count }})</h4>
+					<div class="list-carousel">
+						{% if lst %}
+							{% for item in lst %}
+								<a class="book-card hover-card" href="/books/{{ item.id }}">
+									<img src="/media/{{ item.thumbnail_cover.image }}" alt="Book Cover">
+								</a>
+							{% endfor %}
+						{% else %}
+							<p>This list is empty! Try adding a book...</p>
+						{% endif %}
+					</div>
 				</div>
-				<hr class="thin">
 			{% endfor %}
 		</div>
 		{% if reviews %}
-			<h3>Your Latest Reviews</h3>
-			<div class="list-carousel">
-				{% for review, stars in reviews %}
-					<a class="book-card hover-card" href="/reviews/{{ review.id }}">
-						<img src="/media/{{ review.book.thumbnail_cover.image }}" alt="Book Cover"></img>
-						<div class="library-ratings">
-							<div class="rating-element">
-								{% for star in stars %}
-									{% if star == "full" %}
-										<i class="fa-solid fa-star checked"></i>
-									{% elif star == "half" %}
-										<i class="fa-solid fa-star-half-stroke checked"></i>
-									{% else %}
-										<i class="fa-regular fa-star"></i>
-									{% endif %}
-								{% endfor %}
+			<div class="list-container">
+				<h3>Your Latest Reviews</h3>
+				<div class="list-carousel">
+					{% for review, stars in reviews %}
+						<a class="book-card hover-card" href="/reviews/{{ review.id }}">
+							<img class="book-cover" src="/media/{{ review.book.thumbnail_cover.image }}" alt="Book Cover"></img>
+							<div class="library-ratings">
+								<div class="rating-element">
+									{% for star in stars %}
+										{% if star == "full" %}
+											<i class="fa-solid fa-star checked"></i>
+										{% elif star == "half" %}
+											<i class="fa-solid fa-star-half-stroke checked"></i>
+										{% else %}
+											<i class="fa-regular fa-star"></i>
+										{% endif %}
+									{% endfor %}
+								</div>
 							</div>
-						</div>
-					</a>
-				{% endfor %}
+						</a>
+					{% endfor %}
+				</div>
 			</div>
 		{% endif %}
 		{% if latest_journals %}
-			<hr class="thin">
-			<h3>Your Latest Journals</h3>
-			<div class="list-carousel">
-				{% for journal in latest_journals %}
-					<a class="journal-card hover-card" href="/journal/{{ journal.id }}">
-						<div>
-							<img src="/media/{{ journal.book.thumbnail_cover.image }}" alt="Book Cover">
-							{% if journal.title %}
-								<h4>{{ journal.title }}</h4>
-							{% endif %}
-							{% if journal.page %}
-								<p>{{ journal.book.title }} | page {{ journal.page }}<p>
-							{% else %}
-								<p>{{ journal.book.title }}</p>
-							{% endif %}
-						</div>
-					</a>
-				{% endfor %}
+			<div class="list-container">
+				<h3>Your Latest Journals</h3>
+				<div class="list-carousel">
+					{% for journal in latest_journals %}
+						<a class="book-card hover-card" href="/journal/{{ journal.id }}">
+							<div>
+								<img class="book-cover" src="/media/{{ journal.book.thumbnail_cover.image }}" alt="Book Cover">
+							</div>
+						</a>
+					{% endfor %}
+				</div>
 			</div>
 		{% endif %}
 	</div>

@@ -141,7 +141,8 @@ div.journal-heading {
 	text-decoration: none;
 	color: inherit;
 	padding: 0.5rem;
-	width: 140px;
+	width: 128px;
+	max-width: 128px;
 }
 
 .journal-card img {
@@ -225,7 +226,7 @@ div.journal-heading {
 	display: flex;
 	gap: 1rem;
 	overflow-x: auto;
-	padding: 1rem 1rem 1rem 1.5rem;
+	padding: 0.5rem 0.5rem 0.5rem 0.5rem;
 	scroll-snap-type: x mandatory;
 	scroll-padding: 1rem;
 }
@@ -509,4 +510,12 @@ p.username-result {
 	margin: 0.25rem;
 	line-height: 1;
 	text-indent: 0;
+}
+
+.list-container {
+	padding: 1rem;
+	margin: 2rem;
+	background-color: #E9EBED;
+	border: 1px solid #233D4D;
+	border-radius: 8px;
 }

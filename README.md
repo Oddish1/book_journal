@@ -19,11 +19,20 @@ This is being developed for my capstone project.
 - [X] Num. finished reading on book page
 - [X] User search & finish search styling
 - [ ] Refine/Unify Styling
-  - [ ] public profile page
-  - [ ] library page
+  - [X] library page
   - [ ] journal page
   - [ ] about page
   - [ ] home page
+  - [ ] reviews aggregate page
+  - [ ] individual review page
+  - [ ] password reset
+    - [ ] success
+    - [ ] fail
+    - [ ] complete
+  - [ ] profile
+    - [ ] public profile
+    - [ ] dne
+    - [ ] not public
 
 ## Development Backlog
 
