@@ -158,255 +158,268 @@ def home(request):
     form = BookSearchForm()
     stored_results = []
     results = []
+    user_results = {}
+    query = ""
     if request.method == "GET" and "query" in request.GET:
         form = BookSearchForm(request.GET)
         if form.is_valid():
             query = form.cleaned_data["query"].strip()
             if query:
+                # user search results for public profiles
+                if query[0] == "@":
+                    user_results = User.objects.filter(username__icontains=query[1:], is_public=True)
+                    user_data = {}
+                    for user in user_results:
+                        link = request.build_absolute_uri(
+                                            reverse('public_profile', kwargs={'username': user.username})
+                                    )
+                        user_data.update({user: link})
+                    user_results = user_data
                 # local db search and basic ranking
-                results = Book.objects.filter(
-                        Q(title__icontains=query) |
-                        Q(authors__name__icontains=query) |
-                        Q(isbn__iexact=query) |
-                        Q(description__icontains=query)
-                ).annotate(
-                    relevance=Sum(Case(
-                        When(title__icontains=query, then=Value(3)),
-                        When(authors__name__icontains=query, then=Value(2)),
-                        When(isbn__iexact=query, then=Value(5)),
-                        When(description__icontains=query, then=Value(1)),
-                        default=Value(0),
-                        output_field=IntegerField()))).distinct().order_by("-relevance")
-                # search API and create new Books to save to local db
-                encoded_query = quote_plus(query)
-                url = f'https://www.googleapis.com/books/v1/volumes?q={encoded_query}&maxResults=40&orderBy=relevance&printType=books&key={API_KEY}'
-                response = requests.get(url)
-                if response.status_code == 200:
-                    data = response.json()
-                    api_results = data.get("items", [])
-                    # caches to prevent repeated db hits
-                    genre_cache = {}
-                    author_cache = {}
-                    cover_cache = {}
-                    new_books = []
-                    book_author_links = [] # (book, authors) tuples for many to many relationsip
-                    book_genre_links = [] # (book, genres) tuples for many to many relationship
-                    stored_results = []
+                else:
+                    results = Book.objects.filter(
+                            Q(title__icontains=query) |
+                            Q(authors__name__icontains=query) |
+                            Q(isbn__iexact=query) |
+                            Q(description__icontains=query)
+                    ).annotate(
+                        relevance=Sum(Case(
+                            When(title__icontains=query, then=Value(3)),
+                            When(authors__name__icontains=query, then=Value(2)),
+                            When(isbn__iexact=query, then=Value(5)),
+                            When(description__icontains=query, then=Value(1)),
+                            default=Value(0),
+                            output_field=IntegerField()))).distinct().order_by("-relevance")
+                    # search API and create new Books to save to local db
+                    encoded_query = quote_plus(query)
+                    url = f'https://www.googleapis.com/books/v1/volumes?q={encoded_query}&maxResults=40&orderBy=relevance&printType=books&key={API_KEY}'
+                    response = requests.get(url)
+                    if response.status_code == 200:
+                        data = response.json()
+                        api_results = data.get("items", [])
+                        # caches to prevent repeated db hits
+                        genre_cache = {}
+                        author_cache = {}
+                        cover_cache = {}
+                        new_books = []
+                        book_author_links = [] # (book, authors) tuples for many to many relationsip
+                        book_genre_links = [] # (book, genres) tuples for many to many relationship
+                        stored_results = []
 
-                    for result in api_results:
-                        volume_info = result['volumeInfo']
-                        isbn = extract_isbn(volume_info)
+                        for result in api_results:
+                            volume_info = result['volumeInfo']
+                            isbn = extract_isbn(volume_info)
 
-                        try:
-                            book_title = volume_info['title']
-                        except:
-                            book_title = "Unknown Title"
-
-                        # genres
-                        genres = []
-                        genre_names = extract_genre(volume_info)
-                        for genre_name in genre_names:
-                            genre = genre_cache.get(genre_name)
-                            if not genre:
-                                try:
-                                    genre = Genres.objects.get(genre=genre_name)
-                                except Genres.DoesNotExist:
-                                    genre = Genres(genre=genre_name)
-                                    genre_cache[genre_name] = genre # hold for later bulk_create
-                            genres.append(genre)
-
-                        # authors
-                        try:
-                            authors_names = volume_info.get("authors") or ["Unkown Author"]
-                            logger.debug(f'[Author Import]: found {authors_names}')
-                            logger.debug(f'[Book Import "{book_title}"]: found authors ({authors_names})')
-                            authors = []
-                            for name in authors_names:
-                                author = author_cache.get(name)
-                                if not author:
-                                    try:
-                                        author = Authors.objects.get(name=name)
-                                        logger.debug(f'[Author Import]: Author "{author}" exists in db')
-                                    except Authors.DoesNotExist:
-                                        logger.debug(f'[Author Import]: Author DNE, attempting to create.')
-                                        author = Authors(name=name)
-                                        author_cache[name] = author # hold for later bulk_create
-                                authors.append(author)
-                                logger.info(f'[Book Import "{book_title}"]: added authors {authors}')
-                        except Exception as e:
-                            logger.error(f'[Book Import: "{book_title}"] authors could not be added.')
-                            logger.debug(f'volumeInfo:\n{volume_info}')
-                            logger.debug(f'Error:\n{e}')
-
-                        # set cover image
-                        # ideally using PostgreSQL, would async image downloads, with sqlite this causes db locking errors.
-                        # this is a current bottleneck, but don't have time to move to a different db right now.
-                        try:
-                            cover_image_url = volume_info['imageLinks']['thumbnail']
-                            logger.debug(f'[Image Download "{book_title}"]: image URL ({cover_image_url})')
-                            cover = cover_cache.get(cover_image_url) or Covers.objects.filter(image_url=cover_image_url).first()
-                            if not cover:
-                                cover = download_cover(cover_image_url, book_title, isbn)
-                        except Exception as e:
-                            logger.warning(f'[Book Import: "{book_title}"] thumbnail_cover could not be added. Setting to None.')
-                            cover = None
-                            logger.debug(f'volumeInfo:\n{volume_info}')
-                            logger.error(f'Error:\n{e}')
-
-                        # add title
-                        try:
-                            title = book_title
-                            logger.debug(f'[Book Import "{book_title}"]: Added title {title}')
-                        except Exception as e:
-                            logger.warning(f'[Book Import: "{book_title}"] title could not be added. Setting to None.')
-                            logger.debug(f'volumeInfo:\n{volume_info}')
-                            logger.debug(f'Error:\n{e}')
-
-                        # add page_count
-                        try:
-                            page_count = volume_info.get("pageCount")
-                            logger.debug(f'[Book Import "{book_title}"]: Added page count {page_count}')
-                        except Exception as e:
-                            logger.warning(f'[Book Import: "{book_title}"] page_count could not be added. Setting to None.')
-                            logger.debug(f'volumeInfo:\n{volume_info}')
-                            logger.debug(f'Error:\n{e}')
-
-                        # add publisher
-                        try:
-                            publisher = volume_info.get("publisher")
-                            if isinstance(publisher, list):
-                                try:
-                                    publishers = [pub for pub in publisher]
-                                    publisher = ", ".join(publishers)
-                                except Exception as e:
-                                    logger.error(f'[Adding Publishers: "{book_title}"] unable to join publishers into single string.')
-                                    logger.debug(f'Error: {e}')
-                            logger.debug(f'[Book Import "{book_title}"]: Added publisher "{publisher}"')
-                        except Exception as e:
-                            logger.warning(f'[Book Import: "{book_title}" publisher could not be added. Setting to None.')
-                            logger.debug(f'volumeInfo:\n{volume_info}')
-                            logger.debug(f'Error:\n{e}')
-                            publisher = None
-
-                        # add publisher date
-                        try:
-                            publisher_date = volume_info.get("publishedDate")
                             try:
-                                date = datetime.strptime(publisher_date, "%Y-%m-%d")
-                                date = datetime.strftime(date, "%Y-%m-%d")
+                                book_title = volume_info['title']
+                            except:
+                                book_title = "Unknown Title"
+
+                            # genres
+                            genres = []
+                            genre_names = extract_genre(volume_info)
+                            for genre_name in genre_names:
+                                genre = genre_cache.get(genre_name)
+                                if not genre:
+                                    try:
+                                        genre = Genres.objects.get(genre=genre_name)
+                                    except Genres.DoesNotExist:
+                                        genre = Genres(genre=genre_name)
+                                        genre_cache[genre_name] = genre # hold for later bulk_create
+                                genres.append(genre)
+
+                            # authors
+                            try:
+                                authors_names = volume_info.get("authors") or ["Unkown Author"]
+                                logger.debug(f'[Author Import]: found {authors_names}')
+                                logger.debug(f'[Book Import "{book_title}"]: found authors ({authors_names})')
+                                authors = []
+                                for name in authors_names:
+                                    author = author_cache.get(name)
+                                    if not author:
+                                        try:
+                                            author = Authors.objects.get(name=name)
+                                            logger.debug(f'[Author Import]: Author "{author}" exists in db')
+                                        except Authors.DoesNotExist:
+                                            logger.debug(f'[Author Import]: Author DNE, attempting to create.')
+                                            author = Authors(name=name)
+                                            author_cache[name] = author # hold for later bulk_create
+                                    authors.append(author)
+                                    logger.info(f'[Book Import "{book_title}"]: added authors {authors}')
                             except Exception as e:
-                                logger.warning(f'[Date Conversion "{book_title}"]: date not in "Y-m-d" format. Trying different format.')
+                                logger.error(f'[Book Import: "{book_title}"] authors could not be added.')
+                                logger.debug(f'volumeInfo:\n{volume_info}')
                                 logger.debug(f'Error:\n{e}')
+
+                            # set cover image
+                            # ideally using PostgreSQL, would async image downloads, with sqlite this causes db locking errors.
+                            # this is a current bottleneck, but don't have time to move to a different db right now.
+                            try:
+                                cover_image_url = volume_info['imageLinks']['thumbnail']
+                                logger.debug(f'[Image Download "{book_title}"]: image URL ({cover_image_url})')
+                                cover = cover_cache.get(cover_image_url) or Covers.objects.filter(image_url=cover_image_url).first()
+                                if not cover:
+                                    cover = download_cover(cover_image_url, book_title, isbn)
+                            except Exception as e:
+                                logger.warning(f'[Book Import: "{book_title}"] thumbnail_cover could not be added. Setting to None.')
+                                cover = None
+                                logger.debug(f'volumeInfo:\n{volume_info}')
+                                logger.error(f'Error:\n{e}')
+
+                            # add title
+                            try:
+                                title = book_title
+                                logger.debug(f'[Book Import "{book_title}"]: Added title {title}')
+                            except Exception as e:
+                                logger.warning(f'[Book Import: "{book_title}"] title could not be added. Setting to None.')
+                                logger.debug(f'volumeInfo:\n{volume_info}')
+                                logger.debug(f'Error:\n{e}')
+
+                            # add page_count
+                            try:
+                                page_count = volume_info.get("pageCount")
+                                logger.debug(f'[Book Import "{book_title}"]: Added page count {page_count}')
+                            except Exception as e:
+                                logger.warning(f'[Book Import: "{book_title}"] page_count could not be added. Setting to None.')
+                                logger.debug(f'volumeInfo:\n{volume_info}')
+                                logger.debug(f'Error:\n{e}')
+
+                            # add publisher
+                            try:
+                                publisher = volume_info.get("publisher")
+                                if isinstance(publisher, list):
+                                    try:
+                                        publishers = [pub for pub in publisher]
+                                        publisher = ", ".join(publishers)
+                                    except Exception as e:
+                                        logger.error(f'[Adding Publishers: "{book_title}"] unable to join publishers into single string.')
+                                        logger.debug(f'Error: {e}')
+                                logger.debug(f'[Book Import "{book_title}"]: Added publisher "{publisher}"')
+                            except Exception as e:
+                                logger.warning(f'[Book Import: "{book_title}" publisher could not be added. Setting to None.')
+                                logger.debug(f'volumeInfo:\n{volume_info}')
+                                logger.debug(f'Error:\n{e}')
+                                publisher = None
+
+                            # add publisher date
+                            try:
+                                publisher_date = volume_info.get("publishedDate")
                                 try:
-                                    date = datetime.strptime(publisher_date, "%Y")
+                                    date = datetime.strptime(publisher_date, "%Y-%m-%d")
                                     date = datetime.strftime(date, "%Y-%m-%d")
-                                    logger.info(f'[Date Conversion "{book_title}"]: date stored in "Y" format: {date}')
                                 except Exception as e:
-                                    logger.warning(f'[Date Conversion "{book_title}"]: date not in "Y" format. Trying different format.')
+                                    logger.warning(f'[Date Conversion "{book_title}"]: date not in "Y-m-d" format. Trying different format.')
                                     logger.debug(f'Error:\n{e}')
                                     try:
-                                        date = datetime.strptime(publisher_date, "%Y-%m")
+                                        date = datetime.strptime(publisher_date, "%Y")
                                         date = datetime.strftime(date, "%Y-%m-%d")
+                                        logger.info(f'[Date Conversion "{book_title}"]: date stored in "Y" format: {date}')
                                     except Exception as e:
-                                        logger.warning(f'[Date Conversion "{book_title}"]: date not in "Y-M format. Attempting to set date from string value if possible.')
+                                        logger.warning(f'[Date Conversion "{book_title}"]: date not in "Y" format. Trying different format.')
+                                        logger.debug(f'Error:\n{e}')
                                         try:
-                                            date = datetime.strptime("1111-01-01", "%Y-%m-%d")
+                                            date = datetime.strptime(publisher_date, "%Y-%m")
                                             date = datetime.strftime(date, "%Y-%m-%d")
-                                            logger.warning(f'[Date Conversion "{book_title}"] couldn\'t parse date, setting to {date}')
                                         except Exception as e:
-                                            logger.warning(f'[Date Conversion "{book_title}"] date not a string. Setting publisher_date to None.')
-                                            logger.debug(f'Error:\n{e}')
-                                            date = None
-                        except Exception as e:
-                            logger.error(f'[Book Import "{book_title}"] unable to set date.')
-                            logger.debug(f'Error:\n{e}')
+                                            logger.warning(f'[Date Conversion "{book_title}"]: date not in "Y-M format. Attempting to set date from string value if possible.')
+                                            try:
+                                                date = datetime.strptime("1111-01-01", "%Y-%m-%d")
+                                                date = datetime.strftime(date, "%Y-%m-%d")
+                                                logger.warning(f'[Date Conversion "{book_title}"] couldn\'t parse date, setting to {date}')
+                                            except Exception as e:
+                                                logger.warning(f'[Date Conversion "{book_title}"] date not a string. Setting publisher_date to None.')
+                                                logger.debug(f'Error:\n{e}')
+                                                date = None
+                            except Exception as e:
+                                logger.error(f'[Book Import "{book_title}"] unable to set date.')
+                                logger.debug(f'Error:\n{e}')
 
-                        # add description
-                        try:
-                            description = volume_info.get("description")
-                            logger.info(f'[Book Import "{book_title}"]: Added description')
-                        except Exception as e:
-                            logger.warning(f'[Book Import "{book_title}"] unable to set description. Setting to None.')
-                            logger.debug(f'volumeInfo:\n{volume_info}')
-                            logger.debug(f'Error:\n{e}')
-                            description = None
-
-                        # add print type
-                        try:
-                            print_type = volume_info.get("printType").lower()
-                            logger.info(f'[Book Import "{book_title}"]: Added print type "{print_type}"')
-                        except Exception as e:
-                            logger.warning(f'[Book Import "{book_title}"] unable to set print_type. Setting to None.')
-                            print_type = None
-                            logger.debug(f'volumeInfo:\n{volume_info}')
-                            logger.debug(f'Error:\n{e}')
-
-                        # add language
-                        try:
-                            logger.debug("Trying to set language")
-                            language = volume_info.get('language')
-                            if isinstance(language, str):
-                                logger.debug("language is str")
-                            if isinstance(language, list):
-                                logger.debug('language is list')
-                                langauges = [lang for lang in language]
-                                language = " ,".join(languages)
-                            else:
-                                logger.warning(f'[Book Import "{book_title}"] unable to set language. Setting to None.')
+                            # add description
+                            try:
+                                description = volume_info.get("description")
+                                logger.info(f'[Book Import "{book_title}"]: Added description')
+                            except Exception as e:
+                                logger.warning(f'[Book Import "{book_title}"] unable to set description. Setting to None.')
                                 logger.debug(f'volumeInfo:\n{volume_info}')
-                                language = None
-                            logger.info(f'[Book Import "{book_title}"]: Added language "{language}"')
-                        except Exception as e:
-                            logger.error(f'[Book Import "{book_title}"] error while setting language.')
-                            logger.debug(f'Error:\n{e}')
+                                logger.debug(f'Error:\n{e}')
+                                description = None
 
-                        try:
-                            new_book = Book(
-                                thumbnail_cover = cover,
-                                title = title,
-                                page_count = page_count,
-                                publisher = publisher,
-                                published_date = date,
-                                description = description,
-                                print_type = print_type,
-                                language = language,
-                                isbn = isbn)
-                            new_books.append(new_book)
-                            book_author_links.append((new_book, authors))
-                            book_genre_links.append((new_book, genres))
-                        except ValidationError as e:
-                            logger.error(f'Validation error for "{book_title}":\n{e}')
-                        except Exception as e:
-                            logger.error(f'Book import failed.')
-                            logger.debug(f'volumeInfo:\n{volume_info}')
-                            logger.error(f'Error:\n{e}')
-                    # bulk save related models first
-                    Genres.objects.bulk_create(genre_cache.values(), ignore_conflicts=True)
-                    Authors.objects.bulk_create(author_cache.values(), ignore_conflicts=True)
-                    # save books
-                    Book.objects.bulk_create(new_books, ignore_conflicts=True)
-                    # attatch many to many relationships
-                    all_authors = set(a.name for _, authors in book_author_links for a in authors)
-                    saved_authors = {a.name: a for a in Authors.objects.filter(name__in=all_authors)}
-                    book_author_links = [(book, [saved_authors[a.name] for a in authors]) for book, authors in book_author_links]
-                    for book, authors in book_author_links:
-                        saved_book = Book.objects.filter(isbn=book.isbn).first()
-                        if saved_book:
-                            saved_book.authors.set(authors)
-                            saved_book.save()
-                        else:
-                            logger.warning(f'[Book Import]: Could not find saved_book for ISBN: {book.isbn}')
-                    all_genres = set(g.genre for _, genres in book_genre_links for g in genres)
-                    saved_genres = {g.genre: g for g in Genres.objects.filter(genre__in=all_genres)}
-                    book_genre_links = [(book, [saved_genres[g.genre] for g in genres]) for book, genres in book_genre_links]
-                    for book, genres in book_genre_links:
-                        saved_book = Book.objects.filter(isbn=book.isbn).first()
-                        if saved_book:
-                            saved_book.genres.set(genres)
-                            saved_book.save()
-                            stored_results.append(saved_book)
-                        else:
-                            logger.warning(f'[Book Import]: Could not find saved_book for ISBN: {book.isbn}')
+                            # add print type
+                            try:
+                                print_type = volume_info.get("printType").lower()
+                                logger.info(f'[Book Import "{book_title}"]: Added print type "{print_type}"')
+                            except Exception as e:
+                                logger.warning(f'[Book Import "{book_title}"] unable to set print_type. Setting to None.')
+                                print_type = None
+                                logger.debug(f'volumeInfo:\n{volume_info}')
+                                logger.debug(f'Error:\n{e}')
+
+                            # add language
+                            try:
+                                logger.debug("Trying to set language")
+                                language = volume_info.get('language')
+                                if isinstance(language, str):
+                                    logger.debug("language is str")
+                                if isinstance(language, list):
+                                    logger.debug('language is list')
+                                    langauges = [lang for lang in language]
+                                    language = " ,".join(languages)
+                                else:
+                                    logger.warning(f'[Book Import "{book_title}"] unable to set language. Setting to None.')
+                                    logger.debug(f'volumeInfo:\n{volume_info}')
+                                    language = None
+                                logger.info(f'[Book Import "{book_title}"]: Added language "{language}"')
+                            except Exception as e:
+                                logger.error(f'[Book Import "{book_title}"] error while setting language.')
+                                logger.debug(f'Error:\n{e}')
+
+                            try:
+                                new_book = Book(
+                                    thumbnail_cover = cover,
+                                    title = title,
+                                    page_count = page_count,
+                                    publisher = publisher,
+                                    published_date = date,
+                                    description = description,
+                                    print_type = print_type,
+                                    language = language,
+                                    isbn = isbn)
+                                new_books.append(new_book)
+                                book_author_links.append((new_book, authors))
+                                book_genre_links.append((new_book, genres))
+                            except ValidationError as e:
+                                logger.error(f'Validation error for "{book_title}":\n{e}')
+                            except Exception as e:
+                                logger.error(f'Book import failed.')
+                                logger.debug(f'volumeInfo:\n{volume_info}')
+                                logger.error(f'Error:\n{e}')
+                        # bulk save related models first
+                        Genres.objects.bulk_create(genre_cache.values(), ignore_conflicts=True)
+                        Authors.objects.bulk_create(author_cache.values(), ignore_conflicts=True)
+                        # save books
+                        Book.objects.bulk_create(new_books, ignore_conflicts=True)
+                        # attatch many to many relationships
+                        all_authors = set(a.name for _, authors in book_author_links for a in authors)
+                        saved_authors = {a.name: a for a in Authors.objects.filter(name__in=all_authors)}
+                        book_author_links = [(book, [saved_authors[a.name] for a in authors]) for book, authors in book_author_links]
+                        for book, authors in book_author_links:
+                            saved_book = Book.objects.filter(isbn=book.isbn).first()
+                            if saved_book:
+                                saved_book.authors.set(authors)
+                                saved_book.save()
+                            else:
+                                logger.warning(f'[Book Import]: Could not find saved_book for ISBN: {book.isbn}')
+                        all_genres = set(g.genre for _, genres in book_genre_links for g in genres)
+                        saved_genres = {g.genre: g for g in Genres.objects.filter(genre__in=all_genres)}
+                        book_genre_links = [(book, [saved_genres[g.genre] for g in genres]) for book, genres in book_genre_links]
+                        for book, genres in book_genre_links:
+                            saved_book = Book.objects.filter(isbn=book.isbn).first()
+                            if saved_book:
+                                saved_book.genres.set(genres)
+                                saved_book.save()
+                                stored_results.append(saved_book)
+                            else:
+                                logger.warning(f'[Book Import]: Could not find saved_book for ISBN: {book.isbn}')
 
             else:
                 # add extra search stuff here
@@ -417,14 +430,18 @@ def home(request):
         recommendations = UserRecommendations.objects.filter(user=request.user)
         context = {"form": form,
                "stored_results": stored_results,
+               "user_results": user_results,
                "page_title": "home",
                "currently_reading": currently_reading,
+               "query": query,
                 "recommendations": recommendations}
         return render(request, 'index.html', context)
         logger.debug(f'currently_reading({type(currently_reading)}): {currently_reading}')
     logger.debug(f'stored_results:\n{stored_results}')
     context = {"form": form,
+               "user_results": user_results,
                "stored_results": stored_results,
+               "query": query,
                "page_title": "home"}
     return render(request, 'index.html', context)
 

@@ -12,28 +12,34 @@
 		{% if user.is_authenticated %}
 			<h2 class="home-greeting">Welcome Back {{user.username}}!</h2>
 			{% if stored_results %}
+				<p><strong>Search Results For: </strong>{{ query }}</p>
 				<div class="search-results">
 					{% for book in stored_results %}
-						<div class="book-result">
-							{% if book.thumbnail_cover %}
-								<a href="/books/{{ book.id }}">
-									<img src="/media/{{ book.thumbnail_cover.image }}" alt="Book cover">
-								</a>
-							{% elif cover_image_url %}
-								<a href="/books/{{ book.id }}">
-									<img src="{{ book.cover_image_url }}">
-								</a>
-							{% else %}
-								<p>No cover available</p>
-							{% endif %}
-							<h4>{{ book.title }}</h4>
-							{% for author in book.authors.all %}
-								<h5>{{ author.name }}{% if not forloop.last %}, {% endif %}</h5>
-							{% endfor %}
-							<p>{{ book.genres.genre }}</p>
-							<p>{{ book.published_date }}</p>
-							<p>{{ book.page_count }} pages</p>
-						</div>
+						{% if book.thumbnail_cover %}
+							<a class="list-book-card hover-card" href="/books/{{ book.id }}">
+								<img src="/media/{{ book.thumbnail_cover.image }}" alt="Book cover">
+							</a>
+						{% endif %}
+					{% endfor %}
+				</div>
+			{% elif user_results %}
+				<div class="search-results">
+					{% for user, link in user_results.items %}
+						<a class="user-result-a" href="{{ link }}">
+							<div class="user-result">
+								{% if user.profile_picture %}
+									<div>
+										<img class="profile-picture-small" src="/media/user_profile_pictures/user_{{ user.id }}/avatar" alt="Profile Picture">
+									</div>
+								{% else %}
+									<div>
+										<img class="profile-picture-small" src="/static/images/defaul_avatar.jpg" alt="Default Avatar">
+								{% endif %}
+								<div>
+									<p class="username-result">@{{ user.username }}</p>
+								</div>
+							</div>
+						</a>
 					{% endfor %}
 				</div>
 			{% else %}
@@ -50,14 +56,16 @@
 				{% endif %}
 			{% endif %}
 			{% if recommendations %}
-				<hr class="thin">
-				<h3>Recommended</h3>
-				<div class="list-carousel">
-					{% for recommendation in recommendations %}
-						<a class="list-book-card hover-card" href="/books/{{ recommendation.book.id }}">
-							<img src="/media/{{ recommendation.book.thumbnail_cover.image }}" alt="Book cover">
-						</a>
-					{% endfor %}
+				<div>
+					<hr class="thin">
+					<h3>Recommended</h3>
+					<div class="list-carousel">
+						{% for recommendation in recommendations %}
+							<a class="list-book-card hover-card" href="/books/{{ recommendation.book.id }}">
+								<img src="/media/{{ recommendation.book.thumbnail_cover.image }}" alt="Book cover">
+							</a>
+						{% endfor %}
+					</div>
 				</div>
 			{% endif %}
 

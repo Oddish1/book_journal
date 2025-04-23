@@ -4,7 +4,7 @@
 }
 
 .content-container {
-	max-width: 900px;
+	max-width: 1000px;
 	margin: 0 auto;
 }
 
@@ -63,7 +63,6 @@
 	border: unset;
 	color: #233D4D;
 	scale: 110%;
-	transition: background-color .25s ease;
 }
 
 button {
@@ -79,7 +78,6 @@ button:hover {
 	background-color: #233D4D;
 	color: #FDFDFF;
 	scale: 105%;
-	transition: background-color .25s ease;
 }
 
 .search-form {
@@ -97,22 +95,10 @@ button:hover {
 	border: 1px solid #233D4D;
 }
 
-.book-result {
-	flex: 1 1 200px;
-	max-width: 250px;
-	align-items: center;
-}
-
-.book-result h4,
-.book-result h5,
-.book-result p {
-	margin: 0.25rem 0;
-	line-height: 1.2;
-}
-
 .search-results {
 	display: flex;
 	flex-wrap: wrap;
+	justify-content: center;
 	gap: 2rem;
 }
 
@@ -167,12 +153,10 @@ div.journal-heading {
 
 .journal-card:hover img {
 	scale: 105%;
-	transition: scale 0.2s ease;
 }
 
 .hover-card:hover {
 	scale: 105%;
-	transition: scale 0.2s ease;
 }
 
 h4.book-title {
@@ -462,4 +446,39 @@ p.normal-text {
 .profile-picture {
 	max-width: 200px;
 	max-height: 200px;
+}
+
+.profile-picture-small {
+	max-width: 100px;
+	max-height: 100px;
+}
+
+.user-result-a {
+	text-decoration: none;
+}
+
+.user-result {
+	display: flex;
+	flex-direction: column;
+	max-width: 150px;
+	align-items: center;
+	margin: 0.25rem;
+	padding: 1rem;
+	text-align: center;
+	text-decoration: revert;
+	background-color: #E9EBED;
+	border: 1px solid #233D4D;
+	border-radius: 8px;
+}
+
+p.username-result {
+	line-height: 1;
+	text-indent: 0;
+	margin: 0.25rem;
+	color: black;
+}
+
+.user-result:hover {
+	background-color: #D3D8DB;
+	scale: 105%;
 }

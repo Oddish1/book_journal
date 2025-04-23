@@ -61,7 +61,7 @@ class LoginForm(AuthenticationForm):
 
 class BookSearchForm(forms.Form):
     query = forms.CharField(label='', max_length=200, widget=forms.TextInput(attrs={
-                                                    'placeholder': 'Search books...',
+                                                    'placeholder': 'Search...',
                                                     'class': 'search-input'
                                                     }))
 
