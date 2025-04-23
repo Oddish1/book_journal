@@ -24,7 +24,7 @@ This is being developed for my capstone project.
   - [X] css variables for colors
   - [X] about page
   - [X] home page
-  - [ ] reviews aggregate page
+  - [X] reviews aggregate page
   - [ ] individual review page
   - [ ] password reset
     - [ ] success

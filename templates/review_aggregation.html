@@ -29,14 +29,16 @@
 							{% if book.print_type %}<p><strong>Print Type:</strong> {{ book.print_type }}</p>{% endif %}
 							{% if book.language %}<p><strong>Language:</strong> {{ book.language }}</p>{% endif %}
 							{% if book.publisher and book.published_date %}<p><strong>Publisher:</strong> {{ book.publisher }}; {{ book.published_date }}</p>
-							{% elif book.published_date %}<p><strong>Published on:</strong> {{ book.published_date }}</p>{% endif %}
+							{% elif book.published_date %}<p><strong>Published On:</strong> {{ book.published_date }}</p>{% endif %}
 							{% if book.genres.all %}
-								<h4>Genres:</h4>
-								{% for genre in book.genres.all %}
-									<p>{{ genre.genre }}{% if not forloop.last %}, {% endif %}</p>
-								{% endfor %}
+								<p><strong>Genres: </strong>
+									{% for genre in book.genres.all %}
+										{{ genre.genre }}{% if not forloop.last %}, {% endif %}
+									{% endfor %}
+								</p>
 							{% endif %}
 							{% if num_reviews > 0 %}
+								<div class="ratings-container">
 								<div class="ratings">
 									<p class="rating-element">{{ average_rating }}</p>
 									<div class="rating-element">
@@ -52,16 +54,18 @@
 									</div>
 									<p class="rating-element">({{ num_reviews }})</p>
 								</div>
+								</div>
 							{% endif %}
 						</div>
 					</div>
 					{% if review_data %}
-						<hr class="thin">
-						<h2>Reviews</h2>
+						<h2 style="text-align: center;">Reviews</h2>
 						{% for review, stars in review_data %}
 							<a class="no-decoration" href="/reviews/{{ review.id }}">
 								<div class="individual-review">
-									<h4>{{ review.user.username }}</h4>
+									{% if review.title %}
+										<h3>{{ review.title }}</h3>
+									{% endif %}
 									{% for star in stars %}
 										{% if star == "full" %}
 											<i class="fa-solid fa-star checked"></i>
@@ -71,9 +75,11 @@
 											<i class="fa-regular fa-star"></i>
 										{% endif %}
 									{% endfor %}
+									<p><strong>Posted By: </strong>@{{ review.user.username }}</p>
 									<p>{{ review.created_at }}</p>
-									<h3>{{ review.title }}</h3>
-									<p>{{ review.review }}</p>
+									{% if review.review %}
+										<p>{{ review.review|linebreaks }}</p>
+									{% endif %}
 								</div>
 							</a>
 						{% endfor %}

@@ -221,6 +221,7 @@ div.journal-heading {
 .ratings {
 	display: flex;
 	gap: 0.5rem;
+	margin: 0 auto;
 }
 
 .rating-element {
@@ -321,9 +322,14 @@ p.normal-text {
 
 .individual-review {
 	padding: 1rem;
-	border: 0.05rem solid var(--accent-color);
+	border: 1px solid var(--accent-color);
 	border-radius: 8px;
 	margin-bottom: 1rem;
+	text-align: center;
+}
+
+.individual-review p {
+	text-align: left;
 }
 
 .no-decoration,
@@ -489,4 +495,9 @@ p.username-result {
 	background-color: var(--highlight-1);
 	border: 1px solid var(--accent-color);
 	border-radius: 8px;
+}
+
+.ratings-container {
+	display: flex;
+	align-items: center;
 }

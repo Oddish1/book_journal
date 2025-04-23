@@ -587,7 +587,7 @@ def books(request, book_id):
     reviews = Reviews.objects.filter(book=book)
     num_journals = Journal.objects.filter(book=book, is_public=True).count()
     num_reading = Book.objects.filter(id=book_id, list__name="Currently Reading").values("list__user").distinct().count()
-    num_finished = Book.objects.filter(id=book_id, list__name="Finished").values("list__user").distinct().count()
+    num_finished = Book.objects.filter(id=book_id, list__name="Finished").count()
     num_reviews = book.ratings_count
     if book.average_rating:
         average_rating = round(book.average_rating, 2)
@@ -612,7 +612,8 @@ def books(request, book_id):
         if form.is_valid():
             selected_lists = form.cleaned_data['lists']
             logger.debug(f'selected_lists: {selected_lists}')
-            book.list.set(selected_lists)
+            for lst in selected_lists:
+                book.list.add(lst)
             book.save()
             if selected_lists.filter(user=request.user, name="Finished").exists():
                 book.list.remove(List.objects.get(user=request.user, name="Currently Reading"))
