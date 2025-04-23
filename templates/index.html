@@ -44,7 +44,7 @@
 				</div>
 			{% else %}
 			{% if currently_reading %}
-					<hr class="thin">
+				<div class="list-container">
 					<h3>Currently Reading</h3>
 					<div class="list-carousel">
 						{% for book in currently_reading %}
@@ -52,12 +52,12 @@
 								<img src="/media/{{ book.thumbnail_cover.image }}" alt="Book Cover">
 							</a>
 						{% endfor %}
+					</div>
 				</div>
 				{% endif %}
 			{% endif %}
 			{% if recommendations %}
-				<div>
-					<hr class="thin">
+				<div class="list-container">
 					<h3>Recommended</h3>
 					<div class="list-carousel">
 						{% for recommendation in recommendations %}

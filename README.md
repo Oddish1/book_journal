@@ -22,8 +22,8 @@ This is being developed for my capstone project.
   - [X] library page
   - [X] journal page
   - [X] css variables for colors
-  - [ ] about page
-  - [ ] home page
+  - [X] about page
+  - [X] home page
   - [ ] reviews aggregate page
   - [ ] individual review page
   - [ ] password reset
