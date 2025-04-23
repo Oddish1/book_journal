@@ -9,44 +9,67 @@
 
 {% block content %}
 	<div class="content-container">
-	<h2 class="home-greeting">@{{ user_data.user.username }}'s Library</h2>
-	<img class="profile-picture" src="/media/user_profile_pictures/user_{{ user_data.user.id }}/avatar">
-	{% if request.user != user_data.user %}
-		<form method="POST" action="{% url 'user_follow' username=user_data.user.username %}">
-			{% csrf_token %}
-			{% if is_following %}
-				<button class="form-input" type="submit" name="action" value="unfollow">Unfollow</button>
+		<div class="profile-about">
+			<div class="profile-top">
+				<div class="picture-button">
+					{% if user_data.user.profile_picture %}
+						<img class="profile-picture" src="/media/user_profile_pictures/user_{{ user_data.user.id }}/avatar">
+					{% else %}
+						<img class="profile-picture" src="/static/images/default-avatar.jpg">
+					{% endif %}
+					{% if request.user != user_data.user %}
+						<form method="POST" action="{% url 'user_follow' username=user_data.user.username %}">
+							{% csrf_token %}
+							{% if is_following %}
+								<button class="button-3" type="submit" name="action" value="unfollow">Unfollow</button>
+							{% else %}
+								<button class="button-3" type="submit" name="action" value="follow">Follow</button>
+							{% endif %}
+						</form>
+					{% else %}
+						<form method="GET" action="{% url 'edit_profile' %}">
+							<button class="button-3" type="submit">Edit</button>
+						</form>
+					{% endif %}
+					<div class="follow-container">
+						<p><strong>Followers: </strong> {{ user_data.followers.count }}</p>
+						<p><strong>Following: </strong> {{ user_data.following.count }}</p>
+					</div>
+				</div>
+			</div>
+			{% if user_data.user.bio %}
+				<div class="profile-bio">
+					<h2 class="home-greeting">@{{ user_data.user.username }}'s Library</h2>
+					<p>{{ user_data.user.bio|linebreaks }}</p>
+				</div>
 			{% else %}
-				<button class="form-input" type="submit" name="action" value="follow">Follow</button>
+				<div class="profile-bio">
+					<h2 class="home-greeting">@{{ user_data.user.username }}'s Library</h2>
+					<p>So quiet...</p>
+				</div>
 			{% endif %}
-		</form>
-	{% endif %}
-	<p><strong>Followers: </strong> {{ user_data.followers.count }}</p>
-	<p><strong>Following: </strong> {{ user_data.following.count }}</p>
-	{% if user_data.user.bio %}
-	      <h4>Bio</h4>
-	      <p>{{ user_data.user.bio|linebreaks }}</p>
-	{% endif %}
+		</div>
 	      <div class="user-lists">
 		      {% for name, lst in user_data.lists %}
 			      {% if lst %}
-			      <hr class="thin">
-			      <h4 class="list-title">{{ name }} ({{ lst.count }})</h4>
-			      <div class="list-carousel">
-				      {% if lst %}
-					      {% for item in lst %}
-						      <a class="list-book-card hover-card" href="/books/{{ item.id }}">
-							      <img src="/media/{{ item.thumbnail_cover.image }}" alt="Book Cover">
-						      </a>
-					      {% endfor %}
-				      {% endif %}
-			      </div>
+				<div class="list-container">
+				      <h4 class="list-title">{{ name }} ({{ lst.count }})</h4>
+				      <div class="list-carousel">
+					      {% if lst %}
+						      {% for item in lst %}
+							      <a class="list-book-card hover-card" href="/books/{{ item.id }}">
+								      <img src="/media/{{ item.thumbnail_cover.image }}" alt="Book Cover">
+							      </a>
+						      {% endfor %}
+					      {% endif %}
+				      </div>
+				</div>
 			      {% endif %}
 		      {% endfor %}
-		      <hr class="thin">
 	      </div>
 	      {% if user_data.reviews %}
-	      <h3>Reviews</h3>
+		<div class="list-container">
+		      <h3>Reviews</h3>
 		      <div class="list-carousel">
 			      {% for review, stars in user_data.reviews %}
 				      <a class="book-card hover-card" href="/reviews/{{ review.id }}">
@@ -67,39 +90,31 @@
 				      </a>
 			      {% endfor %}
 		      </div>
-		      <hr class="thin">
+		</div>
 	      {% endif %}
 	      {% if user_data.journals %}
-		      <h3>Journals</h3>
-		      <div class="list-carousel">
-			      {% for journal in user_data.journals %}
-				      <a class="journal-card hover-card" href="/journal/{{ journal.id }}">
-					      <div>
+			<div class="list-container">
+			      <h3>Journals</h3>
+			      <div class="list-carousel">
+				      {% for journal in user_data.journals %}
+					      <a class="list-book-card hover-card" href="/journal/{{ journal.id }}">
 						      <img src="/media/{{ journal.book.thumbnail_cover.image }}" alt="Book Cover">
-						      {% if journal.title %}
-							      <h4>{{ journal.title }}</h4>
-						      {% endif %}
-						      {% if journal.page %}
-							      <p>{{ journal.book.title }} | page {{ journal.page }}<p>
-						      {% else %}
-							      <p>{{ journal.book.title }}</p>
-						      {% endif %}
-					      </div>
-				      </a>
-			      {% endfor %}
-		      </div>
+					      </a>
+				      {% endfor %}
+			      </div>
+			</div>
 	      {% endif %}
 	      {% if user_data.owned_books %}
-		      <hr class="thin">
-		      <h3>Owned Books</h3>
-		      <div class="list-carousel">
-				{% for book in user_data.owned_books %}
-					<a class="list-book-card hover-card" href="/books/{{ book.id }}" alt="Book Cover">
-						  <img src="/media/{{ book.thumbnail_cover.image }}" alt="Book Cover">
-					</a>
-				{% endfor %}
-		      </div>
-		      <hr class="thin">
+			<div class="list-container">
+			      <h3>Owned Books</h3>
+			      <div class="list-carousel">
+					{% for book in user_data.owned_books %}
+						<a class="list-book-card hover-card" href="/books/{{ book.id }}" alt="Book Cover">
+							  <img src="/media/{{ book.thumbnail_cover.image }}" alt="Book Cover">
+						</a>
+					{% endfor %}
+			      </div>
+			</div>
 	      {% endif %}
 	</div>
 {% endblock content %}

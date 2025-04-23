@@ -942,7 +942,7 @@ def about(request):
     context = {'page_title': 'about'}
     return HttpResponse(template.render(context, request))
 
-def profile(request):
+def edit_profile(request):
     if not request.user.is_authenticated:
         return redirect("home")
     user = request.user
@@ -950,12 +950,12 @@ def profile(request):
         form = UserProfileForm(request.POST, request.FILES, instance=user)
         if form.is_valid():
             form.save()
-            return redirect('profile')
+            return redirect(reverse('public_profile', kwargs={'username': user.username}))
     else:
         form = UserProfileForm(instance=user)
     template = loader.get_template('profile.html')
     context = {
-        'page_title': 'profile',
+        'page_title': 'edit profile',
         'user': user,
         'form': form,
     }
@@ -968,7 +968,7 @@ def public_profile(request, username):
         is_following = UserFollow.objects.filter(follower=request.user, followed=user).exists()
     if not user:
         return redirect(reverse('profile_dne', kwargs={'username': username}))
-    if not user.is_public:
+    if not user.is_public and user != request.user:
         return redirect(reverse('profile_not_public', kwargs={'username': username}))
     user_lists = List.objects.filter(user=user)
     lists = []
@@ -1004,8 +1004,12 @@ def public_profile(request, username):
         'owned_books': owned_books
     }
     template = loader.get_template('public_profile.html')
+    if request.user == user:
+        page_title = "profile"
+    else:
+        page_title = f'@{user.username}'
     context = {
-        'page_title': f'@{user.username}',
+        'page_title': page_title,
         'user_data': user_data,
         'is_following': is_following,
     }

@@ -31,10 +31,10 @@ This is being developed for my capstone project.
     - [X] fail
     - [X] complete
     - [X] confirm
-  - [ ] profile
-    - [ ] public profile
-    - [ ] dne
-    - [ ] not public
+  - [X] profile
+    - [X] public profile
+    - [X] dne
+    - [X] not public
 
 ## Development Backlog
 

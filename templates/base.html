@@ -16,7 +16,7 @@
 						<a class="{% if page_title == 'home' %}button-b{% else %} button-a{% endif %}" href="/">home</a>
 						<a class="{% if page_title == 'library' %}button-b{% else %}button-a{% endif %}" href="/library">library</a>
 						<a class="{% if page_title == 'journal' %}button-b{% else %}button-a{% endif %}" href="/journal">journal</a>
-						<a class="{% if page_title == 'profile' %}button-b{% else %}button-a{% endif %}" href="/profile">profile</a>
+						<a class="{% if page_title == 'profile' %}button-b{% else %}button-a{% endif %}" href="/profile/@{{ request.user.username }}">profile</a>
 						<a class="{% if page_title == 'about' %}button-b{% else %} button-a{% endif %}" href="/about">about</a>
 						{% if user.is_authenticated %}
 							<a class="button-a" href="/logout/">sign out</a>

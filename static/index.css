@@ -47,6 +47,7 @@
 	text-align: center;
 	text-decoration: none;
 	display: inline-block;
+	border-radius: 8px;
 }
 
 .button-b:link, .button-b:visited {
@@ -56,6 +57,7 @@
 	text-align: center;
 	text-decoration: none;
 	display: inline-block;
+	border-radius: 8px;
 }
 
 .button-a:link, .button-a:visited,
@@ -77,6 +79,7 @@ button {
 	text-align: center;
 	text_decoration: none;
 	display: inline-block;
+	border-radius: 8px;
 }
 
 button:hover {
@@ -98,6 +101,7 @@ button:hover {
 	padding: 0.5rem;
 	font-size: 1rem;
 	border: 1px solid var(--accent-color);
+	border-radius: 8px;
 }
 
 .search-results {
@@ -374,6 +378,7 @@ p.normal-text {
 	padding: 0.5rem;
 	margin: 0.5rem 0;
 	box-sizing: border-box;
+	border-radius: 8px;
 }
 
 .form-input button {
@@ -436,6 +441,7 @@ p.normal-text {
 .profile-picture {
 	max-width: 200px;
 	max-height: 200px;
+	border-radius: 8px;
 }
 
 .profile-picture-small {
@@ -520,4 +526,43 @@ p.username-result {
 .button-2 {
 	width: 200px;
 	cursor: pointer;
+}
+
+.button-3 {
+	display: flex;
+	width: 175px;
+	justify-content: center;
+	cursor: pointer;
+	margin: 0 auto;
+	border-radius: 8px;
+}
+
+.profile-about {
+	display: flex;
+	margin: 2rem 0rem 2rem 0rem;
+
+}
+
+.profile-top {
+	display: flex;
+	flex-direction: column;
+	algin-items: center;
+
+}
+
+.profile-top p {
+	text-align: center;
+	margin: 0.25rem;
+}
+
+.follow-container {
+}
+
+.profile-bio {
+	padding: 0rem 2rem 0rem 2rem;
+	background-color: var(--highlight-1);
+	border: 1px solid var(--accent-color);
+	border-radius: 8px;
+	margin: 0rem 2rem 0rem 2rem;
+	width: 100%;
 }
