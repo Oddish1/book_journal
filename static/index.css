@@ -377,7 +377,7 @@ p.normal-text {
 }
 
 .form-input button {
-	max-width: 500px;
+	max-width: 300px;
 	padding: 0.5rem 1rem;
 	margin-top: 1rem;
 	font-size: 1rem;
@@ -510,4 +510,14 @@ p.username-result {
 .ratings-container {
 	display: flex;
 	align-items: center;
+}
+
+.center-button {
+	display: flex;
+	justify-content: center;
+}
+
+.button-2 {
+	width: 200px;
+	cursor: pointer;
 }

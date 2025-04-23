@@ -21,14 +21,14 @@
 			<div>
 				{{ form.password }}
 			</div>
-			<button class="form-input" type="submit">Login</button>
+			<button class="form-input button-2" type="submit">Login</button>
 		</form>
 		<form method="GET" action="{% url 'password_reset' %}">
-			<button class="form-input" type="submit">Reset Password</button>
+			<button class="form-input button-2" type="submit">Reset Password</button>
 		</form>
 		<p class="normal-text">Don't have an account?</p>
 		<form method="GET" action="{% url 'register' %}">
-			<button class="form-input" type="submit">Register Now</button>
+			<button class="form-input button-2" type="submit">Register Now</button>
 		</form>
 	</div>
 {% endblock content %}

@@ -26,10 +26,11 @@ This is being developed for my capstone project.
   - [X] home page
   - [X] reviews aggregate page
   - [X] individual review page
-  - [ ] password reset
-    - [ ] success
-    - [ ] fail
-    - [ ] complete
+  - [X] password reset
+    - [X] success
+    - [X] fail
+    - [X] complete
+    - [X] confirm
   - [ ] profile
     - [ ] public profile
     - [ ] dne
