@@ -13,6 +13,16 @@
 		<div class="book-info-container">
 			<div class="book-left-side">
 				<img src="/media/{{ book.thumbnail_cover.image }}" alt="Book Cover">
+				<br>
+				{% if currently_reading %}
+					<div class="new-journal-entry-btn">
+						{% for i in currently_reading %}
+							{% if i.id == book.id %}
+								<a class="button-b" href ="{% url 'new_journal_with_book' book.id %}">Add Journal Entry</a>
+							{% endif %}
+						{% endfor %}
+					</div>
+				{% endif %}
 			</div>
 			<div class="book-middle-section">
 				<div class="book-header">
@@ -29,9 +39,9 @@
 						{% if book.publisher and book.published_date %}<p><strong>Publisher:</strong> {{ book.publisher }}; {{ book.published_date }}</p>
 						{% elif book.published_date %}<p><strong>Published on:</strong> {{ book.published_date }}</p>{% endif %}
 						{% if book.genres.all %}
-							<h4>Genres:</h4>
+							<p><strong>Genres: </strong>
 							{% for genre in book.genres.all %}
-								<p>{{ genre.genre }}{% if not forloop.last %}, {% endif %}</p>
+								{{ genre.genre }}{% if not forloop.last %}, {% endif %}</p>
 							{% endfor %}
 						{% endif %}
 						{% if num_reviews > 0 %}
@@ -51,21 +61,18 @@
 								<a href="/reviews/book/{{ book.id }}"><p class="rating-element">({{ num_reviews }})</p></a>
 							</div>
 						{% endif %}
+						{% if num_reading %}
+							<p><strong>Currently Reading: </strong>{{ num_reading }}</p>
+						{% endif %}
+						{% if num_finished %}
+							<p><strong>Finished Reading: </strong>{{ num_finished }}</p>
+						{% endif %}
+						{% if num_journals > 0 %}
+							<p><strong>User Journals: </strong>(<a href="/journals/book/{{ book.id }}">{{ num_journals }}</a>)</p>
+						{% endif %}
 					</div>
-					{% if currently_reading %}
-						<div class="new-journal-entry-btn">
-							{% for i in currently_reading %}
-								{% if i.id == book.id %}
-									<a class="button-b" href ="{% url 'new_journal_with_book' book.id %}">Add Journal Entry</a>
-								{% endif %}
-							{% endfor %}
-						</div>
-					{% endif %}
 				</div>
 				{% if book.description %}
-					<br>
-					<hr class="thin">
-					<br>
 					<p class="wide-spacing">{{ book.description }}</p>
 				{% endif %}
 			</div>

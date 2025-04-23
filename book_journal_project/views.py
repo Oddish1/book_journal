@@ -585,6 +585,9 @@ def password_reset_complete(request):
 def books(request, book_id):
     book = Book.objects.get(id=book_id)
     reviews = Reviews.objects.filter(book=book)
+    num_journals = Journal.objects.filter(book=book, is_public=True).count()
+    num_reading = Book.objects.filter(id=book_id, list__name="Currently Reading").values("list__user").distinct().count()
+    num_finished = Book.objects.filter(id=book_id, list__name="Finished").values("list__user").distinct().count()
     num_reviews = book.ratings_count
     if book.average_rating:
         average_rating = round(book.average_rating, 2)
@@ -624,6 +627,9 @@ def books(request, book_id):
                "currently_reading": currently_reading,
                "page_title": book.title.lower(),
                "form": form,
+               "num_journals": num_journals,
+               "num_reading": num_reading,
+               "num_finished": num_finished,
                "num_reviews": num_reviews,
                "average_rating": average_rating,
                "stars": stars}
@@ -1027,3 +1033,18 @@ def user_follow(request, username):
             UserFollow.objects.filter(follower=request.user, followed=user_to_follow).delete()
             logger.debug(f'{request.user} unfollowed {user_to_follow}')
     return redirect('public_profile', username=username)
+
+def book_journals_aggregate(request, book_id):
+    if not request.user.is_authenticated:
+        return redirect('home')
+    book = Book.objects.get(id=book_id)
+    journals = Journal.objects.filter(book=book, is_public=True).order_by("-created_at")
+    currently_reading = Book.objects.filter(list=List.objects.get(user=request.user, name="Currently Reading"))
+    context = {
+            "page_title": "journals | " + book.title,
+            "book": book,
+            "journals": journals,
+            "currently_reading": currently_reading,
+    }
+    template = loader.get_template('book_journals_aggregate.html')
+    return HttpResponse(template.render(context, request))

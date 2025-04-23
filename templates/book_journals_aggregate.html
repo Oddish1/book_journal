@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block custom-head %}
+	{% load static %}
+	<meta charset="UTF-8">
+	<meta name="description" content="Journal entries made by users for {{ book.title }}: {{ book.description }}">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" href="{% static 'index.css' %}">
+{% endblock custom-head %}
+
+{% block content %}
+	{% if book %}
+		<div class="book-info-container">
+			<div class="book-left-side">
+				<img src="/media/{{ book.thumbnail_cover.image }}" alt="Book Cover">
+				<br>
+				{% if currently_reading %}
+					<div class="new-journal-entry-btn">
+						{% for i in currently_reading %}
+							{% if i.id == book.id %}
+								<a class="button-b" href ="{% url 'new_journal_with_book' book.id %}">Add Journal Entry</a>
+							{% endif %}
+						{% endfor %}
+					</div>
+				{% endif %}
+			</div>
+			<div class="book-middle-section">
+				{% for entry in journals %}
+					<div class="aggregate-journal-entry">
+						{% if entry.title %}
+							<h3>{{ entry.title }}</h3>
+						{% endif %}
+						{% if entry.tags.all %}
+							<p><strong>Tags: </strong>
+								{% for tag in entry.tags.all %}
+									{{ tag.tag }}{% if not forloop.last %}, {% endif %}
+								{% endfor %}
+							</p>
+						{% endif %}
+						<p><strong>Posted By: </strong><a href="/profile/@{{ entry.user.username }}">@{{ entry.user.username }}</a></p>
+						<p>{{ entry.created_at }}</p>
+						<p><strong>Page: </strong>{{ entry.page }}</p>
+						{% if entry.journal_text %}
+							<p>{{ entry.journal_text|linebreaks }}</p>
+						{% endif %}
+					</div>
+				{% endfor %}
+			</div>
+		</div>
+	{% else %}
+		<p>Oops! It looks like there are no journal entries for {{ book.title }}!<p>
+	{% endif %}
+{% endblock content %}

@@ -16,7 +16,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import include, path
-from .views import home, register, login_view, logout_view, books, journal, new_journal, library, new_review, generate_recommendations, book_reviews_aggregate, book_review, book_journal, about, verify_email, register_landing_page, password_reset, password_reset_success, password_reset_confirm, password_reset_complete, password_reset_fail, profile, public_profile, profile_not_public, profile_dne, user_follow
+from .views import home, register, login_view, logout_view, books, journal, new_journal, library, new_review, generate_recommendations, book_reviews_aggregate, book_review, book_journal, about, verify_email, register_landing_page, password_reset, password_reset_success, password_reset_confirm, password_reset_complete, password_reset_fail, profile, public_profile, profile_not_public, profile_dne, user_follow, book_journals_aggregate
 from django.conf import settings
 from django.conf.urls.static import static
 
@@ -49,4 +49,5 @@ urlpatterns = [
     path('profile/@<username>/not-public', profile_not_public, name='profile_not_public'),
     path('profile/@<username>/does-not-exist', profile_dne, name='profile_dne'),
     path('profile/@<username>/follow-user', user_follow, name='user_follow'),
+    path('journals/book/<int:book_id>/', book_journals_aggregate, name='book_journals_aggregate'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

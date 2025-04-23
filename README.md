@@ -14,21 +14,24 @@ This is being developed for my capstone project.
   - [X] public user profile page
   - [X] populate user links on all pages publicly referencing users (reviews, journals, etc.)
   - [X] User following + email alerts
-- [ ] Public journals aggregate page on book page
-- [ ] Currently reading count on book page
-- [ ] Num. finished reading on book page
+- [X] Public journals aggregate page on book page
+- [X] Currently reading count on book page
+- [X] Num. finished reading on book page
 - [X] User search & finish search styling
-- [ ] Journal filtering (keyword search, user-set tags)
 - [ ] Refine/Unify Styling
   - [ ] public profile page
-- [ ] Auto-tagging system (sentiment analysis + keyword extraction)
-  - [ ] Reviews
-  - [ ] Journals
-  - [ ] Books (descriptions)
+  - [ ] library page
+  - [ ] journal page
+  - [ ] about page
+  - [ ] home page
 
 ## Development Backlog
 
 - [X] Move to PostreSQL db
+- [ ] Auto-tagging system (sentiment analysis + keyword extraction)
+  - [ ] Reviews
+  - [ ] Journals
+  - [ ] Books (descriptions)
 
 ## Finished
 

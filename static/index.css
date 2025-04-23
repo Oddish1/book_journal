@@ -163,10 +163,6 @@ h4.book-title {
 	max-width: 150px;
 }
 
-h1.book-title {
-	max-width: 30rem;
-}
-
 div.currently-reading-books {
 	display: flex;
 	flex-wrap: wrap;
@@ -299,18 +295,32 @@ footer {
 	position: sticky;
 	top: 1rem;
 	align-self: flex-start;
+	align-content: center;
+	padding: 1rem;
+	background-color: #E9EBED;
+	border: solid 1px #233D4D;
+	border-radius: 8px;
+}
+
+.add-to-list button {
+	display: flex;
+	margin: 0 auto;
 }
 
 .book-left-side img {
+	display: flex;
 	max-width: 100%;
 	height: auto;
-	display: block;
+	margin: 0 auto;
+}
+
+.new-journal-entry-btn {
+	display: grid;
 }
 
 .book-middle-section {
 	flex: 1 1 auto;
 	overflow-y: auto;
-	padding-right: 1rem;
 }
 
 p {
@@ -328,18 +338,18 @@ p.normal-text {
 
 .book-header {
 	display: flex;
-	justify-content: space-between;
-	align-items: stretch;
-	gap: 1rem;
+	padding: 1rem;
+	background-color: #E9EBED;
+	border: solid 1px #233D4D;
+	border-radius: 8px;
+	line-spacing: 1;
+	text-align: center;
 }
 
 .book-data {
 	flex: 1;
 }
-.new-journal-entry-btn {
-	display: flex;
-	align-items: flex-end;
-}
+
 
 .individual-review {
 	padding: 1rem;
@@ -481,4 +491,22 @@ p.username-result {
 .user-result:hover {
 	background-color: #D3D8DB;
 	scale: 105%;
+}
+
+.aggregate-journal-entry {
+	display: flex;
+	max-width: 600px;
+	flex-direction: column;
+	align-items: center;
+	margin: 0 auto;
+	padding: 1rem;
+	background-color: #E9EBED;
+	border: 1px solid #233D4D;
+	border-radius: 8px;
+}
+
+.aggregate-journal-entry p, h3, h4, h5 {
+	margin: 0.25rem;
+	line-height: 1;
+	text-indent: 0;
 }
