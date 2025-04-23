@@ -886,6 +886,17 @@ def book_review(request, review_id):
         return redirect("home")
     review = Reviews.objects.get(id=review_id)
     book = review.book
+    num_reviews = book.ratings_count
+    average_rating = book.average_rating
+    if average_rating:
+        average_stars = []
+        for i in range(1, 6):
+            if average_rating >= i:
+                average_stars.append("full")
+            elif average_rating >= i - 0.5:
+                average_stars.append("half")
+            else:
+                average_stars.append("empty")
     if review:
         rating = review.rating
     else:
@@ -906,7 +917,10 @@ def book_review(request, review_id):
             "review": review,
             "rating": rating,
             "stars": stars,
+            "average_rating": average_rating,
+            "average_stars": average_stars,
             "book": book,
+            "num_reviews": num_reviews,
     }
     return HttpResponse(template.render(context, request))
 

@@ -25,7 +25,7 @@ This is being developed for my capstone project.
   - [X] about page
   - [X] home page
   - [X] reviews aggregate page
-  - [ ] individual review page
+  - [X] individual review page
   - [ ] password reset
     - [ ] success
     - [ ] fail

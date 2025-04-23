@@ -332,6 +332,16 @@ p.normal-text {
 	text-align: left;
 }
 
+.individual-review-b {
+	padding: 1rem;
+	margin: 1rem;
+	text-align: center;
+}
+
+.individual-review-b p {
+	text-align: left;
+}
+
 .no-decoration,
 .no-decoration *:not(.checked) {
 	text-decoration: none;
