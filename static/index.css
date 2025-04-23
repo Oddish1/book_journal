@@ -1,3 +1,9 @@
+:root {
+	--accent-color: #233D4D;
+	--highlight-1: #E9EBED;
+	--highlight-2: #D3D8DB;
+}
+
 .page-container {
 	max-width: 1250px;
 	margin: 0 auto;
@@ -35,18 +41,18 @@
 }
 
 .button-a:link, .button-a:visited {
-	background-color: #233D4D;
-	color: #FDFDFF;
-	border: 1px solid #233D4D;
+	background-color: var(--accent-color);
+	color: var(--highlight-1);
+	border: 1px solid var(--accent-color);
 	text-align: center;
 	text-decoration: none;
 	display: inline-block;
 }
 
 .button-b:link, .button-b:visited {
-	background-color: #FDFDFF;
-	color: #233D4D;
-	border: 1px solid #233D4D;
+	background-color: var(--highlight-1);
+	color: var(--accent-color);
+	border: 1px solid var(--accent-color);
 	text-align: center;
 	text-decoration: none;
 	display: inline-block;
@@ -59,15 +65,14 @@
 }
 
 .button-a:hover, .button-b:hover {
-	background-color: #C6C5B9;
-	border: unset;
-	color: #233D4D;
+	background-color: var(--highlight-1);
+	color: var(--accent-color);
 	scale: 110%;
 }
 
 button {
-	background-color: #FDFDFF;
-	color: #233D4D;
+	background-color: var(--accent-color);
+	color: var(--highlight-1);
 	padding: 10px 16px;
 	text-align: center;
 	text_decoration: none;
@@ -75,8 +80,8 @@ button {
 }
 
 button:hover {
-	background-color: #233D4D;
-	color: #FDFDFF;
+	background-color: var(--highlight-2);
+	color: var(--accent-color);
 	scale: 105%;
 }
 
@@ -92,7 +97,7 @@ button:hover {
 	width: 250px;
 	padding: 0.5rem;
 	font-size: 1rem;
-	border: 1px solid #233D4D;
+	border: 1px solid var(--accent-color);
 }
 
 .search-results {
@@ -112,15 +117,24 @@ button:hover {
 .journal-results {
 	display: flex;
 	flex-wrap: wrap;
-	gap: 2rem;
+	gap: 1rem;
+	margin-top: 1rem;
+	margin-bottom: 1rem;
 }
 
 .journal-result {
-	flex: 1 1 250px;
-	max-width: 300px;
+	max-width: 250px;
 	align-items: center;
 	text-align: center;
-	padding: 0.5rem;
+	padding: 1rem;
+	background-color: var(--highlight-1);
+	border: 1px solid var(--accent-color);
+	border-radius: 8px;
+}
+
+.journal-result:hover {
+	scale: 105%;
+	background-color: var(--highlight-2);
 }
 
 .journal-result h3, h4, h5, p {
@@ -145,17 +159,6 @@ div.journal-heading {
 	max-width: 128px;
 }
 
-.journal-card img {
-	text-decoration: none;
-	color: inherit;
-	padding: 0.5rem;
-	width: 140px;
-}
-
-.journal-card:hover img {
-	scale: 105%;
-}
-
 .hover-card:hover {
 	scale: 105%;
 }
@@ -176,34 +179,10 @@ div.user-latest-journals {
 	gap: 2rem;
 }
 
-a.journal-card {
-	flex: 0 0 auto;
-	align-items: center;
-	text-align: center;
-	text-decoration: none;
-	color: inherit;
-	padding: 0.5rem;
-	width: 200px;
-}
-
 hr.thin {
 	border: none;
 	height: 1px;
-	background-color: #233D4D;
-}
-
-hr.dotted {
-	border: none;
-	height: 4px;
-	background-image: radial-gradient(#233D4D 2px, transparent 2px);
-	background-size: 10px 10px;
-	background-repeat: repeat-x;
-}
-
-hr.dashed {
-	border: none;
-	border-top: 2px dashed #233D4D;
-	margin: 1rem 0;
+	background-color: var(--accent-color);
 }
 
 div.journal-heading {
@@ -250,22 +229,6 @@ div.journal-heading {
 	gap: 2rem;
 }
 
-.review-card {
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	text-align: center;
-	text-decoration: none;
-	color: inherit;
-	border: 2px solid #233D4D;
-	border-radius: 5px;
-	padding: 1rem;
-	margin: 0 auto;
-	box-shadow: 4px 4px 12px #233D4D;
-	width: 500px;
-	background-color: #FFF;
-}
-
 .checked {
 	color: orange;
 }
@@ -298,8 +261,8 @@ footer {
 	align-self: flex-start;
 	align-content: center;
 	padding: 1rem;
-	background-color: #E9EBED;
-	border: solid 1px #233D4D;
+	background-color: var(--highlight-1);
+	border: solid 1px var(--accent-color);
 	border-radius: 8px;
 }
 
@@ -340,8 +303,8 @@ p.normal-text {
 .book-header {
 	display: flex;
 	padding: 1rem;
-	background-color: #E9EBED;
-	border: solid 1px #233D4D;
+	background-color: var(--highlight-1);
+	border: solid 1px var(--accent-color);
 	border-radius: 8px;
 	line-spacing: 1;
 	text-align: center;
@@ -354,7 +317,7 @@ p.normal-text {
 
 .individual-review {
 	padding: 1rem;
-	border: 0.05rem solid #233D4D;
+	border: 0.05rem solid var(--accent-color);
 	border-radius: 8px;
 	margin-bottom: 1rem;
 }
@@ -363,16 +326,16 @@ p.normal-text {
 .no-decoration *:not(.checked) {
 	text-decoration: none;
 	color: inherit;
-	background-color: #E9EBED;
+	background-color: var(--highlight-1);
 }
 
 .no-decoration:hover,
 .no-decoration:hover *:not(.checked) {
-	background-color: #D3D8DB;
+	background-color: var(--highlight-2);
 }
 
 .new-journal-content {
-	border: 0.05rem solid #233D4D;
+	border: 0.05rem solid var(--accent-color);
 	border-radius: 8px;
 	padding: 1rem;
 	display: flex;
@@ -381,7 +344,7 @@ p.normal-text {
 	align-items: center;
 	text-align: center;
 	margin: 1rem 20rem 0 20rem;
-	background-color: #E9EBED;
+	background-color: var(--highlight-1);
 }
 
 .form-input {
@@ -402,10 +365,6 @@ p.normal-text {
 	text-align: center;
 	box-sizing: border-box;
 }
-/* .new-journal-form input[type="text"], */
-/* .new-journal-form input[type="number"], */
-/* .new-journal-form textarea, */
-/* .new-journal-form select  */
 
 .errorlist {
 	color: red;
@@ -423,9 +382,9 @@ p.normal-text {
 	margin: 4rem auto;
 	padding: 2rem;
 	max-width: 600px;
-	border: 1px solid #233D4D;
+	border: 1px solid var(--accent-color);
 	border-radius: 8px;
-	background-color: #E9EBED;
+	background-color: var(--highlight-color);
 }
 
 .checkbox-with-label {
@@ -477,8 +436,8 @@ p.normal-text {
 	padding: 1rem;
 	text-align: center;
 	text-decoration: revert;
-	background-color: #E9EBED;
-	border: 1px solid #233D4D;
+	background-color: var(--highlight-1);
+	border: 1px solid var(--accent-color);
 	border-radius: 8px;
 }
 
@@ -490,7 +449,7 @@ p.username-result {
 }
 
 .user-result:hover {
-	background-color: #D3D8DB;
+	background-color: var(--highlight-2);
 	scale: 105%;
 }
 
@@ -501,8 +460,8 @@ p.username-result {
 	align-items: center;
 	margin: 0 auto;
 	padding: 1rem;
-	background-color: #E9EBED;
-	border: 1px solid #233D4D;
+	background-color: var(--highlight-1);
+	border: 1px solid var(--accent-color);
 	border-radius: 8px;
 }
 
@@ -515,7 +474,7 @@ p.username-result {
 .list-container {
 	padding: 1rem;
 	margin: 2rem;
-	background-color: #E9EBED;
-	border: 1px solid #233D4D;
+	background-color: var(--highlight-1);
+	border: 1px solid var(--accent-color);
 	border-radius: 8px;
 }

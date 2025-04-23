@@ -20,7 +20,8 @@ This is being developed for my capstone project.
 - [X] User search & finish search styling
 - [ ] Refine/Unify Styling
   - [X] library page
-  - [ ] journal page
+  - [X] journal page
+  - [X] css variables for colors
   - [ ] about page
   - [ ] home page
   - [ ] reviews aggregate page

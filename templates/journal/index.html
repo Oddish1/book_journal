@@ -17,16 +17,15 @@
 				<h2>Your Journal Entries</h2>
 				<a class="button-a" href="/journal/new-journal">New Journal</a>
 			</div>
-			<hr class="thin">
+			<br>
 			<div class="journal-results">
 				{% for journal in journals %}
 					<div class="journal-result">
-						<a class="journal-card" href="/journal/{{ journal.id }}">
+						<a class="book-card hover-card" href="/journal/{{ journal.id }}">
 							<img src="/media/{{ journal.book.thumbnail_cover.image }}" alt="Book Cover">
 						</a>
 						{% if journal.title %}
 							<h3>{{ journal.title }}</h3>
-							<hr class="thin">
 						{% endif %}
 						{% if journal.page %}
 						<h4>page {{ journal.page }}</h4>
