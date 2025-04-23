@@ -18,7 +18,7 @@ This is being developed for my capstone project.
 - [X] Currently reading count on book page
 - [X] Num. finished reading on book page
 - [X] User search & finish search styling
-- [ ] Refine/Unify Styling
+- [X] Refine/Unify Styling
   - [X] library page
   - [X] journal page
   - [X] css variables for colors
