@@ -1,12 +1,10 @@
-from library.models import Book, Reviews, UserRecommendations
+from library.models import Book, Reviews
 import numpy as np
 import pandas as pd
-import string, re
 from nltk.corpus import stopwords
 from nltk.stem.wordnet import WordNetLemmatizer
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import linear_kernel
-from scipy.sparse import csr_matrix
 from difflib import SequenceMatcher
 import logging
 # import matplotlib.pyplot as plt
@@ -14,11 +12,13 @@ import logging
 
 logger = logging.getLogger('book_journal')
 
+
 def clean_text(sentence):
     text = [word for word in sentence.split() if word not in stopwords.words('english')]
     lemmatizer = WordNetLemmatizer()
     text = [lemmatizer.lemmatize(word) for word in text]
     return ' '.join(text).strip().lower()
+
 
 def build_dataset():
     all_user_reviews = Reviews.objects.all()
@@ -48,10 +48,12 @@ def build_dataset():
     books = books.reset_index(drop=True)
     return ratings, books
 
+
 def vectorize_books(books_df):
     tfidf = TfidfVectorizer(stop_words='english')
     tfidf_matrix = tfidf.fit_transform(books_df['combined_text'])
     return tfidf_matrix, tfidf
+
 
 def get_recommendations(title, books_df, tfidf_matrix, top_n=5):
     idxs = pd.Series(books_df.index, index=books_df['title']).drop_duplicates()
@@ -65,8 +67,10 @@ def get_recommendations(title, books_df, tfidf_matrix, top_n=5):
     top_books = books_df.iloc[similar_indices]
     return top_books[['title']], cosine_similarities[similar_indices]
 
+
 def is_similar(title1, title2, threshold=0.8):
     return SequenceMatcher(None, title1.lower(), title2.lower()).ratio() >= threshold
+
 
 def content_based_recommendations(user):
     ratings_df, books_df = build_dataset()

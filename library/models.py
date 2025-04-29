@@ -5,13 +5,13 @@ from django.core.validators import MinValueValidator, MaxValueValidator
 from PIL import Image
 from io import BytesIO
 from django.core.files.uploadedfile import InMemoryUploadedFile
-import os
 from django.core.files.storage import default_storage
 
 
 def user_directory_path(instance, filename):
     # file will be uploaded to MEDIA_ROOT/user_profile_pictures/user_<user.id>/avatar
     return f'user_profile_pictures/user_{instance.id}/avatar'
+
 
 def optimize_image(image, max_width=1200, quality=85):
     """
@@ -31,7 +31,7 @@ def optimize_image(image, max_width=1200, quality=85):
     img_width, img_height = img.size
 
     if img_width > max_width:
-        aspect_ration = img_height / float(img_width)
+        aspect_ratio = img_height / float(img_width)
         new_width = max_width
         new_height = int(new_width * aspect_ratio)
         img = img.resize((new_width, new_height), Image.ANTIALIAS)
@@ -42,6 +42,7 @@ def optimize_image(image, max_width=1200, quality=85):
 
     image_file = InMemoryUploadedFile(img_io, None, image.name, 'image/jpeg', img_io.tell(), None)
     return image_file
+
 
 # data model for the user
 class User(AbstractUser):
@@ -77,12 +78,13 @@ class User(AbstractUser):
     def __str__(self):
         return self.username
 
+
 # data model for book lists (currently reading, read, etc.)
 class List(models.Model):
     # a forein key linking to the User.id (auto-generated primary key by Django)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     # a disply name for the list
-    name =models.CharField(max_length=200, default='My List')
+    name = models.CharField(max_length=200, default='My List')
     # a boolean representing if the list visible to the public or not (default
     # false)
     is_public = models.BooleanField(default=False)
@@ -208,14 +210,12 @@ class UserRecommendations(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
 
-
 class Tags(models.Model):
     # represents the tag text
     tag = models.CharField(max_length=200)
 
     def __str__(self):
         return self.tag
-
 
 
 class Reviews(models.Model):
@@ -244,4 +244,3 @@ class BooksOwned(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     # foreign key linking to Book.id
     book = models.ForeignKey(Book, on_delete=models.CASCADE)
-

@@ -1,13 +1,12 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm, SetPasswordForm
 from django.contrib.auth import get_user_model
-from django.conf import settings
-from library.models import Tags, List, Book
+from library.models import List, Book
 from django.forms import ModelForm, TextInput, NumberInput, PasswordInput
 from django.core.validators import MinValueValidator, MaxValueValidator
-from django.core.exceptions import ValidationError
 
 User = get_user_model()
+
 
 class RegisterForm(UserCreationForm):
     email = forms.EmailField(
@@ -59,15 +58,17 @@ class LoginForm(AuthenticationForm):
         model = User
         fields = ["username", "password"]
 
+
 class BookSearchForm(forms.Form):
     query = forms.CharField(label='', max_length=200, widget=forms.TextInput(attrs={
                                                     'placeholder': 'Search...',
                                                     'class': 'search-input'
                                                     }))
 
+
 class NewJournalForm(forms.Form):
     book = forms.ModelChoiceField(
-        queryset=Book.objects.none(), # defualt empty
+        queryset=Book.objects.none(),  # defualt empty
         required=True,
         label='',
         empty_label='Pick a Book'
@@ -79,13 +80,13 @@ class NewJournalForm(forms.Form):
                                 'placeholder': 'Journal Title',
                                 'class': 'form-input'
                             })
-    )
+                            )
     page = forms.IntegerField(label='',
                               widget=NumberInput(attrs={
                                 'placeholder': 'Page Number',
                                 'class': 'form-input'
-                              })
-    )
+                                })
+                            )
     tags = forms.CharField(label='',
                            max_length=200,
                            required=False,
@@ -93,7 +94,7 @@ class NewJournalForm(forms.Form):
                                 'placeholder': 'tags, with, commas',
                                 'class': 'form-input'
                            })
-    )
+                          )
     journal_text = forms.CharField(
         label='',
         max_length=10000,
@@ -115,10 +116,9 @@ class NewJournalForm(forms.Form):
         self.fields['book'].queryset = Book.objects.filter(list=currently_reading)
 
 
-
 class ListDropDownForm(forms.Form):
     lists = forms.ModelMultipleChoiceField(
-        queryset=List.objects.none(), # default empty,
+        queryset=List.objects.none(),  # default empty,
         widget=forms.CheckboxSelectMultiple,
         required=False,
         label="",
@@ -132,7 +132,7 @@ class ListDropDownForm(forms.Form):
 
 class NewReviewForm(forms.Form):
     book = forms.ModelChoiceField(
-        queryset=Book.objects.none(), # default empty
+        queryset=Book.objects.none(),  # default empty
         required=True,
         label='',
         empty_label='Pick a Book'

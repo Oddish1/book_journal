@@ -1,18 +1,14 @@
 import requests
-import threading
 from urllib.parse import quote_plus
 from django.shortcuts import render, redirect, HttpResponse
-from django.contrib.auth import login, logout, authenticate, get_user_model
-from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth import login, logout
 from django.contrib.auth.tokens import default_token_generator
 from .forms import RegisterForm, BookSearchForm, NewJournalForm, ListDropDownForm, NewReviewForm, LoginForm, PasswordResetForm, PasswordResetPasswordForm, UserProfileForm
 from django.conf import settings
 from datetime import datetime
 from library.models import Book, Genres, Authors, Covers, Journal, Tags, List, Reviews, UserRecommendations, User, UserFollow, BooksOwned
 from library.recommender import content_based_recommendations
-from PIL import Image
-from io import BytesIO
-from django.core.files.base import ContentFile, File
+from django.core.files.base import ContentFile
 from django.core.exceptions import ValidationError
 from django.core.mail import EmailMultiAlternatives
 from django.template import loader
@@ -25,6 +21,7 @@ from django.utils.encoding import force_bytes
 logger = logging.getLogger('book_journal')
 
 API_KEY = settings.GOOGLE_BOOKS_API_KEY
+
 
 # helper methods
 def extract_isbn(volume_info):
@@ -42,7 +39,7 @@ def extract_isbn(volume_info):
                 isbn_10 = identifier['identifier']
                 logger.debug(f'[ISBN]: Found isbn_10 {isbn_10}')
                 break
-        isbn_13 = isbn_10 # use isbn-10 if isbn-13 isn't found
+        isbn_13 = isbn_10  # use isbn-10 if isbn-13 isn't found
     return isbn_13
 
 
@@ -62,17 +59,18 @@ def download_cover(url, book_title, isbn):
         if img_response.status_code == 200:
             logger.debug(f'[Image Download "{book_title}"]: Good URL response, attempting download.')
             cover = Covers(image_url=url)
-            filename=f'{isbn}.png'
+            filename = f'{isbn}.png'
             cover.image.save(filename, ContentFile(img_response.content), save=True)
-            cover_file = cover # set cover_image
+            cover_file = cover  # set cover_image
             logger.info(f'[Image Download "{book_title}"]: Successfully saved to DB.')
             return cover_file
     except ValidationError as e:
         logger.error(f'[Image Download: "{book_title}"] Validation error: \n{e}')
     except Exception as e:
         logger.error(f'[Image Download: "{book_title}"] Image failed to download.')
-        logger.debug(f'Image link: {cover_image_url}')
+        logger.debug(f'Image link: {url}')
         logger.error(f'Error:\n{e}')
+
 
 def send_confirmation_email(user, verify_link):
     subject = "Confirm your account"
@@ -91,6 +89,7 @@ def send_confirmation_email(user, verify_link):
     msg.attach_alternative(html_content, "text/html")
     msg.send()
 
+
 def send_welcome_email(user, login_link):
     subject = "Welcome to BookJournal!"
     from_email = "noreply@oddish1.com"
@@ -108,6 +107,7 @@ def send_welcome_email(user, login_link):
     msg.attach_alternative(html_content, "text/html")
     msg.send()
 
+
 def send_password_reset_email(user, reset_url):
     subject = "Password Reset"
     from_email = "noreply@oddish1.com"
@@ -123,6 +123,7 @@ def send_password_reset_email(user, reset_url):
     msg.attach_alternative(html_content, "text/html")
     msg.send()
 
+
 def send_password_reset_complete_email(user, login_link):
     subject = "You Just Reset Your BookJournal Password"
     from_email = "noreply@oddish1.com"
@@ -136,6 +137,7 @@ def send_password_reset_complete_email(user, login_link):
     msg = EmailMultiAlternatives(subject, text_content, from_email, [to_email])
     msg.attach_alternative(html_content, "text/html")
     msg.send()
+
 
 def send_follow_email(user, follower, link):
     subject = "You have a new follower!"
@@ -202,8 +204,8 @@ def home(request):
                         author_cache = {}
                         cover_cache = {}
                         new_books = []
-                        book_author_links = [] # (book, authors) tuples for many to many relationsip
-                        book_genre_links = [] # (book, genres) tuples for many to many relationship
+                        book_author_links = []  # (book, authors) tuples for many to many relationsip
+                        book_genre_links = []  # (book, genres) tuples for many to many relationship
                         stored_results = []
 
                         for result in api_results:
@@ -212,7 +214,7 @@ def home(request):
 
                             try:
                                 book_title = volume_info['title']
-                            except:
+                            except Exception:
                                 book_title = "Unknown Title"
 
                             # genres
@@ -225,7 +227,7 @@ def home(request):
                                         genre = Genres.objects.get(genre=genre_name)
                                     except Genres.DoesNotExist:
                                         genre = Genres(genre=genre_name)
-                                        genre_cache[genre_name] = genre # hold for later bulk_create
+                                        genre_cache[genre_name] = genre  # hold for later bulk_create
                                 genres.append(genre)
 
                             # authors
@@ -243,7 +245,7 @@ def home(request):
                                         except Authors.DoesNotExist:
                                             logger.debug(f'[Author Import]: Author DNE, attempting to create.')
                                             author = Authors(name=name)
-                                            author_cache[name] = author # hold for later bulk_create
+                                            author_cache[name] = author  # hold for later bulk_create
                                     authors.append(author)
                                     logger.info(f'[Book Import "{book_title}"]: added authors {authors}')
                             except Exception as e:
@@ -320,7 +322,7 @@ def home(request):
                                         try:
                                             date = datetime.strptime(publisher_date, "%Y-%m")
                                             date = datetime.strftime(date, "%Y-%m-%d")
-                                        except Exception as e:
+                                        except Exception:
                                             logger.warning(f'[Date Conversion "{book_title}"]: date not in "Y-M format. Attempting to set date from string value if possible.')
                                             try:
                                                 date = datetime.strptime("1111-01-01", "%Y-%m-%d")
@@ -362,7 +364,7 @@ def home(request):
                                     logger.debug("language is str")
                                 if isinstance(language, list):
                                     logger.debug('language is list')
-                                    langauges = [lang for lang in language]
+                                    languages = [lang for lang in language]
                                     language = " ,".join(languages)
                                 else:
                                     logger.warning(f'[Book Import "{book_title}"] unable to set language. Setting to None.')
@@ -375,22 +377,22 @@ def home(request):
 
                             try:
                                 new_book = Book(
-                                    thumbnail_cover = cover,
-                                    title = title,
-                                    page_count = page_count,
-                                    publisher = publisher,
-                                    published_date = date,
-                                    description = description,
-                                    print_type = print_type,
-                                    language = language,
-                                    isbn = isbn)
+                                    thumbnail_cover=cover,
+                                    title=title,
+                                    page_count=page_count,
+                                    publisher=publisher,
+                                    published_date=date,
+                                    description=description,
+                                    print_type=print_type,
+                                    language=language,
+                                    isbn=isbn)
                                 new_books.append(new_book)
                                 book_author_links.append((new_book, authors))
                                 book_genre_links.append((new_book, genres))
                             except ValidationError as e:
                                 logger.error(f'Validation error for "{book_title}":\n{e}')
                             except Exception as e:
-                                logger.error(f'Book import failed.')
+                                logger.error('Book import failed.')
                                 logger.debug(f'volumeInfo:\n{volume_info}')
                                 logger.error(f'Error:\n{e}')
                         # bulk save related models first
@@ -429,12 +431,12 @@ def home(request):
         currently_reading = Book.objects.filter(list=List.objects.get(user=request.user, name="Currently Reading"))
         recommendations = UserRecommendations.objects.filter(user=request.user)
         context = {"form": form,
-               "stored_results": stored_results,
-               "user_results": user_results,
-               "page_title": "home",
-               "currently_reading": currently_reading,
-               "query": query,
-                "recommendations": recommendations}
+                   "stored_results": stored_results,
+                   "user_results": user_results,
+                   "page_title": "home",
+                   "currently_reading": currently_reading,
+                   "query": query,
+                   "recommendations": recommendations}
         return render(request, 'index.html', context)
         logger.debug(f'currently_reading({type(currently_reading)}): {currently_reading}')
     logger.debug(f'stored_results:\n{stored_results}')
@@ -445,12 +447,13 @@ def home(request):
                "page_title": "home"}
     return render(request, 'index.html', context)
 
+
 def register(request):
     if request.method == "POST":
         form = RegisterForm(request.POST)
         if form.is_valid():
             user = form.save(commit=False)
-            user.is_active = False # set false until verified
+            user.is_active = False  # set false until verified
             user.save()
             # create default lists (currently reading, to be read)
             # TODO error handling on list creation
@@ -477,8 +480,10 @@ def register(request):
                "page_title": "register"}
     return render(request, "register.html", context)
 
+
 def register_landing_page(request):
     return render(request, 'register_verify.html')
+
 
 def login_view(request):
     if request.method == "POST":
@@ -496,9 +501,11 @@ def login_view(request):
                    "page_title": "login"}
     return render(request, "login.html", context)
 
+
 def logout_view(request):
     logout(request)
     return redirect("home")
+
 
 def verify_email(request, uidb64, token):
     try:
@@ -518,6 +525,7 @@ def verify_email(request, uidb64, token):
         return render(request, 'verification_success.html')
     else:
         return render(request, 'verification_failed.html')
+
 
 def password_reset(request):
     if request.method == "POST":
@@ -543,13 +551,16 @@ def password_reset(request):
     }
     return render(request, 'password_reset.html', context)
 
+
 def password_reset_success(request):
     context = {"page_title": "password reset"}
     return render(request, 'password_reset_success.html', context)
 
+
 def password_reset_fail(request):
     context = {"page_title": "password reset failed"}
     return render(request, 'password_reset_fail.html', context)
+
 
 def password_reset_confirm(request, uidb64, token):
     try:
@@ -579,12 +590,13 @@ def password_reset_confirm(request, uidb64, token):
     else:
         return redirect('password_reset_fail')
 
+
 def password_reset_complete(request):
     return render(request, 'password_reset_complete.html')
 
+
 def books(request, book_id):
     book = Book.objects.get(id=book_id)
-    reviews = Reviews.objects.filter(book=book)
     num_journals = Journal.objects.filter(book=book, is_public=True).count()
     num_reading = Book.objects.filter(id=book_id, list__name="Currently Reading").values("list__user").distinct().count()
     num_finished = Book.objects.filter(id=book_id, list__name="Finished").count()
@@ -595,7 +607,7 @@ def books(request, book_id):
         average_rating = None
     stars = []
     for i in range(1, 6):
-        if average_rating == None:
+        if average_rating is None:
             stars.append("empty")
         elif average_rating >= i:
             stars.append("full")
@@ -623,7 +635,7 @@ def books(request, book_id):
     else:
         form = ListDropDownForm(user=request.user, initial={
                                 'lists': book.list.all()
-        })
+                                })
     context = {"book": book,
                "currently_reading": currently_reading,
                "page_title": book.title.lower(),
@@ -685,13 +697,13 @@ def new_journal(request, book_id=None):
             if new_journal_form.is_valid():
                 clean_data = new_journal_form.cleaned_data
                 new_journal = Journal(
-                        user = request.user,
-                        book = clean_data['book'],
-                        title = clean_data['title'],
-                        page = clean_data['page'],
-                        journal_text = clean_data['journal_text'],
-                        is_public = clean_data['is_public'],
-                        is_finished = clean_data['is_finished'],
+                        user=request.user,
+                        book=clean_data['book'],
+                        title=clean_data['title'],
+                        page=clean_data['page'],
+                        journal_text=clean_data['journal_text'],
+                        is_public=clean_data['is_public'],
+                        is_finished=clean_data['is_finished'],
                 )
                 new_journal.save()
                 new_journal.tags.set(clean_data['tags'])
@@ -700,7 +712,7 @@ def new_journal(request, book_id=None):
                     # remove from currently reading and add to finished list
                     new_journal.book.list.remove(List.objects.get(user=request.user, name="Currently Reading"))
                     new_journal.book.list.add(List.objects.get(user=request.user, name="Finished"))
-                logger.info(f'[New Journal]: Saved successfully!')
+                logger.info('[New Journal]: Saved successfully!')
                 return redirect("journal")
     else:
         if book_id:
@@ -736,7 +748,7 @@ def library(request):
         latest_journals = Journal.objects.filter(user=request.user).order_by("-created_at")[:10]
         logger.debug(f'latest_journals: {latest_journals}')
         user = request.user
-       # all of a user's reviewed books
+        # all of a user's reviewed books
         user_reviews = Reviews.objects.filter(user=request.user)
         logger.debug(f'reviews: {user_reviews}')
         # books the user hasn't reviewed yet
@@ -745,7 +757,6 @@ def library(request):
         reviews = []
         for review in user_reviews:
             item = []
-            title = review.book.title
             item.append(review)
             stars = []
             rating = review.rating
@@ -761,7 +772,6 @@ def library(request):
         reviews.reverse()
         logger.debug(f'reviews: {reviews}')
         logger.debug(f'need_reviews: {need_reviews}')
-        last_read_book = Book.objects.filter(list=List.objects.get(user=request.user, name="Finished")).first()
         template = loader.get_template("library.html")
         context = {"page_title": "library",
                    "currently_reading": currently_reading,
@@ -770,7 +780,7 @@ def library(request):
                    "need_reviews": need_reviews,
                    "latest_journals": latest_journals,
                    "user": user,
-        }
+                   }
         return HttpResponse(template.render(context, request))
 
 
@@ -794,11 +804,11 @@ def new_review(request, book_id=None):
                     average_rating = clean_data['rating']
                     ratings_count += 1
                 new_review = Reviews(
-                    book = book,
-                    user = request.user,
-                    rating = clean_data['rating'],
-                    title = clean_data['title'],
-                    review = clean_data['review']
+                    book=book,
+                    user=request.user,
+                    rating=clean_data['rating'],
+                    title=clean_data['title'],
+                    review=clean_data['review']
                 )
                 new_review.save()
                 book.average_rating = average_rating
@@ -831,12 +841,14 @@ def new_review(request, book_id=None):
         }
         return HttpResponse(template.render(context, request))
 
+
 def generate_recommendations(request):
     if not request.user.is_authenticated:
         return redirect("home")
     last_review = Reviews.objects.filter(user=request.user).order_by('-created_at').first()
     if last_review:
-            return redirect("home")
+        return redirect("home")
+
 
 def book_reviews_aggregate(request, book_id):
     if not request.user.is_authenticated:
@@ -864,7 +876,7 @@ def book_reviews_aggregate(request, book_id):
         for i in range(1, 6):
             if rating >= i:
                 rating_stars.append("full")
-            elif rating >= i -0.5:
+            elif rating >= i - 0.5:
                 rating_stars.append("half")
             else:
                 rating_stars.append("empty")
@@ -880,6 +892,7 @@ def book_reviews_aggregate(request, book_id):
             "average_stars": average_stars,
     }
     return HttpResponse(template.render(context, request))
+
 
 def book_review(request, review_id):
     if not request.user.is_authenticated:
@@ -924,6 +937,7 @@ def book_review(request, review_id):
     }
     return HttpResponse(template.render(context, request))
 
+
 def book_journal(request, journal_id):
     if not request.user.is_authenticated:
         return redirect("home")
@@ -937,10 +951,12 @@ def book_journal(request, journal_id):
     }
     return HttpResponse(template.render(context, request))
 
+
 def about(request):
     template = loader.get_template('about.html')
     context = {'page_title': 'about'}
     return HttpResponse(template.render(context, request))
+
 
 def edit_profile(request):
     if not request.user.is_authenticated:
@@ -960,6 +976,7 @@ def edit_profile(request):
         'form': form,
     }
     return HttpResponse(template.render(context, request))
+
 
 def public_profile(request, username):
     user = User.objects.filter(username=username).first()
@@ -1015,6 +1032,7 @@ def public_profile(request, username):
     }
     return HttpResponse(template.render(context, request))
 
+
 def profile_not_public(request, username):
     template = loader.get_template('profile_not_public.html')
     context = {
@@ -1022,12 +1040,14 @@ def profile_not_public(request, username):
     }
     return HttpResponse(template.render(context, request))
 
+
 def profile_dne(request, username):
     template = loader.get_template('profile_dne.html')
     context = {
         'page_title': f'@{username} | DNE'
     }
     return HttpResponse(template.render(context, request))
+
 
 def user_follow(request, username):
     if not request.user.is_authenticated:
@@ -1052,6 +1072,7 @@ def user_follow(request, username):
             UserFollow.objects.filter(follower=request.user, followed=user_to_follow).delete()
             logger.debug(f'{request.user} unfollowed {user_to_follow}')
     return redirect('public_profile', username=username)
+
 
 def book_journals_aggregate(request, book_id):
     if not request.user.is_authenticated:
