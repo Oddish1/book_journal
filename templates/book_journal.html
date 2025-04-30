@@ -31,35 +31,54 @@
 							{% if book.publisher and book.published_date %}<p><strong>Publisher:</strong> {{ book.publisher }}; {{ book.published_date }}</p>
 							{% elif book.published_date %}<p><strong>Published on:</strong> {{ book.published_date }}</p>{% endif %}
 							{% if book.genres.all %}
-								<p><strong>Genres:</strong> 
-									{% for genre in book.genres.all %}
-										{{ genre.genre }}{% if not forloop.last %}, {% endif %}
-									{% endfor %}
+								<p><strong>Genres: </strong>
+								{% for genre in book.genres.all %}
+									{{ genre.genre }}{% if not forloop.last %}, {% endif %}
+								{% endfor %}
 								</p>
+							{% endif %}
+							{% if num_reviews > 0 %}
+								<div class="ratings-container">
+								<div class="ratings">
+									<p class="rating-element">{{ average_rating }}</p>
+									<div class="rating-element">
+										{% for star in average_stars %}
+											{% if star == "full" %}
+												<i class="fa-solid fa-star checked"></i>
+											{% elif star == "half" %}
+												<i class="fa-solid fa-star-half-stroke checked"></i>
+											{% else %}
+												<i class="fa-regular fa-star"></i>
+											{% endif %}
+										{% endfor %}
+									</div>
+									<a href="/reviews/book/{{ book.id }}"><p class="rating-element">({{ num_reviews }})</p></a>
+								</div>
+								</div>
 							{% endif %}
 						</div>
 					</div>
 					{% if journal %}
-						<hr class="thin">
-						{% if journal.title %}
-							<h3>{{ journal.title }}</h3>
-						{% endif %}
-						<p><strong>Posted by:</strong> <a href="/profile/@{{ journal.user.username }}">{{ journal.user.username }}</a></p>
-						<p><strong>Created at:</strong> {{ journal.created_at }}</p>
-						{% if journal.page %}
-							<p><strong>Page:</strong> {{ journal.page }}</p>
-						{% endif %}
-						{% if journal.tags.all %}
-							<p><strong>Tags:</strong>
-								{% for tag in journal.tags.all %}
-									{{ tag.tag }}{% if not forloop.last %}, {% endif %}
-								{% endfor %}
-							</p>
-						{% endif %}
-						{% if journal.journal_text %}
-							<br>
-							<p class="wide-spacing">{{ journal.journal_text }}</p>
-						{% endif %}
+						<div class="individual-review-b">
+						    {% if journal.title %}
+							    <h3>{{ journal.title }}</h3>
+						    {% endif %}
+						    <p><strong>Posted by:</strong> <a href="/profile/@{{ journal.user.username }}">{{ journal.user.username }}</a></p>
+						    <p><strong>Created at:</strong> {{ journal.created_at }}</p>
+						    {% if journal.page %}
+							    <p><strong>Page:</strong> {{ journal.page }}</p>
+						    {% endif %}
+						    {% if journal.tags.all %}
+							    <p><strong>Tags:</strong>
+								    {% for tag in journal.tags.all %}
+									    {{ tag.tag }}{% if not forloop.last %}, {% endif %}
+								    {% endfor %}
+							    </p>
+						    {% endif %}
+						    {% if journal.journal_text %}
+							    {{ journal.journal_text|linebreaks }}
+						    {% endif %}
+						</div>
 					{% endif %}
 				</div>
 			</div>

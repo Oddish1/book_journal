@@ -16,7 +16,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-import views
+from . import views
 from django.conf import settings
 from django.conf.urls.static import static
 
@@ -45,6 +45,7 @@ urlpatterns = [
     path('password-reset/<uidb64>/<token>/', views.password_reset_confirm, name='password_reset_confirm'),
     path('password-reset/complete', views.password_reset_complete, name='password_reset_complete'),
     path('profile/edit-profile', views.edit_profile, name='edit_profile'),
+    path('profile/@', views.profile, name='profile'),
     path('profile/@<username>/', views.public_profile, name='public_profile'),
     path('profile/@<username>/not-public', views.profile_not_public, name='profile_not_public'),
     path('profile/@<username>/does-not-exist', views.profile_dne, name='profile_dne'),

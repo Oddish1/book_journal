@@ -958,6 +958,12 @@ def about(request):
     return HttpResponse(template.render(context, request))
 
 
+def profile(request):
+    if request.user.is_authenticated:
+        return redirect('public_profile')
+    return redirect('home')
+
+
 def edit_profile(request):
     if not request.user.is_authenticated:
         return redirect("home")
