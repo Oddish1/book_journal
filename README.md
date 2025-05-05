@@ -1,101 +1,73 @@
-# Book Journal
+# 📚 BookJournal
 
-This is being developed for my capstone project.
+**BookJournal** is a full-stack Django web app that allows users to search for books, save them to a personal collection, and write journal entries. It integrates with the Google Books API and provides a clean interface for managing and exploring a personal reading history.
 
-## Currently in Progress
+## Screenshots
 
-- [X] Email integration for password reset
-  - [X] noreply email setup
-  - [X] welcome template
-  - [X] password reset
-  - [X] email verification?
-- [X] Public user profiles
-  - [X] User profile editing page with image upload/optimization
-  - [X] public user profile page
-  - [X] populate user links on all pages publicly referencing users (reviews, journals, etc.)
-  - [X] User following + email alerts
-- [X] Public journals aggregate page on book page
-- [X] Currently reading count on book page
-- [X] Num. finished reading on book page
-- [X] User search & finish search styling
-- [X] Refine/Unify Styling
-  - [X] library page
-  - [X] journal page
-  - [X] css variables for colors
-  - [X] about page
-  - [X] home page
-  - [X] reviews aggregate page
-  - [X] individual review page
-  - [X] password reset
-    - [X] success
-    - [X] fail
-    - [X] complete
-    - [X] confirm
-  - [X] profile
-    - [X] public profile
-    - [X] dne
-    - [X] not public
+**Homepage (not logged in)**
+![Unauthenticated Homepage Screenshot](./screenshots/homepage_noauth.png)
 
-## Development Backlog
+**Register**
+![Register Page Screenshot](./screenshots/register.png)
 
-- [X] Move to PostreSQL db
-- [ ] Auto-tagging system (sentiment analysis + keyword extraction)
-  - [ ] Reviews
-  - [ ] Journals
-  - [ ] Books (descriptions)
+**Login**
+![Login Page Screenshot](./screenshots/login.png)
 
-## Finished
+**Homepage (logged in)**
+![Authenticated Homepage Screenshot](./screenshots/homepage_auth.png)
 
-- [X] Search
-- [X] Optimize database transactions
-- [X] Recommendations
-  - [X] Set finished in journal entry
-  - [X] Prompt user for reviews if finished and not reviewed
-  - [X] Review form + storage
-  - [X] Recommendation Algorithm
-  - [X] Add ratings to books on db for easier lookup
-  - [X] Show Reviews on book page
-  - [X] Show User reviews on library page
-  - [X] Generate recommendations when user submits new review
-- [X] UI Tweaking (remove cards, remove book titles, simplify display)
-  - [X] Homepage
-  - [X] Book Page
-    - [X] split in thirds only book details scroll -> book image | book details | list functionality)
-    - [X] review aggregation link
-  - [X] Library Page
-  - [X] Login Page
-  - [X] Register Page
-  - [X] Journal Page
-    - [X] Journal Home
-    - [X] Individual Journal Pages
-    - [X] Pages that link to journals need individual journal links
-    - [X] New Journals
-    - [X] New Reviews
-  - [X] About Page
+**Search Results**
+![Search Results Screenshot](./screenshots/search_results.png)
 
-- [X] Individual Review pages for full review
-- [X] Add link on review count on book page leading to aggregated reviews for that book
-- [X] API Integration
-  - [X] Fetch book details
-- [X] Implement Books
-  - [X] Auto-Add Books from API to DB
-  - [X] Book Details Page
-- [X] Implement Journal
-  - [X] Journal Page (sort by timestamp)
-  - [X] New Journal Page
-  - [X] Journals on book page
-- [X] Implement Lists
-  - [X] Adding Book to List
-    - [X] Book Page
-  - [X] Removing Book from List
-    - [X] Book Page
-- [X] Library Page
-  - [X] styling
-  - [X] currently reading (w/ link to new journal for the book)
-  - [X] user's lists
-  - [X] latest journals (10)
-- [X] Data Models
-- [X] Authentication
-  - [X] Registration
-  - [X] Login
-  - [X] Logout
+**Book Details**
+![Book Details Screenshot](./screenshots/book_details.png)
+
+**Book Reviews**
+![Book Reviews Screenshot](./screenshots/book_reviews.png)
+
+**Review**
+![Review Screenshot](./screenshots/review.png)
+
+**New Review**
+![New Review Screenshot](./screenshots/new_review.png)
+
+**Library**
+![Library Screenshot](./screenshots/library.png)
+
+**Journal Home Page**
+![Journal Homepage Screenshot](./screenshots/journal.png)
+
+**New Journal**
+![New Journal Screenshot](./screenshots/new_journal.png)
+
+**Your Profile**
+![Your Profile Screenshot](./screenshots/profile.png)
+
+**Other User Profile**
+![Other User Profile Screenshot](./screenshots/user_profile.png)
+
+**
+
+## Features
+
+- Search books using the Google Books API
+- Add to your library with persistent storage in PostgreSQL
+- Follow your friends
+- View detailed book pages including cover, metadata, journal entries, and reviews
+- Journal your reading with timestamped entries
+- Content-based recommendations based on books you have rated
+- Custom password reset flow using Django's Auth system
+- Responsive UI built with Bootsrap
+
+## Tech Stack
+
+- **Backend:** Django, Python, PostgreSQL
+- **Frontend:** HTML, Bootstrap
+- **APIs:** Google Books API
+
+## Future Improvements
+
+- Add user-to-user sharing
+- Implement auto-tagging of books, reviews, and journals
+- Implement Celery for background processing and scalability
+- Dockerize for production deployment
