@@ -46,7 +46,6 @@
 **Other User Profile**
 ![Other User Profile Screenshot](./screenshots/user_profile.png)
 
-**
 
 ## Features
 
